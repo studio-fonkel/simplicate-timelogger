@@ -55,6 +55,13 @@
   import VueMultiselect from 'vue-multiselect';
   import { axios } from './composables/use-axios.js';
 
+  import {
+    availableProjects,
+    loadingAvailableProjects,
+    currentProject,
+    fetchAllProjects,
+  } from './composables/use-projects.js';
+
   const vmsOptions = {
     'track-by': 'id',
     'multiple': false,
@@ -68,29 +75,6 @@
     'deselect-label': '',
     'deselected-label': '',
   };
-
-  ///////////////////////////////////////
-  //  PROJECTS                         //
-  ///////////////////////////////////////
-
-  const availableProjects = ref([]); // REVIEW: Use shallowRef?
-  const loadingAvailableProjects = ref(true);
-  const currentProject = ref(null); // REVIEW: Use shallowRef?
-
-  const clearProjects = () => {
-    availableProjects.value.length = 0;
-  };
-
-  const addProjects = (projects) => {
-    availableProjects.value.push(...projects);
-  };
-
-  const getProjects = async () => {
-    const { data: projects } = await axios.get('projects/project');
-    clearProjects();
-    addProjects(projects.data);
-    loadingAvailableProjects.value = false;
-  }
 
   ///////////////////////////////////////
   //  PROJECTS SERVICES                //
@@ -238,7 +222,7 @@
   //  CREATED                          //
   ///////////////////////////////////////
 
-  getProjects();
+  fetchAllProjects();
 </script>
 
 <style lang="scss">
