@@ -290,6 +290,7 @@
 
   .multiselect__placeholder {
     padding-top: 0;
+    margin-bottom: 8px;
   }
 
   .multiselect__select {
