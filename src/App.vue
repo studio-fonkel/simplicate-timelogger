@@ -82,9 +82,9 @@
   //  PROJECTS                         //
   ///////////////////////////////////////
 
-  const availableProjects = ref([]);
+  const availableProjects = ref([]); // REVIEW: Use shallowRef?
   const loadingAvailableProjects = ref(true);
-  const currentProject = ref(null);
+  const currentProject = ref(null); // REVIEW: Use shallowRef?
 
   const clearProjects = () => {
     availableProjects.value.length = 0;
@@ -105,9 +105,9 @@
   //  PROJECTS SERVICES                //
   ///////////////////////////////////////
 
-  const availableProjectServices = ref([]);
+  const availableProjectServices = ref([]); // REVIEW: Use shallowRef?
   const loadingAvailableProjectServices = ref(false);
-  const currentProjectService = ref(null);
+  const currentProjectService = ref(null); // REVIEW: Use shallowRef?
 
   const setCurrentProjectService = (value) => {
     currentProjectService.value = value;
@@ -147,9 +147,9 @@
   //  PROJECT SERVICE HOURS TYPES      //
   ///////////////////////////////////////
 
-  const availableProjectServiceHoursTypes = ref([]);
+  const availableProjectServiceHoursTypes = ref([]); // REVIEW: Use shallowRef?
   const loadingAvailableProjectServiceHoursTypes = ref(false);
-  const currentProjectServiceHoursType = ref(null);
+  const currentProjectServiceHoursType = ref(null); // REVIEW: Use shallowRef?
 
   const setCurrentProjectServiceHoursType = (value) => {
     currentProjectServiceHoursType.value = value;
