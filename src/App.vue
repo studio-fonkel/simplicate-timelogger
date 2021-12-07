@@ -69,6 +69,7 @@
     resetCurrentProjectService,
     selectFirstProjectService,
     getProjectServices,
+    clearProjectServices,
   } from './composables/use-project-services.js';
 
   const vmsOptions = {

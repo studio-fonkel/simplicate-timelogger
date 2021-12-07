@@ -46,4 +46,5 @@ export {
   resetCurrentProjectService,
   selectFirstProjectService,
   getProjectServices,
+  clearProjectServices,
 };
