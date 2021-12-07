@@ -261,6 +261,10 @@
     margin-top: 60px;
   }
 
+  .dim {
+    color: #bbb;
+  }
+
   section {
     margin: 1em auto;
     max-width: 400px;
@@ -335,6 +339,10 @@
     &::before {
       top: 63%;
     }
+  }
+
+  .multiselect__loading-leave-active {
+    transition-duration: 0.2s;
   }
 
   .multiselect__spinner {
