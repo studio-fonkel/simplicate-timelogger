@@ -3,13 +3,13 @@
     <VueMultiselect
       v-model="currentProject"
       :options="availableProjects"
-      :loading="gettingAvailableProjects"
+      :loading="loadingAvailableProjects"
       label="name"
       v-bind="vmsOptions"
       placeholder="Selecteer een project"
     >
       <template #noOptions>
-        <span class="dim">{{ gettingAvailableProjects ? 'Bezig met projecten ophalen' : 'Geen projecten beschikbaar' }}</span>
+        <span class="dim">{{ loadingAvailableProjects ? 'Bezig met projecten ophalen' : 'Geen projecten beschikbaar' }}</span>
       </template>
     </VueMultiselect>
   </section>
@@ -18,13 +18,13 @@
     <VueMultiselect
       v-model="currentProjectService"
       :options="availableProjectServices"
-      :loading="gettingAvailableProjectServices"
+      :loading="loadingAvailableProjectServices"
       label="name"
       v-bind="vmsOptions"
       placeholder="Selecteer een dienst"
     >
       <template #noOptions>
-        <span class="dim">{{ gettingAvailableProjectServices ? 'Bezig met diensten ophalen' : 'Geen diensten beschikbaar' }}</span>
+        <span class="dim">{{ loadingAvailableProjectServices ? 'Bezig met diensten ophalen' : 'Geen diensten beschikbaar' }}</span>
       </template>
     </VueMultiselect>
   </section>
@@ -33,25 +33,25 @@
     <VueMultiselect
       v-model="currentProjectServiceHoursType"
       :options="availableProjectServiceHoursTypes"
-      :loading="gettingAvailableProjectServiceHoursTypes"
+      :loading="loadingAvailableProjectServiceHoursTypes"
       label="label"
       v-bind="vmsOptions"
       placeholder="Selecteer een type uren"
     >
       <template #noOptions>
-        <span class="dim">{{ gettingAvailableProjectServiceHoursTypes ? 'Bezig met type uren ophalen' : 'Geen type uren beschikbaar' }}</span>
+        <span class="dim">{{ loadingAvailableProjectServiceHoursTypes ? 'Bezig met type uren ophalen' : 'Geen type uren beschikbaar' }}</span>
       </template>
     </VueMultiselect>
   </section>
 
   <button
     type="button"
-    :disabled="!currentProject || !currentProjectService || !currentProjectServiceHoursType"
+    :disabled="timerButtonEnabled === false"
   >Start timer</button>
 </template>
 
 <script setup>
-  import { computed, ref, watch } from 'vue';
+  import { ref, computed, watch } from 'vue';
   import axiosPlugin from 'axios';
   import VueMultiselect from 'vue-multiselect';
 
@@ -83,8 +83,8 @@
   ///////////////////////////////////////
 
   const availableProjects = ref([]);
-  const gettingAvailableProjects = ref(true);
-  const currentProject = ref('');
+  const loadingAvailableProjects = ref(true);
+  const currentProject = ref(null);
 
   const clearProjects = () => {
     availableProjects.value.length = 0;
@@ -98,7 +98,7 @@
     const { data: projects } = await axios.get('projects/project');
     clearProjects();
     addProjects(projects.data);
-    gettingAvailableProjects.value = false;
+    loadingAvailableProjects.value = false;
   }
 
   ///////////////////////////////////////
@@ -106,8 +106,20 @@
   ///////////////////////////////////////
 
   const availableProjectServices = ref([]);
-  const gettingAvailableProjectServices = ref(false);
+  const loadingAvailableProjectServices = ref(false);
   const currentProjectService = ref(null);
+
+  const setCurrentProjectService = (value) => {
+    currentProjectService.value = value;
+  };
+
+  const resetCurrentProjectService = () => {
+    setCurrentProjectService(null);
+  };
+
+  const selectFirstProjectService = () => {
+    setCurrentProjectService(availableProjectServices.value[0]);
+  };
 
   const clearProjectServices = () => {
     availableProjectServices.value.length = 0;
@@ -118,7 +130,7 @@
   };
 
   const getProjectServices = async ({ id: projectId }) => {
-    gettingAvailableProjectServices.value = true;
+    loadingAvailableProjectServices.value = true;
 
     const { data: services } = await axios.get('hours/projectservices', {
       params: {
@@ -128,7 +140,7 @@
 
     clearProjectServices();
     addProjectServices(services.data);
-    gettingAvailableProjectServices.value = false;
+    loadingAvailableProjectServices.value = false;
   };
 
   ///////////////////////////////////////
@@ -136,8 +148,20 @@
   ///////////////////////////////////////
 
   const availableProjectServiceHoursTypes = ref([]);
-  const gettingAvailableProjectServiceHoursTypes = ref(false);
+  const loadingAvailableProjectServiceHoursTypes = ref(false);
   const currentProjectServiceHoursType = ref(null);
+
+  const setCurrentProjectServiceHoursType = (value) => {
+    currentProjectServiceHoursType.value = value;
+  };
+
+  const resetCurrentProjectServiceHoursType = () => {
+    setCurrentProjectServiceHoursType(null);
+  };
+
+  const selectFirstProjectServiceHoursType = () => {
+    setCurrentProjectServiceHoursType(availableProjectServiceHoursTypes.value[0]);
+  };
 
   const clearProjectServiceHoursTypes = () => {
     availableProjectServiceHoursTypes.value.length = 0;
@@ -148,7 +172,7 @@
   };
 
   const getProjectServiceHoursTypes = async ({ id: projectId }, { id: projectServiceId }) => {
-    gettingAvailableProjectServiceHoursTypes.value = true;
+    loadingAvailableProjectServiceHoursTypes.value = true;
 
     const { data: serviceHoursTypes } = await axios.get('hours/projectservicehourstypes', {
       params: {
@@ -159,7 +183,7 @@
 
     clearProjectServiceHoursTypes();
     addProjectServiceHoursTypes(serviceHoursTypes.data);
-    gettingAvailableProjectServiceHoursTypes.value = false;
+    loadingAvailableProjectServiceHoursTypes.value = false;
   };
 
   ///////////////////////////////////////
@@ -172,17 +196,17 @@
         // Reset current project service if service not available in new project
         if (currentProjectService.value !== null
           && availableProjectServices.value.find(service => service.id === currentProjectService.value.id) === undefined) {
-          currentProjectService.value = null;
+          resetCurrentProjectService();
         }
 
         // If new available project services has only one entry, select it
         if (availableProjectServices.value.length === 1) {
-          currentProjectService.value = availableProjectServices.value[0];
+          selectFirstProjectService();
         }
       });
     }
     else {
-      currentProjectService.value = null;
+      resetCurrentProjectService();
       clearProjectServices();
     }
   });
@@ -193,19 +217,30 @@
         // Reset current project service if service not available in new project
         if (currentProjectServiceHoursType.value !== null
           && availableProjectServiceHoursTypes.value.find(serviceHoursTypes => serviceHoursTypes.id === currentProjectServiceHoursType.value.id) === undefined) {
-          currentProjectServiceHoursType.value = null;
+          resetCurrentProjectServiceHoursType();
         }
 
         // If new available project service hours types has only one entry, select it
         if (availableProjectServiceHoursTypes.value.length === 1) {
-          currentProjectServiceHoursType.value = availableProjectServiceHoursTypes.value[0];
+          selectFirstProjectServiceHoursType();
         }
       });
     }
     else {
-      currentProjectServiceHoursType.value = null;
-      availableProjectServiceHoursTypes.value.length = 0;
+      resetCurrentProjectServiceHoursType();
+      clearProjectServiceHoursTypes();
     }
+  });
+
+  const timerButtonEnabled = computed(() => {
+    return (
+      currentProject.value !== null
+      && currentProjectService.value !== null
+      && currentProjectServiceHoursType.value !== null
+      && loadingAvailableProjects.value !== true
+      && loadingAvailableProjectServices.value !== true
+      && loadingAvailableProjectServiceHoursTypes.value !== true
+    );
   });
 
   ///////////////////////////////////////
