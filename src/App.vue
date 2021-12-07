@@ -131,27 +131,6 @@
     gettingAvailableProjectServices.value = false;
   };
 
-  watch(currentProject, (newCurrentProject) => {
-    if (newCurrentProject !== null) {
-      getProjectServices(newCurrentProject).then(() => {
-        // Reset current project service if service not available in new project
-        if (currentProjectService.value !== null
-          && availableProjectServices.value.find(service => service.id === currentProjectService.value.id) === undefined) {
-          currentProjectService.value = null;
-        }
-
-        // If new available project services has only one entry, select it
-        if (availableProjectServices.value.length === 1) {
-          currentProjectService.value = availableProjectServices.value[0];
-        }
-      });
-    }
-    else {
-      currentProjectService.value = null;
-      clearProjectServices();
-    }
-  });
-
   ///////////////////////////////////////
   //  PROJECT SERVICE HOURS TYPES      //
   ///////////////////////////////////////
@@ -183,6 +162,31 @@
     gettingAvailableProjectServiceHoursTypes.value = false;
   };
 
+  ///////////////////////////////////////
+  //  WATCHs                           //
+  ///////////////////////////////////////
+
+  watch(currentProject, (newCurrentProject) => {
+    if (newCurrentProject !== null) {
+      getProjectServices(newCurrentProject).then(() => {
+        // Reset current project service if service not available in new project
+        if (currentProjectService.value !== null
+          && availableProjectServices.value.find(service => service.id === currentProjectService.value.id) === undefined) {
+          currentProjectService.value = null;
+        }
+
+        // If new available project services has only one entry, select it
+        if (availableProjectServices.value.length === 1) {
+          currentProjectService.value = availableProjectServices.value[0];
+        }
+      });
+    }
+    else {
+      currentProjectService.value = null;
+      clearProjectServices();
+    }
+  });
+
   watch(currentProjectService, (newCurrentProjectService) => {
     if (newCurrentProjectService !== null) {
       getProjectServiceHoursTypes(currentProject.value, newCurrentProjectService).then(() => {
@@ -204,7 +208,10 @@
     }
   });
 
-  // Created
+  ///////////////////////////////////////
+  //  CREATED                          //
+  ///////////////////////////////////////
+
   getProjects();
 </script>
 
