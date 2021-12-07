@@ -62,6 +62,15 @@
     fetchAllProjects,
   } from './composables/use-projects.js';
 
+  import {
+    availableProjectServices,
+    loadingAvailableProjectServices,
+    currentProjectService,
+    resetCurrentProjectService,
+    selectFirstProjectService,
+    getProjectServices,
+  } from './composables/use-project-services.js';
+
   const vmsOptions = {
     'track-by': 'id',
     'multiple': false,
@@ -74,48 +83,6 @@
     'selected-label': '',
     'deselect-label': '',
     'deselected-label': '',
-  };
-
-  ///////////////////////////////////////
-  //  PROJECTS SERVICES                //
-  ///////////////////////////////////////
-
-  const availableProjectServices = ref([]); // REVIEW: Use shallowRef?
-  const loadingAvailableProjectServices = ref(false);
-  const currentProjectService = ref(null); // REVIEW: Use shallowRef?
-
-  const setCurrentProjectService = (value) => {
-    currentProjectService.value = value;
-  };
-
-  const resetCurrentProjectService = () => {
-    setCurrentProjectService(null);
-  };
-
-  const selectFirstProjectService = () => {
-    setCurrentProjectService(availableProjectServices.value[0]);
-  };
-
-  const clearProjectServices = () => {
-    availableProjectServices.value.length = 0;
-  };
-
-  const addProjectServices = (services) => {
-    availableProjectServices.value.push(...services);
-  };
-
-  const getProjectServices = async ({ id: projectId }) => {
-    loadingAvailableProjectServices.value = true;
-
-    const { data: services } = await axios.get('hours/projectservices', {
-      params: {
-        'q[project_id]': projectId,
-      },
-    });
-
-    clearProjectServices();
-    addProjectServices(services.data);
-    loadingAvailableProjectServices.value = false;
   };
 
   ///////////////////////////////////////
