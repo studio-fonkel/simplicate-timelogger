@@ -7,7 +7,11 @@
       label="name"
       v-bind="vmsOptions"
       placeholder="Selecteer een project"
-    />
+    >
+      <template #noOptions>
+        <span class="dim">{{ gettingAvailableProjects ? 'Bezig met projecten ophalen' : 'Geen projecten beschikbaar' }}</span>
+      </template>
+    </VueMultiselect>
   </section>
 
   <section>
@@ -15,11 +19,14 @@
       v-model="currentProjectService"
       :options="availableProjectServices"
       :loading="gettingAvailableProjectServices"
-      :disabled="availableProjectServices.length === 0"
       label="name"
       v-bind="vmsOptions"
       placeholder="Selecteer een dienst"
-    />
+    >
+      <template #noOptions>
+        <span class="dim">{{ gettingAvailableProjectServices ? 'Bezig met diensten ophalen' : 'Geen diensten beschikbaar' }}</span>
+      </template>
+    </VueMultiselect>
   </section>
 
   <section>
@@ -27,11 +34,14 @@
       v-model="currentProjectServiceHoursType"
       :options="availableProjectServiceHoursTypes"
       :loading="gettingAvailableProjectServiceHoursTypes"
-      :disabled="availableProjectServiceHoursTypes.length === 0"
       label="label"
       v-bind="vmsOptions"
       placeholder="Selecteer een type uren"
-    />
+    >
+      <template #noOptions>
+        <span class="dim">{{ gettingAvailableProjectServiceHoursTypes ? 'Bezig met type uren ophalen' : 'Geen type uren beschikbaar' }}</span>
+      </template>
+    </VueMultiselect>
   </section>
 
   <button
@@ -41,7 +51,7 @@
 </template>
 
 <script setup>
-  import { ref, watch } from 'vue';
+  import { computed, ref, watch } from 'vue';
   import axiosPlugin from 'axios';
   import VueMultiselect from 'vue-multiselect';
 
@@ -125,12 +135,19 @@
     if (newCurrentProject !== null) {
       getProjectServices(newCurrentProject).then(() => {
         // Reset current project service if service not available in new project
-        if (currentProjectService.value !== null && !availableProjectServices.value.find(service => service.id === currentProjectService.value.id)) {
+        if (currentProjectService.value !== null
+          && availableProjectServices.value.find(service => service.id === currentProjectService.value.id) === undefined) {
           currentProjectService.value = null;
+        }
+
+        // If new available project services has only one entry, select it
+        if (availableProjectServices.value.length === 1) {
+          currentProjectService.value = availableProjectServices.value[0];
         }
       });
     }
     else {
+      currentProjectService.value = null;
       clearProjectServices();
     }
   });
@@ -170,12 +187,19 @@
     if (newCurrentProjectService !== null) {
       getProjectServiceHoursTypes(currentProject.value, newCurrentProjectService).then(() => {
         // Reset current project service if service not available in new project
-        if (currentProjectServiceHoursType.value !== null && !availableProjectServiceHoursTypes.value.find(serviceHoursTypes => serviceHoursTypes.id === currentProjectServiceHoursType.value.id)) {
+        if (currentProjectServiceHoursType.value !== null
+          && availableProjectServiceHoursTypes.value.find(serviceHoursTypes => serviceHoursTypes.id === currentProjectServiceHoursType.value.id) === undefined) {
           currentProjectServiceHoursType.value = null;
+        }
+
+        // If new available project service hours types has only one entry, select it
+        if (availableProjectServiceHoursTypes.value.length === 1) {
+          currentProjectServiceHoursType.value = availableProjectServiceHoursTypes.value[0];
         }
       });
     }
     else {
+      currentProjectServiceHoursType.value = null;
       availableProjectServiceHoursTypes.value.length = 0;
     }
   });
@@ -227,6 +251,10 @@
     }
   }
 
+  .multiselect {
+    cursor: text;
+  }
+
   .multiselect__tags,
   .multiselect, .multiselect__input,
   .multiselect__single {
@@ -239,8 +267,22 @@
     padding-left: 0.75em;
   }
 
-  .multiselect__single {
+  .multiselect__option {
+    padding: 0.45em 0.75em;
+    line-height: inherit;
+
+    &--highlight {
+      background-color: #24b0f1;
+    }
+  }
+
+  .multiselect__single,
+  .multiselect__input {
     padding-left: 0;
+  }
+
+  .multiselect__placeholder {
+    padding-top: 0;
   }
 
   .multiselect__select {
@@ -260,11 +302,5 @@
     // &::before,
     // &::after {
     // }
-  }
-
-  .multiselect__option {
-    &--highlight {
-      background-color: #24b0f1;
-    }
   }
 </style>
