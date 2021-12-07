@@ -269,12 +269,12 @@
     padding: 0.7em 1.4em;
     font-size: inherit;
     font-weight: 500;
-    // transition: background-color 0.1s ease-out;
 
     &:not(:disabled) {
       background-color: #26c018;
       box-shadow: 0 5px 15px -3px rgba(#0a2507, 0.2);
       cursor: pointer;
+      transition: background-color 0.1s ease-out;
 
       &:hover,
       &:focus {
