@@ -245,10 +245,6 @@
   .multiselect__select {
     height: 100%;
     width: 2.3em;
-
-    &::before {
-      top: 63%;
-    }
   }
 
   .multiselect__loading-leave-active {
