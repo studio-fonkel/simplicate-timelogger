@@ -1,8 +1,9 @@
 module.exports = {
   env: {
-    es6: true,
-    browser: true,
-    node: true,
+    'es6': true,
+    'browser': true,
+    'node': true,
+    'vue/setup-compiler-macros': true,
   },
   extends: [
     '@fonkel/eslint-config-fonkel',
