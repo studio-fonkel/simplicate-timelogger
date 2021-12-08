@@ -2,34 +2,49 @@
   <table class="hours-overview">
     <thead>
       <tr>
-        <th>Start time</th>
+        <th><i class="far fa-clock"></i> Start-/eindtijd</th>
         <th>Project</th>
         <th>Aantal uren</th>
-        <!-- <th>Total</th> -->
       </tr>
     </thead>
+
     <tbody>
       <tr
         v-for="hoursEntry of sortedHours"
         :key="hoursEntry.id"
+        class="hours-entry"
       >
         <td>
           <span v-if="hoursEntry.is_time_defined === false" class="semi-dim">
-            Geen starttijd
+            Geen start-/eindtijd
           </span>
           <span v-else>
-            {{ toTimeString(hoursEntry.start_date) }}
+            <div><strong>{{ toTimeString(hoursEntry.start_date) }}</strong></div>
+            <div>{{ toTimeString(hoursEntry.end_date) }}</div>
           </span>
         </td>
+
         <td>
           <div><strong>{{ hoursEntry.project.name }}</strong></div>
           <div>{{ hoursEntry.projectservice.name }}</div>
-          <div v-if="hoursEntry.note" class="semi-dim">{{ hoursEntry.note }}</div>
+          <div v-if="hoursEntry.note" class="hours-entry__description semi-dim">{{ hoursEntry.note || '-' }}</div>
         </td>
-        <td>{{ toDurationString(hoursEntry.hours) }}</td>
+
+        <td>
+          <strong>{{ toDurationString(hoursEntry.hours) }}</strong>
+          <button
+            type="button"
+            class="hours-entry__edit-btn btn--small btn--grey"
+            title="Bewerk log"
+            @click="$emit('edit-hours-entry', hoursEntry)"
+          >
+            <i class="fas fa-pencil-alt"></i>
+          </button>
+        </td>
       </tr>
-      <tr class="totals">
-        <td colspan="3">Totaal:&nbsp;&nbsp;&nbsp;{{ totalHoursDurationString }}</td>
+
+      <tr class="hours-overview__totals">
+        <td colspan="3"><strong>Totaal:&nbsp;&nbsp;&nbsp;{{ totalHoursDurationString }}</strong></td>
       </tr>
     </tbody>
   </table>
@@ -43,6 +58,10 @@
     fetchHours,
     startPolling,
   } from '../composables/use-hours.js';
+
+  defineEmits({
+    'edit-hours-entry': hoursEntry => hoursEntry != null,
+  });
 
   const timeFormatter = new Intl.DateTimeFormat('nl-NL', {
     hour: 'numeric',
@@ -86,11 +105,21 @@
   startPolling();
 </script>
 
-<style scoped lang="scss">
-  table {
+<style lang="scss">
+  .hours-overview {
     text-align: left;
     border-spacing: 0;
-    font-size: 0.8em;
+    box-shadow: 0 3px 20px -3px rgba(#585858, 0.06);
+    table-layout: fixed;
+
+    // Set first column width to fixed width
+    th:first-child {
+      width: 17.5ch;
+    }
+    // Set last column to minimal width
+    th:last-child {
+      width: 0;
+    }
 
     th, td {
       border: 1px solid #e7e7e7;
@@ -122,10 +151,12 @@
     }
 
     th {
-      $th-bg-color: #d1ccc7;
+      $th-bg-color: hsl(25, 7%, 87.5%);
+      color: hsl(25, 3%, 40%);
+      font-weight: 900;
       background-color: $th-bg-color;
       border-color: $th-bg-color;
-      padding: 1em 0.85em 0.8em;
+      padding: 1.12em 0.85em 0.8em;
 
       &:first-child {
         border-top-left-radius: 8px;
@@ -136,15 +167,45 @@
     }
 
     th,
-    tbody tr:not(.totals) td {
+    tbody tr:not(.hours-overview__totals) td {
       border-bottom-width: 0;
     }
 
-    tr.totals td {
+    tr:not(.hours-overview__totals) {
+      font-size: 0.8em;
+      line-height: 1.55;
+    }
+
+    .hours-entry__description {
+      margin-top: 0.23em;
+
+      // @if (true) {
+      //   &::before {
+      //     content: "“";
+      //     opacity: 0.5;
+      //   }
+      //   &::after {
+      //     content: "”";
+      //     opacity: 0.5;
+      //   }
+      // }
+      // @else {
+      //   &::before {
+      //     content: "\25B6\0020";
+      //     display: inline-block;
+      //     white-space: pre;
+      //     transform: scale(0.6);
+      //     margin-right: -0.4ch;
+      //     transform-origin: left center;
+      //     opacity: 0.3;
+      //   }
+      // }
+    }
+
+    tr.hours-overview__totals td {
       padding-top: 1.4em;
       padding-bottom: 1.4em;
-      background-color: #f5f1ee;
-      font-weight: 700;
+      background-color: hsl(25, 26%, 95%);
 
       &:first-child {
         border-bottom-left-radius: 8px;
@@ -152,6 +213,10 @@
       &:last-child {
         border-bottom-right-radius: 8px;
       }
+    }
+
+    .hours-entry__edit-btn {
+      margin-left: 0.75em;
     }
   }
 </style>

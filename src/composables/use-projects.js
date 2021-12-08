@@ -13,10 +13,13 @@ function addProjects (projects) {
   availableProjects.value.push(...projects);
 }
 
-export async function fetchAllProjects () {
+async function fetchAllProjects () {
   loadingAvailableProjects.value = true;
   const { data: projects } = await axios.get('projects/project');
   clearProjects();
   addProjects(projects.data);
   loadingAvailableProjects.value = false;
 }
+
+// On init, fetch all projects.
+fetchAllProjects();

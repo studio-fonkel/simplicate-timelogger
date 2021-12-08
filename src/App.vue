@@ -1,159 +1,38 @@
 <template>
-  <HoursOverview/>
-  <div class="timer">
-    <section>
-      <VueMultiselect
-        v-model="currentProject"
-        :options="availableProjects"
-        :loading="loadingAvailableProjects"
-        label="name"
-        v-bind="vmsOptions"
-        placeholder="Selecteer een project"
-      >
-        <template #noOptions>
-          <span class="dim">
-            {{ loadingAvailableProjects ? 'Bezig met projecten ophalen' : 'Geen projecten beschikbaar' }}
-          </span>
-        </template>
-      </VueMultiselect>
-    </section>
+  <HoursOverview
+    @edit-hours-entry="editHoursEntry"
+  />
 
-    <section>
-      <VueMultiselect
-        v-model="currentProjectService"
-        :options="availableProjectServices"
-        :loading="loadingAvailableProjectServices"
-        label="name"
-        v-bind="vmsOptions"
-        placeholder="Selecteer een dienst"
-      >
-        <template #noOptions>
-          <span class="dim">
-            {{ loadingAvailableProjectServices ? 'Bezig met diensten ophalen' : 'Geen diensten beschikbaar' }}
-          </span>
-        </template>
-      </VueMultiselect>
-    </section>
-
-    <section>
-      <VueMultiselect
-        v-model="currentProjectServiceHoursType"
-        :options="availableProjectServiceHoursTypes"
-        :loading="loadingAvailableProjectServiceHoursTypes"
-        label="label"
-        v-bind="vmsOptions"
-        placeholder="Selecteer een type uren"
-      >
-        <template #noOptions>
-          <span class="dim">
-            {{ loadingAvailableProjectServiceHoursTypes ? 'Bezig met type uren ophalen' : 'Geen type uren beschikbaar' }}
-          </span>
-        </template>
-      </VueMultiselect>
-    </section>
-
-    <StartTimerButton/>
-  </div>
+  <TimerForm
+    :mode="timerFormMode"
+    :currentlyEditedHoursEntry="currentlyEditedHoursEntry"
+    @confirm-edit-hours-entry="confirmEditHoursEntry"
+    @cancel-edit-hours-entry="cancelEditHoursEntry"
+  />
 </template>
 
 <script setup>
-  import { watch } from 'vue';
-  import VueMultiselect from 'vue-multiselect';
-  import StartTimerButton from './components/StartTimerButton.vue';
+  import { ref } from 'vue';
   import HoursOverview from './components/HoursOverview.vue';
+  import TimerForm from './components/TimerForm.vue';
 
-  import {
-    availableProjects,
-    loadingAvailableProjects,
-    currentProject,
-    fetchAllProjects,
-  } from './composables/use-projects.js';
+  const timerFormMode = ref('add');
+  const currentlyEditedHoursEntry = ref(null);
 
-  import {
-    availableProjectServices,
-    loadingAvailableProjectServices,
-    currentProjectService,
-    resetCurrentProjectService,
-    selectFirstProjectService,
-    getProjectServices,
-    clearProjectServices,
-  } from './composables/use-project-services.js';
-
-  import {
-    availableProjectServiceHoursTypes,
-    loadingAvailableProjectServiceHoursTypes,
-    currentProjectServiceHoursType,
-    resetCurrentProjectServiceHoursType,
-    selectFirstProjectServiceHoursType,
-    clearProjectServiceHoursTypes,
-    getProjectServiceHoursTypes,
-  } from './composables/use-project-service-hours-types.js';
-
-  const vmsOptions = {
-    'track-by': 'id',
-    'multiple': false,
-    'searchable': true,
-    'close-on-select': true,
-    'clear-on-select': false,
-    'preselect-first': false,
-    'show-no-results': false,
-    'select-label': '',
-    'selected-label': '',
-    'deselect-label': '',
-    'deselected-label': '',
+  const editHoursEntry = (hoursEntry) => {
+    currentlyEditedHoursEntry.value = hoursEntry;
+    timerFormMode.value = 'edit';
   };
 
-  // Watch current project so we can update the available project services.
-  watch(currentProject, (newCurrentProject) => {
-    if (newCurrentProject !== null) {
-      getProjectServices(newCurrentProject).then(() => {
-        // Reset current project service if service not available in new project.
-        if (currentProjectService.value !== null
-          && availableProjectServices.value.find(service => service.id === currentProjectService.value.id) === undefined) {
-          resetCurrentProjectService();
-        }
+  const confirmEditHoursEntry = () => {
+    timerFormMode.value = 'add';
+    currentlyEditedHoursEntry.value = null;
+  };
 
-        // If new available project services has only one entry, select it.
-        if (availableProjectServices.value.length === 1) {
-          selectFirstProjectService();
-        }
-      });
-    }
-    else {
-      resetCurrentProjectService();
-      clearProjectServices();
-    }
-  });
-
-  // Watch current project service so we can update the available project service hours types.
-  watch(currentProjectService, (newCurrentProjectService) => {
-    if (newCurrentProjectService !== null) {
-      getProjectServiceHoursTypes(currentProject.value, newCurrentProjectService).then(() => {
-        // Reset current project service if service not available in new project.
-        if (currentProjectServiceHoursType.value !== null
-          && availableProjectServiceHoursTypes.value.find(serviceHoursTypes => serviceHoursTypes.id === currentProjectServiceHoursType.value.id) === undefined) {
-          resetCurrentProjectServiceHoursType();
-        }
-
-        // If new available project service hours types has only one entry, select it.
-        if (availableProjectServiceHoursTypes.value.length === 1) {
-          selectFirstProjectServiceHoursType();
-        }
-      });
-    }
-    else {
-      resetCurrentProjectServiceHoursType();
-      clearProjectServiceHoursTypes();
-    }
-  });
-
-  // We need to watch deep, because it’s an array and we want to watch both reassignments AND array content changes.
-  // watch(hours.value, (newHours) => {
-  //   console.log('bladiebla', newHours);
-  // });
-
-  // On init, fetch all projects.
-  fetchAllProjects();
+  const cancelEditHoursEntry = () => {
+    timerFormMode.value = 'add';
+    currentlyEditedHoursEntry.value = null;
+  };
 </script>
 
 <style lang="scss">
@@ -162,8 +41,7 @@
     font-size: 1.2rem;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    // color: #2c3e50;
-    color: #303030;
+    color: $black-1;
     margin: 0;
     padding: 0;
   }
@@ -173,7 +51,7 @@
   }
 
   .semi-dim {
-    color: #838383;
+    color: #7e7e7e;
   }
 
   .error {
@@ -185,31 +63,20 @@
     display: flex;
     flex-flow: row wrap;
     justify-content: center;
+    justify-content: space-around;
     align-items: flex-start;
     gap: 40px;
+    max-width: 1400px;
+    margin: 0 auto;
 
     .hours-overview {
       flex: 2 0 60%;
-      min-width: 700px;
-      max-width: 900px;
+      min-width: 650px;
+      max-width: 850px;
     }
 
-    .timer {
+    .timer-form {
       flex: 0 0 400px;
-    }
-  }
-
-  .timer {
-    section {
-      margin: 1em 0;
-      // max-width: 100%;
-
-      &:first-child {
-        margin-top: 0;
-      }
-      &:last-child {
-        margin-bottom: 0;
-      }
     }
   }
 
@@ -217,88 +84,96 @@
     appearance: none;
     border: none;
     border-radius: 5px;
-    padding: 0.7em 1.4em;
-    font-size: inherit;
-    font-weight: 500;
-  }
+    padding: 0.65em 1.25em;
+    font-family: inherit;
+    font-size: 1em;
+    font-weight: 700;
+    text-shadow: 0 1px 1px var(--button-text-shadow-color);
 
-  .multiselect {
-    cursor: pointer;
+    &:not(:disabled) {
+      color: var(--button-normal-text-color);
+      box-shadow: inset 0 0 0 1px var(--button-border-color), var(--button-box-shadow);
+      cursor: pointer;
+      transition: background 0.1s ease-out;
+      --button-text-shadow-color: var(--button-normal-text-shadow-color);
+      --button-box-shadow: 0 2.5px 8px -4px var(--button-normal-box-shadow-color);
 
-    &:hover,
-    &:focus-within {
-      .multiselect__tags {
-        background: linear-gradient(to bottom, #fdfdfd, #f5f5f5);
+      &:not(:hover):not(:focus):not(:active) {
+        background: linear-gradient(to bottom, var(--button-normal-default-background-color-1), var(--button-normal-default-background-color-2));
+        --button-border-color: var(--button-normal-default-border-color);
+      }
+
+      &:hover,
+      &:focus {
+        background: linear-gradient(to bottom, var(--button-normal-hover-background-color-1), var(--button-normal-hover-background-color-2));
+        --button-border-color: var(--button-normal-hover-border-color);
+      }
+
+      &:active {
+        background: linear-gradient(to bottom, var(--button-normal-active-background-color-1), var(--button-normal-active-background-color-2));
+        --button-border-color: var(--button-normal-active-border-color);
       }
     }
-  }
 
-  .multiselect__tags,
-  .multiselect, .multiselect__input,
-  .multiselect__single {
-    font-size: inherit;
-    line-height: 1.8em;
-  }
-
-  .multiselect__tags {
-    padding-top: 0.45em;
-    padding-left: 0.75em;
-  }
-
-  .multiselect__option {
-    padding: 0.32em 0.75em;
-    line-height: inherit;
-    font-size: 0.8em;
-    transition-property: background-color, color;
-    transition-duration: 0.075s;
-    transition-timing-function: ease-out;
-
-    &--highlight {
-      background-color: #24b0f1;
+    &:disabled {
+      color: var(--button-disabled-text-color);
+      background: linear-gradient(to bottom, var(--button-disabled-background-color-1), var(--button-disabled-background-color-2));
+      box-shadow: var(--button-border-color), 0 2.5px 8px -4px var(--button-disabled-box-shadow-color);
+      --button-text-shadow-color: var(--button-disabled-text-shadow-color);
     }
 
-    &--selected {
-      font-weight: inherit;
+    > i {
+      vertical-align: middle;
     }
   }
 
-  .multiselect__content,
-  .multiselect__element,
-  .multiselect__single,
-  .multiselect__option {
-    width: 100%;
+  .btn--small {
+    padding: 0.45em 0.6em;
   }
 
-  .multiselect__single,
-  .multiselect__option {
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
+  .btn--green {
+    // Background
+    --button-normal-default-background-color-1: #{$green-7};
+    --button-normal-default-background-color-2: #{$green-6};
+    --button-normal-hover-background-color-1: #{$green-5};
+    --button-normal-hover-background-color-2: #{$green-4};
+    --button-normal-active-background-color-1: #{$green-3};
+    --button-normal-active-background-color-2: #{$green-2};
+    --button-disabled-background-color-1: #{$grey-7};
+    --button-disabled-background-color-2: #{$grey-7};
+    // Text + shadow
+    --button-normal-text-color: #{$white-0};
+    --button-disabled-text-color: #{$white-0};
+    --button-normal-text-shadow-color: #{$green-4};
+    --button-disabled-text-shadow-color: #{$grey-6};
+    // Borders
+    --button-normal-default-border-color: #{$green-5};
+    --button-normal-hover-border-color: #{$green-4};
+    --button-normal-active-border-color: #{$green-2};
+    // Box-shadow
+    --button-normal-box-shadow-color: #{rgba($green-1, 0.3)};
+    --button-disabled-box-shadow-color: #{rgba(#585858, 0.3)};
   }
 
-  .multiselect__single,
-  .multiselect__input {
-    padding-left: 0;
-    background: none;
-  }
-
-  .multiselect__placeholder {
-    padding-top: 0;
-    margin-bottom: 8px;
-  }
-
-  .multiselect__select {
-    height: 100%;
-    width: 2.3em;
-  }
-
-  .multiselect__loading-leave-active {
-    transition-duration: 0.2s;
-  }
-
-  .multiselect__spinner {
-    height: calc(100% - 2px);
-    width: 2.3em;
-    top: 1px;
+  .btn--grey {
+    // Background
+    --button-normal-default-background-color-1: #{$grey-9};
+    --button-normal-default-background-color-2: #{$grey-8};
+    --button-normal-hover-background-color-1: #{$grey-8};
+    --button-normal-hover-background-color-2: #{$grey-7};
+    --button-normal-active-background-color-1: #{$grey-7};
+    --button-normal-active-background-color-2: #{$grey-6};
+    // Text + shadow
+    --button-normal-text-color: #{$black-1};
+    --button-disabled-text-color: #{$black-1};
+    --button-normal-text-shadow-color: #{$grey-8};
+    --button-disabled-text-shadow-color: #{$grey-5};
+    // Borders
+    --button-normal-default-border-color: #{$grey-8};
+    --button-normal-hover-border-color: #{$grey-7};
+    --button-normal-active-border-color: #{$grey-6};
+    // Box-shadow
+    --button-normal-box-shadow-color: #{rgba($grey-3, 0.2)};
+    --button-disabled-box-shadow-color: #{rgba(#585858, 0.3)};
   }
 </style>
