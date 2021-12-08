@@ -44,6 +44,7 @@
     color: $black-1;
     margin: 0;
     padding: 0;
+    background-color: hsl(30deg 13% 98.5%);
   }
 
   .dim {
