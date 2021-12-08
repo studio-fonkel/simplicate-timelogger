@@ -11,6 +11,7 @@
           label="name"
           v-bind="vmsOptions"
           placeholder="Selecteer een project"
+          @remove="preventDeselectProject"
         >
           <template #noOptions>
             <span class="dim">
@@ -28,6 +29,7 @@
           label="name"
           v-bind="vmsOptions"
           placeholder="Selecteer een dienst"
+          @remove="preventDeselectProjectService"
         >
           <template #noOptions>
             <span class="dim">
@@ -45,6 +47,7 @@
           label="label"
           v-bind="vmsOptions"
           placeholder="Selecteer een type uren"
+          @remove="preventDeselectProjectServiceHoursType"
         >
           <template #noOptions>
             <span class="dim">
@@ -79,7 +82,7 @@
 </template>
 
 <script setup>
-  import { watch } from 'vue';
+  import { watch, nextTick } from 'vue';
   import VueMultiselect from 'vue-multiselect';
   import CreateTimerButton from './CreateTimerButton.vue';
   import StartTimerButton from './StartTimerButton.vue';
@@ -88,12 +91,14 @@
     availableProjects,
     loadingAvailableProjects,
     currentProject,
+    setCurrentProject,
   } from '../composables/use-projects.js';
 
   import {
     availableProjectServices,
     loadingAvailableProjectServices,
     currentProjectService,
+    setCurrentProjectService,
     resetCurrentProjectService,
     selectFirstProjectService,
     getProjectServices,
@@ -104,6 +109,7 @@
     availableProjectServiceHoursTypes,
     loadingAvailableProjectServiceHoursTypes,
     currentProjectServiceHoursType,
+    setCurrentProjectServiceHoursType,
     resetCurrentProjectServiceHoursType,
     selectFirstProjectServiceHoursType,
     clearProjectServiceHoursTypes,
@@ -117,7 +123,7 @@
       validator: value => ['hidden', 'add', 'edit'].includes(value),
     },
     currentlyEditedHoursEntry: {
-      type: Object,
+      type: [Object, null],
       required: true,
     },
   });
@@ -139,20 +145,69 @@
     'selected-label': '',
     'deselect-label': '',
     'deselected-label': '',
+    'preserve-search': true,
+  };
+
+  // EXCEPTION: This is only necessary because VueMultiselect doesn't support preventing deselects by clicking the active option.
+  const preventDeselectProject = (deselectedOption) => {
+    nextTick(() => {
+      setCurrentProject(deselectedOption);
+    });
+  };
+
+  // EXCEPTION: This is only necessary because VueMultiselect doesn't support preventing deselects by clicking the active option.
+  const preventDeselectProjectService = (deselectedOption) => {
+    nextTick(() => {
+      setCurrentProjectService(deselectedOption);
+    });
+  };
+
+  // EXCEPTION: This is only necessary because VueMultiselect doesn't support preventing deselects by clicking the active option.
+  const preventDeselectProjectServiceHoursType = (deselectedOption) => {
+    nextTick(() => {
+      setCurrentProjectServiceHoursType(deselectedOption);
+    });
   };
 
   // Watch current project so we can update the available project services.
-  watch(currentProject, (newCurrentProject) => {
+  watch(currentProject, (newCurrentProject, oldCurrentProject) => {
     if (newCurrentProject !== null) {
+      if (newCurrentProject === oldCurrentProject) {
+        return;
+      }
+
       getProjectServices(newCurrentProject).then(() => {
+        /** This is `true` if we manually selected a new option already. */
+        let hasSelectedNewOption = false;
+
         // Reset current project service if service not available in new project.
-        if (currentProjectService.value !== null
-          && availableProjectServices.value.find(service => service.id === currentProjectService.value.id) === undefined) {
-          resetCurrentProjectService();
+        if (currentProjectService.value !== null) {
+          const serviceWithSameID = availableProjectServices.value.find((service) => {
+            return service.id === currentProjectService.value.id;
+          });
+
+          const serviceWithSameName = availableProjectServices.value.find((service) => {
+            return service.name === currentProjectService.value.name;
+          });
+
+          // If exact same service is available in new project, select it.
+          if (serviceWithSameID !== undefined) {
+            hasSelectedNewOption = true;
+            // Select service with same id after this. We need to because the option objects are not the same.
+            setCurrentProjectService(serviceWithSameID);
+          }
+          else if (serviceWithSameName !== undefined) {
+            hasSelectedNewOption = true;
+            // Select service with same name after this. We need to because the option objects are not the same.
+            setCurrentProjectService(serviceWithSameName);
+          }
+          else {
+            resetCurrentProjectService();
+          }
         }
 
         // If new available project services has only one entry, select it.
-        if (availableProjectServices.value.length === 1) {
+        if (hasSelectedNewOption === false && availableProjectServices.value.length === 1) {
           selectFirstProjectService();
         }
       });
@@ -164,17 +219,44 @@
   });
 
   // Watch current project service so we can update the available project service hours types.
-  watch(currentProjectService, (newCurrentProjectService) => {
+  watch(currentProjectService, (newCurrentProjectService, oldCurrentProjectService) => {
     if (newCurrentProjectService !== null) {
+      if (newCurrentProjectService === oldCurrentProjectService) {
+        return;
+      }
+
       getProjectServiceHoursTypes(currentProject.value, newCurrentProjectService).then(() => {
+        /** This is `true` if we manually selected a new option already. */
+        let hasSelectedNewOption = false;
+
         // Reset current project service if service not available in new project.
-        if (currentProjectServiceHoursType.value !== null
-          && availableProjectServiceHoursTypes.value.find(serviceHoursTypes => serviceHoursTypes.id === currentProjectServiceHoursType.value.id) === undefined) {
-          resetCurrentProjectServiceHoursType();
+        if (currentProjectServiceHoursType.value !== null) {
+          const serviceHoursTypeWithSameID = availableProjectServiceHoursTypes.value.find((serviceHoursTypes) => {
+            return serviceHoursTypes.id === currentProjectServiceHoursType.value.id;
+          });
+
+          const serviceHoursTypeWithSameLabel = availableProjectServiceHoursTypes.value.find((serviceHoursTypes) => {
+            return serviceHoursTypes.label === currentProjectServiceHoursType.value.label;
+          });
+
+          // If exact same service hours type is available in new project, select it.
+          if (serviceHoursTypeWithSameID !== undefined) {
+            hasSelectedNewOption = true;
+            // Select service hours type with same id after this. We need to because the option objects are not the same.
+            setCurrentProjectServiceHoursType(serviceHoursTypeWithSameID);
+          }
+          else if (serviceHoursTypeWithSameLabel !== undefined) {
+            hasSelectedNewOption = true;
+            // Select service hours type with same label after this. We need to because the option objects are not the same.
+            setCurrentProjectServiceHoursType(serviceHoursTypeWithSameLabel);
+          }
+          else {
+            resetCurrentProjectServiceHoursType();
+          }
         }
 
         // If new available project service hours types has only one entry, select it.
-        if (availableProjectServiceHoursTypes.value.length === 1) {
+        if (hasSelectedNewOption === false && availableProjectServiceHoursTypes.value.length === 1) {
           selectFirstProjectServiceHoursType();
         }
       });
@@ -208,6 +290,7 @@
   .multiselect__tags {
     padding-top: 0.45em;
     padding-left: 0.75em;
+    border: 1px solid $grey-7;
   }
 
   .multiselect__content-wrapper {
@@ -227,11 +310,13 @@
     transition-timing-function: ease-out;
 
     &--highlight {
-      background-color: #24b0f1;
+      background-color: #00b86b !important;
+      color: $white-0 !important;
     }
 
     &--selected {
-      font-weight: inherit;
+      font-weight: 700 !important;
+      background-color: #ebf7f2;
     }
 
     span {

@@ -5,7 +5,7 @@ export const availableProjectServices = ref([]);
 export const loadingAvailableProjectServices = shallowRef(false);
 export const currentProjectService = shallowRef(null);
 
-function setCurrentProjectService (value) {
+export function setCurrentProjectService (value) {
   currentProjectService.value = value;
 }
 

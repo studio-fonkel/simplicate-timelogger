@@ -5,6 +5,10 @@ export const availableProjects = ref([]);
 export const loadingAvailableProjects = shallowRef(false);
 export const currentProject = shallowRef(null);
 
+export function setCurrentProject (value) {
+  currentProject.value = value;
+}
+
 function clearProjects () {
   availableProjects.value.length = 0;
 }

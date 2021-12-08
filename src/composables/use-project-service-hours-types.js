@@ -5,7 +5,7 @@ export const availableProjectServiceHoursTypes = ref([]);
 export const loadingAvailableProjectServiceHoursTypes = shallowRef(false);
 export const currentProjectServiceHoursType = shallowRef(null);
 
-function setCurrentProjectServiceHoursType (value) {
+export function setCurrentProjectServiceHoursType (value) {
   currentProjectServiceHoursType.value = value;
 }
 
