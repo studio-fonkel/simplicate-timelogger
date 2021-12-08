@@ -27,7 +27,9 @@
         <td>
           <div><strong>{{ hoursEntry.project.name }}</strong></div>
           <div>{{ hoursEntry.projectservice.name }}</div>
-          <div v-if="hoursEntry.note" class="hours-entry__description semi-dim">{{ hoursEntry.note || '-' }}</div>
+          <div v-if="hoursEntry.note" class="hours-entry__description semi-dim">
+            <i class="fas fa-quote-left"></i>{{ hoursEntry.note || '-' }}
+          </div>
         </td>
 
         <td>
@@ -111,6 +113,7 @@
     border-spacing: 0;
     box-shadow: 0 3px 20px -3px rgba(#585858, 0.06);
     table-layout: fixed;
+    $th-border-color: lighten($grey-7, 3%);
 
     // Set first column width to fixed width
     th:first-child {
@@ -122,7 +125,7 @@
     }
 
     th, td {
-      border: 1px solid #e7e7e7;
+      border: 1px solid $grey-7;
       min-width: 10ch;
 
       &:not(:first-child) {
@@ -142,21 +145,13 @@
       }
     }
 
-    td {
-      padding: 0.8em 0.85em 0.76em;
-
-      &:first-child {
-        vertical-align: top;
-      }
-    }
-
     th {
-      $th-bg-color: hsl(25, 7%, 87.5%);
-      color: hsl(25, 3%, 40%);
-      font-weight: 900;
-      background-color: $th-bg-color;
-      border-color: $th-bg-color;
       padding: 1.12em 0.85em 0.8em;
+      $th-bg-color: hsl(240, 18%, 95%);
+      background-color: $th-bg-color;
+      border-color: $th-border-color;
+      color: hsl(25, 3%, 25%);
+      font-weight: 900;
 
       &:first-child {
         border-top-left-radius: 8px;
@@ -166,8 +161,21 @@
       }
     }
 
+    td {
+      padding: 0.8em 0.85em 0.76em;
+      background-color: $white-0;
+
+      &:first-child {
+        vertical-align: top;
+      }
+    }
+
+    tbody tr:first-child td {
+      border-top-color: $th-border-color;
+    }
+
     th,
-    tbody tr:not(.hours-overview__totals) td {
+    tbody tr:not(:last-child) td {
       border-bottom-width: 0;
     }
 
@@ -178,28 +186,16 @@
 
     .hours-entry__description {
       margin-top: 0.23em;
+      line-height: 1.26;
 
-      // @if (true) {
-      //   &::before {
-      //     content: "“";
-      //     opacity: 0.5;
-      //   }
-      //   &::after {
-      //     content: "”";
-      //     opacity: 0.5;
-      //   }
-      // }
-      // @else {
-      //   &::before {
-      //     content: "\25B6\0020";
-      //     display: inline-block;
-      //     white-space: pre;
-      //     transform: scale(0.6);
-      //     margin-right: -0.4ch;
-      //     transform-origin: left center;
-      //     opacity: 0.3;
-      //   }
-      // }
+      .fa-quote-left {
+        display: inline-block;
+        margin-right: 0.4ch;
+        font-size: 55%;
+        vertical-align: text-top;
+        transform: translateY(50%);
+        color: $grey-7;
+      }
     }
 
     tr.hours-overview__totals td {
