@@ -228,7 +228,7 @@
     tr.hours-overview__empty-row td {
       text-align: center;
       font-size: 250%;
-      color: $green-6;
+      color: $grey-7;
       padding: 1.6em 0.85em 1.52em;
 
       i {

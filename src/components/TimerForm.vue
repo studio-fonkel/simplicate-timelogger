@@ -285,7 +285,7 @@
 
       .timer-form__select-label {
         font-size: 70%;
-        margin: 0 0 0.25em;
+        margin: 0 0 0.5em;
       }
     }
 
@@ -339,7 +339,7 @@
     transition-timing-function: ease-out;
 
     &--highlight {
-      background-color: $green-6 !important;
+      background-color: $green-5 !important;
       color: $white-0 !important;
     }
 
