@@ -170,7 +170,7 @@
   button {
     appearance: none;
     border: none;
-    border-radius: 100px;
+    border-radius: 5px;
     padding: 0.7em 1.4em;
     font-size: inherit;
     font-weight: 500;
@@ -203,7 +203,7 @@
   .multiselect__option {
     padding: 0.32em 0.75em;
     line-height: inherit;
-    font-size: 0.875em;
+    font-size: 0.8em;
     transition-property: background-color, color;
     transition-duration: 0.075s;
     transition-timing-function: ease-out;
