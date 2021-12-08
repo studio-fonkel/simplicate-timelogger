@@ -310,7 +310,7 @@
     transition-timing-function: ease-out;
 
     &--highlight {
-      background-color: #00b86b !important;
+      background-color: $green-6 !important;
       color: $white-0 !important;
     }
 

@@ -19,40 +19,40 @@
       </tr>
       <template v-else>
         <tr
-        v-for="hoursEntry of sortedHours"
-        :key="hoursEntry.id"
-        class="hours-entry"
-      >
-        <td>
-          <span v-if="hoursEntry.is_time_defined === false" class="semi-dim">
-            Geen start-/eindtijd
-          </span>
-          <span v-else>
-            <div><strong>{{ toTimeString(hoursEntry.start_date) }}</strong></div>
-            <div>{{ toTimeString(hoursEntry.end_date) }}</div>
-          </span>
-        </td>
+          v-for="hoursEntry of sortedHours"
+          :key="hoursEntry.id"
+          class="hours-entry"
+        >
+          <td>
+            <span v-if="hoursEntry.is_time_defined === false" class="semi-dim">
+              Geen start-/eindtijd
+            </span>
+            <span v-else>
+              <div><strong>{{ toTimeString(hoursEntry.start_date) }}</strong></div>
+              <div>{{ toTimeString(hoursEntry.end_date) }}</div>
+            </span>
+          </td>
 
-        <td>
-          <div><strong>{{ hoursEntry.project.name }}</strong></div>
-          <div>{{ hoursEntry.projectservice.name }}</div>
-          <div v-if="hoursEntry.note" class="hours-entry__description semi-dim">
-            <i class="fas fa-quote-left"></i>{{ hoursEntry.note || '-' }}
-          </div>
-        </td>
+          <td>
+            <div><strong>{{ hoursEntry.project.name }}</strong></div>
+            <div>{{ hoursEntry.projectservice.name }}</div>
+            <div v-if="hoursEntry.note" class="hours-entry__description semi-dim">
+              <i class="fas fa-quote-left"></i>{{ hoursEntry.note || '-' }}
+            </div>
+          </td>
 
-        <td>
-          <strong>{{ toDurationString(hoursEntry.hours) }}</strong>
-          <button
-            type="button"
-            class="hours-entry__edit-btn btn--small btn--grey"
-            title="Bewerk log"
-            @click="$emit('edit-hours-entry', hoursEntry)"
-          >
-            <i class="fas fa-pencil-alt"></i>
-          </button>
-        </td>
-      </tr>
+          <td>
+            <strong>{{ toDurationString(hoursEntry.hours) }}</strong>
+            <button
+              type="button"
+              class="hours-entry__edit-btn btn--small btn--grey"
+              title="Bewerk log"
+              @click="$emit('edit-hours-entry', hoursEntry)"
+            >
+              <i class="fas fa-pencil-alt"></i>
+            </button>
+          </td>
+        </tr>
       </template>
 
       <tr class="hours-overview__totals">
@@ -125,6 +125,7 @@
     box-shadow: 0 3px 20px -3px rgba(#585858, 0.06);
     table-layout: fixed;
     $th-border-color: lighten($grey-7, 3%);
+    $accent-color-hue: 40;
 
     // Set first column width to fixed width
     th:first-child {
@@ -158,10 +159,10 @@
 
     th {
       padding: 1.12em 0.85em 0.8em;
-      $th-bg-color: hsl(240, 18%, 95%);
-      background-color: $th-bg-color;
+      $th-bg-color: hsl($accent-color-hue, 15%, 96%);
+      background: linear-gradient(to bottom, $th-bg-color, darken($th-bg-color, 2%));
       border-color: $th-border-color;
-      color: hsl(25, 3%, 25%);
+      color: hsl($accent-color-hue, 3%, 25%);
       font-weight: 900;
 
       &:first-child {
@@ -209,10 +210,22 @@
       }
     }
 
+    tr.hours-overview__empty-row td {
+      text-align: center;
+      font-size: 250%;
+      color: $green-6;
+      padding: 1.6em 0.85em 1.52em;
+
+      i {
+        transform-origin: 51% 47% !important;
+        animation-duration: 1s;
+      }
+    }
+
     tr.hours-overview__totals td {
       padding-top: 1.4em;
       padding-bottom: 1.4em;
-      background-color: hsl(25, 26%, 95%);
+      background-color: hsl($accent-color-hue, 20%, 95.5%);
 
       &:first-child {
         border-bottom-left-radius: 8px;
