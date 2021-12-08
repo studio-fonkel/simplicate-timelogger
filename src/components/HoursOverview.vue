@@ -10,6 +10,15 @@
 
     <tbody>
       <tr
+        v-if="initiallyLoadedEmployeeHours === false"
+        class="hours-overview__empty-row"
+      >
+        <td colspan="3">
+          <i class="fas fa-sync-alt fa-spin"></i>
+        </td>
+      </tr>
+      <template v-else>
+        <tr
         v-for="hoursEntry of sortedHours"
         :key="hoursEntry.id"
         class="hours-entry"
@@ -44,6 +53,7 @@
           </button>
         </td>
       </tr>
+      </template>
 
       <tr class="hours-overview__totals">
         <td colspan="3"><strong>Totaal:&nbsp;&nbsp;&nbsp;{{ totalHoursDurationString }}</strong></td>
@@ -57,6 +67,7 @@
 
   import {
     hours,
+    initiallyLoadedEmployeeHours,
     fetchHours,
     startPolling,
   } from '../composables/use-hours.js';

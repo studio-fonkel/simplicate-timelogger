@@ -1,12 +1,17 @@
-import { ref, shallowRef } from 'vue';
+import { ref, shallowRef, watch } from 'vue';
 import { Temporal } from '@js-temporal/polyfill';
 import { axios } from './use-axios.js';
 
-// Date.prototype.toTemporalInstant = toTemporalInstant;
-
 export const hours = ref([]);
 export const loadingEmployeeHours = shallowRef(false);
+export const initiallyLoadedEmployeeHours = shallowRef(false);
 export const currentProject = shallowRef(null);
+
+watch(loadingEmployeeHours, (loading) => {
+  if (initiallyLoadedEmployeeHours.value === false && loading === false) {
+    initiallyLoadedEmployeeHours.value = true;
+  }
+});
 
 function clearHours () {
   hours.value.length = 0;
@@ -15,8 +20,6 @@ function clearHours () {
 function addHours (projects) {
   hours.value.push(...projects);
 }
-
-// const calendar = new Temporal.Calendar('iso8601');
 
 export async function fetchHours () {
   loadingEmployeeHours.value = true;
