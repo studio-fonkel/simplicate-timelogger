@@ -118,7 +118,7 @@
     &:disabled {
       color: var(--button-disabled-text-color);
       background: linear-gradient(to bottom, var(--button-disabled-background-color-1), var(--button-disabled-background-color-2));
-      box-shadow: var(--button-border-color), 0 2.5px 8px -4px var(--button-disabled-box-shadow-color);
+      box-shadow: 0 2.5px 8px -4px var(--button-disabled-box-shadow-color);
       --button-text-shadow-color: var(--button-disabled-text-shadow-color);
     }
 
@@ -152,7 +152,7 @@
     --button-normal-active-border-color: #{$green-2};
     // Box-shadow
     --button-normal-box-shadow-color: #{rgba($green-1, 0.3)};
-    --button-disabled-box-shadow-color: #{rgba(#585858, 0.3)};
+    --button-disabled-box-shadow-color: #{rgba(#585858, 0.15)};
   }
 
   .btn--grey {
@@ -163,17 +163,19 @@
     --button-normal-hover-background-color-2: #{$grey-7};
     --button-normal-active-background-color-1: #{$grey-7};
     --button-normal-active-background-color-2: #{$grey-6};
+    --button-disabled-background-color-1: #{$grey-8};
+    --button-disabled-background-color-2: #{$grey-8};
     // Text + shadow
     --button-normal-text-color: #{$black-1};
-    --button-disabled-text-color: #{$black-1};
+    --button-disabled-text-color: #{$grey-5};
     --button-normal-text-shadow-color: #{$grey-8};
-    --button-disabled-text-shadow-color: #{$grey-5};
+    --button-disabled-text-shadow-color: #{$grey-7};
     // Borders
-    --button-normal-default-border-color: #{$grey-8};
+    --button-normal-default-border-color: #{$grey-7};
     --button-normal-hover-border-color: #{$grey-7};
     --button-normal-active-border-color: #{$grey-6};
     // Box-shadow
     --button-normal-box-shadow-color: #{rgba($grey-3, 0.2)};
-    --button-disabled-box-shadow-color: #{rgba(#585858, 0.3)};
+    --button-disabled-box-shadow-color: #{rgba(#585858, 0.15)};
   }
 </style>
