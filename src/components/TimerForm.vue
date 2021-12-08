@@ -4,6 +4,7 @@
 
     <template v-else>
       <section>
+        <p class="timer-form__select-label"><strong>Project</strong></p>
         <VueMultiselect
           v-model="currentProject"
           :options="availableProjects"
@@ -22,6 +23,7 @@
       </section>
 
       <section>
+        <p class="timer-form__select-label"><strong>Dienst</strong></p>
         <VueMultiselect
           v-model="currentProjectService"
           :options="availableProjectServices"
@@ -40,18 +42,19 @@
       </section>
 
       <section>
+        <p class="timer-form__select-label"><strong>Uursoort</strong></p>
         <VueMultiselect
           v-model="currentProjectServiceHoursType"
           :options="availableProjectServiceHoursTypes"
           :loading="loadingAvailableProjectServiceHoursTypes"
           label="label"
           v-bind="vmsOptions"
-          placeholder="Selecteer een type uren"
+          placeholder="Selecteer een uursoort"
           @remove="preventDeselectProjectServiceHoursType"
         >
           <template #noOptions>
             <span class="dim">
-              {{ loadingAvailableProjectServiceHoursTypes ? 'Bezig met type uren ophalen' : 'Geen type uren beschikbaar' }}
+              {{ loadingAvailableProjectServiceHoursTypes ? 'Bezig met uursoorten ophalen' : 'Geen uursoorten beschikbaar' }}
             </span>
           </template>
         </VueMultiselect>
@@ -269,6 +272,32 @@
 </script>
 
 <style lang="scss">
+  .timer-form {
+    section {
+      margin: 1em 0;
+
+      &:first-child {
+        margin-top: 0;
+      }
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .timer-form__select-label {
+        font-size: 70%;
+        margin: 0 0 0.25em;
+      }
+    }
+
+    section + button {
+      margin-top: 0.25em;
+    }
+
+    button + button {
+      margin-left: 0.5em;
+    }
+  }
+
   .multiselect {
     cursor: pointer;
 
@@ -369,22 +398,5 @@
     height: calc(100% - 2px);
     width: 2.3em;
     top: 1px;
-  }
-</style>
-
-<style scoped lang="scss">
-  section {
-    margin: 1em 0;
-
-    &:first-child {
-      margin-top: 0;
-    }
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  button + button {
-    margin-left: 0.5em;
   }
 </style>
