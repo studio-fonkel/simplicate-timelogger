@@ -1,62 +1,66 @@
 <template>
-  <section>
-    <VueMultiselect
-      v-model="currentProject"
-      :options="availableProjects"
-      :loading="loadingAvailableProjects"
-      label="name"
-      v-bind="vmsOptions"
-      placeholder="Selecteer een project"
-    >
-      <template #noOptions>
-        <span class="dim">
-          {{ loadingAvailableProjects ? 'Bezig met projecten ophalen' : 'Geen projecten beschikbaar' }}
-        </span>
-      </template>
-    </VueMultiselect>
-  </section>
+  <HoursOverview/>
+  <div class="timer">
+    <section>
+      <VueMultiselect
+        v-model="currentProject"
+        :options="availableProjects"
+        :loading="loadingAvailableProjects"
+        label="name"
+        v-bind="vmsOptions"
+        placeholder="Selecteer een project"
+      >
+        <template #noOptions>
+          <span class="dim">
+            {{ loadingAvailableProjects ? 'Bezig met projecten ophalen' : 'Geen projecten beschikbaar' }}
+          </span>
+        </template>
+      </VueMultiselect>
+    </section>
 
-  <section>
-    <VueMultiselect
-      v-model="currentProjectService"
-      :options="availableProjectServices"
-      :loading="loadingAvailableProjectServices"
-      label="name"
-      v-bind="vmsOptions"
-      placeholder="Selecteer een dienst"
-    >
-      <template #noOptions>
-        <span class="dim">
-          {{ loadingAvailableProjectServices ? 'Bezig met diensten ophalen' : 'Geen diensten beschikbaar' }}
-        </span>
-      </template>
-    </VueMultiselect>
-  </section>
+    <section>
+      <VueMultiselect
+        v-model="currentProjectService"
+        :options="availableProjectServices"
+        :loading="loadingAvailableProjectServices"
+        label="name"
+        v-bind="vmsOptions"
+        placeholder="Selecteer een dienst"
+      >
+        <template #noOptions>
+          <span class="dim">
+            {{ loadingAvailableProjectServices ? 'Bezig met diensten ophalen' : 'Geen diensten beschikbaar' }}
+          </span>
+        </template>
+      </VueMultiselect>
+    </section>
 
-  <section>
-    <VueMultiselect
-      v-model="currentProjectServiceHoursType"
-      :options="availableProjectServiceHoursTypes"
-      :loading="loadingAvailableProjectServiceHoursTypes"
-      label="label"
-      v-bind="vmsOptions"
-      placeholder="Selecteer een type uren"
-    >
-      <template #noOptions>
-        <span class="dim">
-          {{ loadingAvailableProjectServiceHoursTypes ? 'Bezig met type uren ophalen' : 'Geen type uren beschikbaar' }}
-        </span>
-      </template>
-    </VueMultiselect>
-  </section>
+    <section>
+      <VueMultiselect
+        v-model="currentProjectServiceHoursType"
+        :options="availableProjectServiceHoursTypes"
+        :loading="loadingAvailableProjectServiceHoursTypes"
+        label="label"
+        v-bind="vmsOptions"
+        placeholder="Selecteer een type uren"
+      >
+        <template #noOptions>
+          <span class="dim">
+            {{ loadingAvailableProjectServiceHoursTypes ? 'Bezig met type uren ophalen' : 'Geen type uren beschikbaar' }}
+          </span>
+        </template>
+      </VueMultiselect>
+    </section>
 
-  <StartTimerButton/>
+    <StartTimerButton/>
+  </div>
 </template>
 
 <script setup>
   import { watch } from 'vue';
   import VueMultiselect from 'vue-multiselect';
   import StartTimerButton from './components/StartTimerButton.vue';
+  import HoursOverview from './components/HoursOverview.vue';
 
   import {
     availableProjects,
@@ -143,6 +147,11 @@
     }
   });
 
+  // We need to watch deep, because it’s an array and we want to watch both reassignments AND array content changes.
+  // watch(hours.value, (newHours) => {
+  //   console.log('bladiebla', newHours);
+  // });
+
   // On init, fetch all projects.
   fetchAllProjects();
 </script>
@@ -153,18 +162,55 @@
     font-size: 1.2rem;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    margin-top: 60px;
+    // color: #2c3e50;
+    color: #303030;
+    margin: 0;
+    padding: 0;
   }
 
   .dim {
     color: #bbb;
   }
 
-  section {
-    margin: 1em auto;
-    max-width: 400px;
+  .semi-dim {
+    color: #838383;
+  }
+
+  .error {
+    color: #b41200;
+  }
+
+  #app {
+    padding: 60px 60px;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 40px;
+
+    .hours-overview {
+      flex: 2 0 60%;
+      min-width: 700px;
+      max-width: 900px;
+    }
+
+    .timer {
+      flex: 0 0 400px;
+    }
+  }
+
+  .timer {
+    section {
+      margin: 1em 0;
+      // max-width: 100%;
+
+      &:first-child {
+        margin-top: 0;
+      }
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
   }
 
   button {
@@ -177,7 +223,6 @@
   }
 
   .multiselect {
-    // cursor: text;
     cursor: pointer;
 
     &:hover,

@@ -7,6 +7,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@js-temporal/polyfill": "^0.2.0",
     "axios": "^0.24.0",
     "vue": "^3.2.23",
     "vue-multiselect": "^3.0.0-alpha.2"
