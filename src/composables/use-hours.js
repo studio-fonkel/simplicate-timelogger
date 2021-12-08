@@ -1,6 +1,7 @@
 import { ref, shallowRef, watch } from 'vue';
 import { Temporal } from '@js-temporal/polyfill';
 import { axios } from './use-axios.js';
+import { registerCallback, unregisterCallback } from './use-polling.js';
 
 export const hours = ref([]);
 export const loadingEmployeeHours = shallowRef(false);
@@ -35,15 +36,10 @@ export async function fetchHours () {
   loadingEmployeeHours.value = false;
 }
 
-let interval = null;
-export function startPolling () {
-  interval = setInterval(() => {
-    fetchHours();
-  }, 5000);
+export function startPollingFetchHours () {
+  registerCallback(fetchHours);
 }
 
-export function stopPolling () {
-  if (interval !== null) {
-    clearInterval(interval);
-  }
+export function stopPollingFetchHours () {
+  unregisterCallback(fetchHours);
 }

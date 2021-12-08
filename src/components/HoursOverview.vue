@@ -63,14 +63,24 @@
 </template>
 
 <script setup>
-  import { ref, computed } from 'vue';
+  import { ref, computed, watch } from 'vue';
 
   import {
     hours,
     initiallyLoadedEmployeeHours,
     fetchHours,
-    startPolling,
+    startPollingFetchHours,
   } from '../composables/use-hours.js';
+
+  import {
+    timers,
+    fetchTimers,
+    startPollingFetchTimers,
+  } from '../composables/use-timer.js';
+
+  watch(timers, (timers) => {
+    console.log(timers);
+  });
 
   defineEmits({
     'edit-hours-entry': hoursEntry => hoursEntry != null,
@@ -115,7 +125,12 @@
   });
 
   fetchHours();
-  startPolling();
+  startPollingFetchHours();
+  // TODO: Stop polling on destroy
+
+  fetchTimers();
+  startPollingFetchTimers();
+  // TODO: Stop polling on destroy
 </script>
 
 <style lang="scss">
