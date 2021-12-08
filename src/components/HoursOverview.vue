@@ -41,6 +41,7 @@
   import {
     hours,
     fetchHours,
+    startPolling,
   } from '../composables/use-hours.js';
 
   const timeFormatter = new Intl.DateTimeFormat('nl-NL', {
@@ -82,6 +83,7 @@
   });
 
   fetchHours();
+  startPolling();
 </script>
 
 <style scoped lang="scss">
