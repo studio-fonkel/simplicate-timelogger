@@ -1,31 +1,31 @@
-import { ref } from 'vue';
+import { ref, shallowRef } from 'vue';
 import { axios } from './use-axios.js';
 
-const availableProjectServices = ref([]); // REVIEW: Use shallowRef?
-const loadingAvailableProjectServices = ref(false);
-const currentProjectService = ref(null); // REVIEW: Use shallowRef?
+export const availableProjectServices = ref([]);
+export const loadingAvailableProjectServices = shallowRef(false);
+export const currentProjectService = shallowRef(null);
 
-const setCurrentProjectService = (value) => {
+function setCurrentProjectService (value) {
   currentProjectService.value = value;
-};
+}
 
-const resetCurrentProjectService = () => {
+export function resetCurrentProjectService () {
   setCurrentProjectService(null);
-};
+}
 
-const selectFirstProjectService = () => {
+export function selectFirstProjectService () {
   setCurrentProjectService(availableProjectServices.value[0]);
-};
+}
 
-const clearProjectServices = () => {
+export function clearProjectServices () {
   availableProjectServices.value.length = 0;
-};
+}
 
-const addProjectServices = (services) => {
+function addProjectServices (services) {
   availableProjectServices.value.push(...services);
-};
+}
 
-const getProjectServices = async ({ id: projectId }) => {
+export async function getProjectServices ({ id: projectId }) {
   loadingAvailableProjectServices.value = true;
 
   const { data: services } = await axios.get('hours/projectservices', {
@@ -37,14 +37,4 @@ const getProjectServices = async ({ id: projectId }) => {
   clearProjectServices();
   addProjectServices(services.data);
   loadingAvailableProjectServices.value = false;
-};
-
-export {
-  availableProjectServices,
-  loadingAvailableProjectServices,
-  currentProjectService,
-  resetCurrentProjectService,
-  selectFirstProjectService,
-  getProjectServices,
-  clearProjectServices,
-};
+}

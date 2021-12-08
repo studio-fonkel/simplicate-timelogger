@@ -9,7 +9,9 @@
       placeholder="Selecteer een project"
     >
       <template #noOptions>
-        <span class="dim">{{ loadingAvailableProjects ? 'Bezig met projecten ophalen' : 'Geen projecten beschikbaar' }}</span>
+        <span class="dim">
+          {{ loadingAvailableProjects ? 'Bezig met projecten ophalen' : 'Geen projecten beschikbaar' }}
+        </span>
       </template>
     </VueMultiselect>
   </section>
@@ -24,7 +26,9 @@
       placeholder="Selecteer een dienst"
     >
       <template #noOptions>
-        <span class="dim">{{ loadingAvailableProjectServices ? 'Bezig met diensten ophalen' : 'Geen diensten beschikbaar' }}</span>
+        <span class="dim">
+          {{ loadingAvailableProjectServices ? 'Bezig met diensten ophalen' : 'Geen diensten beschikbaar' }}
+        </span>
       </template>
     </VueMultiselect>
   </section>
@@ -39,21 +43,20 @@
       placeholder="Selecteer een type uren"
     >
       <template #noOptions>
-        <span class="dim">{{ loadingAvailableProjectServiceHoursTypes ? 'Bezig met type uren ophalen' : 'Geen type uren beschikbaar' }}</span>
+        <span class="dim">
+          {{ loadingAvailableProjectServiceHoursTypes ? 'Bezig met type uren ophalen' : 'Geen type uren beschikbaar' }}
+        </span>
       </template>
     </VueMultiselect>
   </section>
 
-  <button
-    type="button"
-    :disabled="timerButtonEnabled === false"
-  >Start timer</button>
+  <StartTimerButton/>
 </template>
 
 <script setup>
-  import { ref, computed, watch } from 'vue';
+  import { watch } from 'vue';
   import VueMultiselect from 'vue-multiselect';
-  import { axios } from './composables/use-axios.js';
+  import StartTimerButton from './components/StartTimerButton.vue';
 
   import {
     availableProjects,
@@ -72,6 +75,16 @@
     clearProjectServices,
   } from './composables/use-project-services.js';
 
+  import {
+    availableProjectServiceHoursTypes,
+    loadingAvailableProjectServiceHoursTypes,
+    currentProjectServiceHoursType,
+    resetCurrentProjectServiceHoursType,
+    selectFirstProjectServiceHoursType,
+    clearProjectServiceHoursTypes,
+    getProjectServiceHoursTypes,
+  } from './composables/use-project-service-hours-types.js';
+
   const vmsOptions = {
     'track-by': 'id',
     'multiple': false,
@@ -86,63 +99,17 @@
     'deselected-label': '',
   };
 
-  ///////////////////////////////////////
-  //  PROJECT SERVICE HOURS TYPES      //
-  ///////////////////////////////////////
-
-  const availableProjectServiceHoursTypes = ref([]); // REVIEW: Use shallowRef?
-  const loadingAvailableProjectServiceHoursTypes = ref(false);
-  const currentProjectServiceHoursType = ref(null); // REVIEW: Use shallowRef?
-
-  const setCurrentProjectServiceHoursType = (value) => {
-    currentProjectServiceHoursType.value = value;
-  };
-
-  const resetCurrentProjectServiceHoursType = () => {
-    setCurrentProjectServiceHoursType(null);
-  };
-
-  const selectFirstProjectServiceHoursType = () => {
-    setCurrentProjectServiceHoursType(availableProjectServiceHoursTypes.value[0]);
-  };
-
-  const clearProjectServiceHoursTypes = () => {
-    availableProjectServiceHoursTypes.value.length = 0;
-  };
-
-  const addProjectServiceHoursTypes = (serviceHoursTypes) => {
-    availableProjectServiceHoursTypes.value.push(...serviceHoursTypes);
-  };
-
-  const getProjectServiceHoursTypes = async ({ id: projectId }, { id: projectServiceId }) => {
-    loadingAvailableProjectServiceHoursTypes.value = true;
-
-    const { data: serviceHoursTypes } = await axios.get('hours/projectservicehourstypes', {
-      params: {
-        'q[project_id]': projectId,
-        'q[projectservice_id]': projectServiceId,
-      },
-    });
-
-    clearProjectServiceHoursTypes();
-    addProjectServiceHoursTypes(serviceHoursTypes.data);
-    loadingAvailableProjectServiceHoursTypes.value = false;
-  };
-
-  ///////////////////////////////////////
-  //  WATCHs                           //
-  ///////////////////////////////////////
-
+  // Watch current project so we can update the available project services.
   watch(currentProject, (newCurrentProject) => {
     if (newCurrentProject !== null) {
       getProjectServices(newCurrentProject).then(() => {
-        // Reset current project service if service not available in new project
+        // Reset current project service if service not available in new project.
         if (currentProjectService.value !== null
           && availableProjectServices.value.find(service => service.id === currentProjectService.value.id) === undefined) {
           resetCurrentProjectService();
         }
 
-        // If new available project services has only one entry, select it
+        // If new available project services has only one entry, select it.
         if (availableProjectServices.value.length === 1) {
           selectFirstProjectService();
         }
@@ -154,16 +121,17 @@
     }
   });
 
+  // Watch current project service so we can update the available project service hours types.
   watch(currentProjectService, (newCurrentProjectService) => {
     if (newCurrentProjectService !== null) {
       getProjectServiceHoursTypes(currentProject.value, newCurrentProjectService).then(() => {
-        // Reset current project service if service not available in new project
+        // Reset current project service if service not available in new project.
         if (currentProjectServiceHoursType.value !== null
           && availableProjectServiceHoursTypes.value.find(serviceHoursTypes => serviceHoursTypes.id === currentProjectServiceHoursType.value.id) === undefined) {
           resetCurrentProjectServiceHoursType();
         }
 
-        // If new available project service hours types has only one entry, select it
+        // If new available project service hours types has only one entry, select it.
         if (availableProjectServiceHoursTypes.value.length === 1) {
           selectFirstProjectServiceHoursType();
         }
@@ -175,21 +143,7 @@
     }
   });
 
-  const timerButtonEnabled = computed(() => {
-    return (
-      currentProject.value !== null
-      && currentProjectService.value !== null
-      && currentProjectServiceHoursType.value !== null
-      && loadingAvailableProjects.value !== true
-      && loadingAvailableProjectServices.value !== true
-      && loadingAvailableProjectServiceHoursTypes.value !== true
-    );
-  });
-
-  ///////////////////////////////////////
-  //  CREATED                          //
-  ///////////////////////////////////////
-
+  // On init, fetch all projects.
   fetchAllProjects();
 </script>
 
@@ -215,33 +169,23 @@
 
   button {
     appearance: none;
-    color: white;
     border: none;
     border-radius: 100px;
     padding: 0.7em 1.4em;
     font-size: inherit;
     font-weight: 500;
-
-    &:not(:disabled) {
-      background-color: #26c018;
-      box-shadow: 0 5px 15px -3px rgba(#0a2507, 0.2);
-      cursor: pointer;
-      transition: background-color 0.1s ease-out;
-
-      &:hover,
-      &:focus {
-        background-color: #1fa313;
-      }
-    }
-
-    &:disabled {
-      background-color: #bbbbbb;
-      box-shadow: 0 5px 15px -3px rgba(#585858, 0.2);
-    }
   }
 
   .multiselect {
-    cursor: text;
+    // cursor: text;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-within {
+      .multiselect__tags {
+        background: linear-gradient(to bottom, #fdfdfd, #f5f5f5);
+      }
+    }
   }
 
   .multiselect__tags,
@@ -257,17 +201,40 @@
   }
 
   .multiselect__option {
-    padding: 0.45em 0.75em;
+    padding: 0.32em 0.75em;
     line-height: inherit;
+    font-size: 0.875em;
+    transition-property: background-color, color;
+    transition-duration: 0.075s;
+    transition-timing-function: ease-out;
 
     &--highlight {
       background-color: #24b0f1;
     }
+
+    &--selected {
+      font-weight: inherit;
+    }
+  }
+
+  .multiselect__content,
+  .multiselect__element,
+  .multiselect__single,
+  .multiselect__option {
+    width: 100%;
+  }
+
+  .multiselect__single,
+  .multiselect__option {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
   }
 
   .multiselect__single,
   .multiselect__input {
     padding-left: 0;
+    background: none;
   }
 
   .multiselect__placeholder {
@@ -292,9 +259,5 @@
     height: calc(100% - 2px);
     width: 2.3em;
     top: 1px;
-
-    // &::before,
-    // &::after {
-    // }
   }
 </style>
