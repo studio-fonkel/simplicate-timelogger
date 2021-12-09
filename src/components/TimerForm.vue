@@ -1,14 +1,17 @@
 <template>
-  <div class="timer-form">
+  <div
+    ref="timerForm"
+    tabindex="-1"
+    class="timer-form"
+  >
     <CreateTimerButton v-if="mode === 'hidden'"/>
 
     <template v-else>
       <section>
         <p class="timer-form__select-label"><strong>Project</strong></p>
         <VueMultiselect
-          v-bind="vmsOptions"
-          ref="firstSelect"
           v-model="currentProject"
+          v-bind="vmsOptions"
           :options="availableProjects"
           :loading="loadingAvailableProjects"
           label="name"
@@ -108,10 +111,12 @@
 </template>
 
 <script setup>
-  import { ref, watch, onMounted, nextTick } from 'vue';
+  import { ref, watch, watchEffect, onMounted, nextTick } from 'vue';
   import VueMultiselect from 'vue-multiselect';
   import CreateTimerButton from './CreateTimerButton.vue';
   import StartTimerButton from './StartTimerButton.vue';
+
+  import { fixTime, getCurrentTime } from '../composables/use-date-helper.js';
 
   import {
     availableProjects,
@@ -142,7 +147,7 @@
     getProjectServiceHoursTypes,
   } from '../composables/use-project-service-hours-types.js';
 
-  defineProps({
+  const props = defineProps({
     mode: {
       type: String,
       required: true,
@@ -159,7 +164,7 @@
     'cancel-edit-hours-entry': null,
   });
 
-  const firstSelect = ref(null);
+  const timerForm = ref(null);
 
   const vmsOptions = {
     'track-by': 'id',
@@ -180,71 +185,11 @@
   const startTime = ref(null);
   const endTime = ref(null);
 
-  /**
-   * Fix time to be in the format (h)h:mm.
-   */
-  const fixTime = (time) => {
-    /*
-      Scenario 0: time is not set or wrong type
-      Scenario 1: time is in format 'hh:mm'
-      Scenario 2: time is in format 'h:mm'
-      Scenario 3: time is in format 'hh:m'
-      Scenario 4: time is in format 'h:m'
-      Scenario 5: time is in format 'hhmm'
-      Scenario 6: time is in format 'hmm'
-      Scenario 7: time is in format 'hh'
-      Scenario 8: time is in format 'h'
-      Scenario 9: time has too many digits, e.g. user made typo hh:mmm
-      Scenario 10: time is gibberish
-    */
-
-    // Scenario 0
-    if (typeof(time) !== 'string') {
-      return null;
+  watchEffect(() => {
+    if (props.mode === 'add') {
+      startTime.value = fixTime(getCurrentTime());
     }
-
-    time = time.trim();
-
-    // Also scenario 0
-    if (time === '') {
-      return null;
-    }
-
-    // Early return for perfectly formatted times
-    if (time.match(/^(\d)?\d:\d\d$/)) {
-      return time;
-    }
-
-    // Scenario 3 & 4
-    if (time.match(/^(\d)?\d:\d$/)) {
-      return `${time}0`;
-    }
-
-    // Scenario 1 & 2 become 5 & 6
-    time = time.replace(':', '');
-
-    // Scenario 10
-    if (!time.match(/^\d+$/)) {
-      return null;
-    }
-
-    // Scenario 5
-    if (time.length === 4) {
-      return `${time.slice(0, 2)}:${time.slice(2)}`;
-    }
-    // Scenario 6
-    else if (time.length === 3) {
-      return `${time.slice(0, 1)}:${time.slice(1)}`;
-    }
-    // Scenario 7 & 8
-    else if (time.length === 2 || time.length === 1) {
-      return `${time}:00`;
-    }
-    // Scenario 9
-    else {
-      return `${time.slice(0, 2)}:${time.slice(2, 4)}`;
-    }
-  };
+  });
 
   // EXCEPTION: This is only necessary because VueMultiselect doesn't support preventing deselects by clicking the active option.
   const preventDeselectProject = (deselectedOption) => {
@@ -366,12 +311,16 @@
   });
 
   onMounted(() => {
-    firstSelect.value.$el.focus();
+    timerForm.value.focus();
   });
 </script>
 
 <style lang="scss">
   .timer-form {
+    &:focus {
+      outline: none;
+    }
+
     section {
       margin: 1em 0;
 
