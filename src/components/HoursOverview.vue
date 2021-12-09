@@ -8,6 +8,7 @@
           <th>Start-/eindtijd</th>
           <th>Project</th>
           <th>Aantal uren</th>
+          <th></th>
         </tr>
       </thead>
 
@@ -16,7 +17,7 @@
           v-if="initiallyLoadedEmployeeHours === false"
           class="hours-overview__empty-row"
         >
-          <td colspan="3">
+          <td colspan="4">
             <i class="fas fa-sync-alt fa-spin"></i>
             <div>Uren ophalen</div>
           </td>
@@ -26,7 +27,7 @@
           v-else-if="sortedHours.length === 0"
           class="hours-overview__empty-row"
         >
-          <td colspan="3">
+          <td colspan="4">
             <i class="fas fa-receipt"></i>
             <div>Geen uren gevonden</div>
           </td>
@@ -58,6 +59,9 @@
 
             <td>
               <strong>{{ toDurationString(hoursEntry.hours) }}</strong>
+            </td>
+
+            <td>
               <button
                 type="button"
                 class="hours-entry__edit-btn btn--small btn--grey"
@@ -66,12 +70,21 @@
               >
                 <i class="fas fa-pencil-alt"></i>
               </button>
+
+              <button
+                type="button"
+                class="hours-entry__edit-btn btn--small btn--red"
+                title="Verwijder log"
+                @click="$emit('edit-hours-entry', hoursEntry)"
+              >
+                <i class="fas fa-trash"></i>
+              </button>
             </td>
           </tr>
         </template>
 
         <tr class="hours-overview__totals">
-          <td colspan="3"><strong><i class="far fa-clock"></i>&nbsp;&nbsp;Totaal:&nbsp;&nbsp;&nbsp;{{ totalHoursDurationString }}</strong></td>
+          <td colspan="4"><strong><i class="far fa-clock"></i>&nbsp;&nbsp;Totaal:&nbsp;&nbsp;&nbsp;{{ totalHoursDurationString }}</strong></td>
         </tr>
       </tbody>
     </table>
@@ -155,13 +168,19 @@
       $th-border-color: lighten($grey-7, 3%);
       $accent-color-hue: 40;
 
-      // Set first column width to fixed width
-      th:first-child {
-        width: 19.5ch;
-      }
-      // Set last column to minimal width
-      th:last-child {
-        width: 16ch;
+      th {
+        // Set first column width to fixed width
+        &:first-child {
+          width: 19.5ch;
+        }
+        // Set hours column to fixed width
+        &:nth-last-child(2) {
+          width: 16ch;
+        }
+        // Set actions column to fixed width
+        &:last-child {
+          width: 15ch;
+        }
       }
 
       th, td {
@@ -245,7 +264,7 @@
 
         i {
           font-size: 250%;
-          transform-origin: 51% 47% !important;
+          transform-origin: 50.05% 48.8% !important;
           animation-duration: 1s;
         }
 
@@ -265,10 +284,6 @@
         &:last-child {
           border-bottom-right-radius: 8px;
         }
-      }
-
-      .hours-entry__edit-btn {
-        margin-left: 0.75em;
       }
     }
   }
