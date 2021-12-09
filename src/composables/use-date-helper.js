@@ -18,6 +18,10 @@ export function getCurrentTime () {
   return `${now.hour}:${now.minute}`;
 }
 
+export function compareDates (dateA, dateB) {
+  return Temporal.PlainDate.compare(dateA, dateB);
+}
+
 const timeFormatter = new Intl.DateTimeFormat('nl-NL', {
   hour: 'numeric',
   minute: 'numeric',

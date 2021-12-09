@@ -1,5 +1,5 @@
 <template>
-  <div class="date-browser">
+  <div ref="dateBrowser" class="date-browser">
     <button
       type="button"
       class="btn--grey"
@@ -9,12 +9,14 @@
     </button>
 
     <h3
-      class="inline-block margin-0"
+      class="date-browser__date inline-block margin-0"
       :class="{
-        'date-browser__date-is-today': currentlySelectedDate.equals(today),
+        'date-browser__date--past': compareDates(currentlySelectedDate, today) === -1,
+        'date-browser__date--today': compareDates(currentlySelectedDate, today) === 0,
       }"
     >
       {{ toFullDate(currentlySelectedDate.toString()) }}
+      {{ currentlySelectedDate.equals(today) ? ' (vandaag)' : '' }}
     </h3>
 
     <button
@@ -28,13 +30,17 @@
 </template>
 
 <script setup>
+  import { ref, onMounted, onBeforeUnmount } from 'vue';
+
   import {
     initiallyLoadedEmployeeHours,
     currentlySelectedDate,
     fetchHours,
   } from '../composables/use-hours.js';
 
-  import { today, toFullDate } from '../composables/use-date-helper.js';
+  import { today, toFullDate, compareDates } from '../composables/use-date-helper.js';
+
+  const dateBrowser = ref(null);
 
   const goToPreviousDay = () => {
     currentlySelectedDate.value = currentlySelectedDate.value.subtract({ days: 1 });
@@ -47,6 +53,33 @@
     initiallyLoadedEmployeeHours.value = false;
     fetchHours();
   };
+
+  // All this ResizeObserver nonsense makes sure we can align the top of the timer-form with the bottom of the date-browser.
+  const observedObjects = new Map;
+  const resizeObserver = new ResizeObserver((entries) => {
+    for (const entry of entries) {
+      const { target, borderBoxSize } = entry;
+      const varName = observedObjects.get(target);
+
+      const cs = getComputedStyle(target);
+      const marginBlock = parseFloat(cs.getPropertyValue('margin-bottom')) + parseFloat(cs.getPropertyValue('margin-top'));
+
+      document.documentElement.style.setProperty(
+        `--current-${varName}-height`,
+        `${(Array.isArray(borderBoxSize) ? borderBoxSize[0] : borderBoxSize).blockSize + marginBlock}px`,
+      );
+    }
+  });
+
+  onMounted(() => {
+    observedObjects.set(dateBrowser.value, 'date-browser');
+    resizeObserver.observe(dateBrowser.value);
+  });
+
+  onBeforeUnmount(() => {
+    resizeObserver.unobserve(dateBrowser.value);
+    observedObjects.delete(dateBrowser.value);
+  });
 </script>
 
 <style lang="scss">
@@ -55,8 +88,11 @@
     justify-content: space-between;
     align-items: center;
 
-    &__date-is-today {
-      color: $green-7;
+    &__date--past {
+      color: $grey-6;
+    }
+    &__date--today {
+      color: $blue-5;
     }
   }
 </style>

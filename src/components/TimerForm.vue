@@ -331,15 +331,25 @@
 
 <style lang="scss">
   .timer-form {
+    // This aligns the top of the form with the bottom of the date-browser.
+    padding-top: var(--current-date-browser-height, 0);
+
     &:focus {
       outline: none;
     }
 
     section {
+      position: relative;
       margin: 1em 0;
 
       &:first-child {
         margin-top: 0;
+
+        // This aligns the top of the form with the bottom of the date-browser.
+        .timer-form__select-label {
+          position: absolute;
+          bottom: 100%;
+        }
       }
       &:last-child {
         margin-bottom: 0;
