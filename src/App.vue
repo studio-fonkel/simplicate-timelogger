@@ -221,6 +221,7 @@
     width: 100%;
     text-overflow: ellipsis;
     white-space: nowrap;
+    // REVIEW: Check if ellipsis works without overflow: hidden, because text was being cut off.
     overflow: visible;
     // overflow: hidden;
   }
