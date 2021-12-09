@@ -210,6 +210,7 @@
     font-size: inherit;
     font-family: inherit;
     font-weight: 500;
+    color: inherit;
     line-height: 1;
     border-radius: 5px;
   }
@@ -223,6 +224,7 @@
 
   .multiselect {
     cursor: pointer;
+    color: inherit;
     --multiselect-spinner-border-width: 2px;
     --multiselect-select-width: 2.3em;
     --multiselect-select-border-width: 0.32em;
