@@ -152,6 +152,7 @@
     'deselect-label': '',
     'deselected-label': '',
     'preserve-search': true,
+    'max-height': 500,
   };
 
   // EXCEPTION: This is only necessary because VueMultiselect doesn't support preventing deselects by clicking the active option.
