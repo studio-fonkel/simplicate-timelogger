@@ -5,10 +5,10 @@
     <table>
       <thead>
         <tr>
-          <th>Start-/eindtijd</th>
-          <th>Project</th>
-          <th>Aantal uren</th>
-          <th></th>
+          <th class="hours-overview__col--start-end-time">Start-/eindtijd</th>
+          <th class="hours-overview__col--project">Project</th>
+          <th class="hours-overview__col--hours-amount">Aantal uren</th>
+          <th class="hours-overview__col--actions"></th>
         </tr>
       </thead>
 
@@ -39,7 +39,7 @@
             :key="hoursEntry.id"
             class="hours-entry"
           >
-            <td>
+            <td class="hours-overview__col--start-end-time">
               <span v-if="hoursEntry.is_time_defined === false" class="semi-dim">
                 Geen start-/eindtijd ingesteld
               </span>
@@ -49,7 +49,7 @@
               </span>
             </td>
 
-            <td>
+            <td class="hours-overview__col--project">
               <div><strong>{{ hoursEntry.project.name }}</strong></div>
               <div>{{ hoursEntry.projectservice.name }}</div>
               <div v-if="hoursEntry.note" class="hours-entry__description semi-dim">
@@ -57,11 +57,11 @@
               </div>
             </td>
 
-            <td>
+            <td class="hours-overview__col--hours-amount">
               <strong>{{ toDurationString(hoursEntry.hours) }}</strong>
             </td>
 
-            <td>
+            <td class="hours-overview__col--actions">
               <button
                 type="button"
                 class="hours-entry__edit-btn btn--small btn--grey"
@@ -84,7 +84,10 @@
         </template>
 
         <tr class="hours-overview__totals">
-          <td colspan="4"><strong><i class="far fa-clock"></i>&nbsp;&nbsp;Totaal:&nbsp;&nbsp;&nbsp;{{ totalHoursDurationString }}</strong></td>
+          <td colspan="3" class="hours-overview__col--hours-total">
+            <strong><i class="far fa-clock"></i>&nbsp;&nbsp;Totaal:&nbsp;&nbsp;&nbsp;{{ totalHoursDurationString }}</strong>
+          </td>
+          <td></td>
         </tr>
       </tbody>
     </table>
@@ -169,17 +172,17 @@
       $accent-color-hue: 40;
 
       th {
-        // Set first column width to fixed width
-        &:first-child {
+        &.hours-overview__col--start-end-time {
           width: 19.5ch;
         }
-        // Set hours column to fixed width
-        &:nth-last-child(2) {
+        &.hours-overview__col--project {
+          width: auto;
+        }
+        &.hours-overview__col--hours-amount {
           width: 16ch;
         }
-        // Set actions column to fixed width
-        &:last-child {
-          width: 15ch;
+        &.hours-overview__col--actions {
+          width: 13ch;
         }
       }
 
@@ -193,14 +196,17 @@
         &:not(:last-child) {
           border-right-width: 0;
         }
-
         &:first-child {
           padding-left: 1.1em;
         }
-
         &:last-child {
+          padding-right: 1.4em;
+        }
+
+        &.hours-overview__col--hours-amount,
+        &.hours-overview__col--actions,
+        &.hours-overview__col--hours-total {
           text-align: right;
-          padding-right: 1.6em;
         }
       }
 
@@ -221,11 +227,14 @@
       }
 
       td {
-        padding: 0.8em 0.85em 0.76em;
+        padding: 0.9em 0.85em 0.86em;
         background-color: $white-0;
 
-        &:first-child {
+        &.hours-overview__col--start-end-time {
           vertical-align: top;
+        }
+        &.hours-overview__col--hours-amount {
+          font-size: math.div(1em, 0.8);
         }
       }
 
@@ -240,20 +249,21 @@
 
       tr:not(.hours-overview__totals) {
         font-size: 0.8em;
-        line-height: 1.55;
+        line-height: 1.5;
       }
 
       .hours-entry__description {
-        margin-top: 0.23em;
+        margin-top: 0.3em;
         line-height: 1.26;
 
         .fa-quote-left {
-          display: inline-block;
-          margin-right: 0.4ch;
-          font-size: 55%;
-          vertical-align: text-top;
-          transform: translateY(50%);
-          color: $grey-7;
+          display: none;
+          // display: inline-block;
+          // margin-right: 0.4ch;
+          // font-size: 42%;
+          // vertical-align: text-top;
+          // transform: translateY(50%);
+          // color: $grey-7;
         }
       }
 
