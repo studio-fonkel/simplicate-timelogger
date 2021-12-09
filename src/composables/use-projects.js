@@ -1,5 +1,6 @@
 import { ref, shallowRef } from 'vue';
 import { axios } from './use-axios.js';
+import { INTERVALS, registerCallback, unregisterCallback } from './use-polling.js';
 
 export const availableProjects = ref([]);
 export const loadingAvailableProjects = shallowRef(false);
@@ -17,14 +18,23 @@ function addProjects (projects) {
   availableProjects.value.push(...projects);
 }
 
-async function fetchAllProjects () {
+export async function fetchProjects () {
   loadingAvailableProjects.value = true;
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  // TODO: Add q[employee.id]=employee:afa58dd4b2c525fe6d44e34a3f0f8c3d
   const { data: projects } = await axios.get('projects/project');
   clearProjects();
   addProjects(projects.data);
   loadingAvailableProjects.value = false;
 }
 
-// On init, fetch all projects.
-fetchAllProjects();
+function startPollingFetchProjects () {
+  registerCallback(fetchProjects, INTERVALS.quarterhour);
+}
+
+function stopPollingFetchProjects () {
+  unregisterCallback(fetchProjects);
+}
+
+// On init, fetch all projects and start polling.
+fetchProjects();
+startPollingFetchProjects();

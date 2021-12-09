@@ -17,17 +17,21 @@ function addTimers (projects) {
 
 export async function fetchTimers () {
   loadingEmployeeTimers.value = true;
-  // api/v2/timers/timer?q%5Bemployee.id%5D=employee:afa58dd4b2c525fe6d44e34a3f0f8c3d&sort=state,-updated_at
+  // TODO: Add q[employee.id]=employee:afa58dd4b2c525fe6d44e34a3f0f8c3d
   const { data: timers } = await axios.get('timers/timer');
   clearTimers();
   addTimers(timers.data);
   loadingEmployeeTimers.value = false;
 }
 
-export function startPollingFetchTimers () {
+function startPollingFetchTimers () {
   registerCallback(fetchTimers, INTERVALS.medium);
 }
 
-export function stopPollingFetchTimers () {
+function stopPollingFetchTimers () {
   unregisterCallback(fetchTimers);
 }
+
+// On init, fetch all timers and start polling.
+fetchTimers();
+startPollingFetchTimers();

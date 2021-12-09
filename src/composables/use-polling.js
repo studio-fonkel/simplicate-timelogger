@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 
-const debugPolling = true;
+const debugPolling = false;
 const log = (...logs) => (debugPolling === true && console.log(...logs));
 
 const callbacks = ref(new Map);
@@ -9,6 +9,10 @@ export const INTERVALS = {
   short: 1,
   medium: 10,
   long: 20,
+  minute: 60,
+  quarterhour: 60 * 15,
+  // halfhour: 60 * 30,
+  // hour: 60 * 60,
 };
 
 export function registerCallback (callback, interval = INTERVALS.short) {

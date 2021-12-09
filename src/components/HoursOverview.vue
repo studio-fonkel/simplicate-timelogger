@@ -2,15 +2,6 @@
   <main class="hours-overview">
     <DateBrowser/>
 
-    <!-- <p v-if="timers.filter(timer => timer.state === 'running').length > 0" class="error">
-      Multiple timers running!
-    </p>
-    <ul>
-      <li v-for="timer in timers">
-        <span>{{ timer }}</span>
-      </li>
-    </ul> -->
-
     <table>
       <thead>
         <tr>
@@ -88,27 +79,23 @@
 </template>
 
 <script setup>
-  import { ref, computed } from 'vue';
-
-  import {
-    hours,
-    initiallyLoadedEmployeeHours,
-    fetchHours,
-    startPollingFetchHours,
-  } from '../composables/use-hours.js';
-
-  import {
-    timers,
-    fetchTimers,
-    startPollingFetchTimers,
-  } from '../composables/use-timer.js';
-
+  import { ref, computed, watchEffect } from 'vue';
+  import { hours, initiallyLoadedEmployeeHours } from '../composables/use-hours.js';
+  import { timers } from '../composables/use-timer.js';
   import { toTimeString, toDurationString } from '../composables/use-date-helper.js';
 
   import DateBrowser from './DateBrowser.vue';
 
   defineEmits({
     'edit-hours-entry': hoursEntry => hoursEntry != null,
+  });
+
+  watchEffect(() => {
+    console.log(timers.value);
+
+    if (timers.value.filter(timer => timer.state === 'running').length > 0) {
+      console.warn('Multiple timers running!');
+    }
   });
 
   const sortedHours = computed(() => {
@@ -132,14 +119,6 @@
   const totalHoursDurationString = computed(() => {
     return toDurationString(totalHours.value);
   });
-
-  fetchHours();
-  startPollingFetchHours();
-  // TODO: Stop polling on destroy
-
-  fetchTimers();
-  startPollingFetchTimers();
-  // TODO: Stop polling on destroy
 </script>
 
 <style lang="scss">

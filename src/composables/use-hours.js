@@ -25,6 +25,7 @@ function addHours (projects) {
 
 export async function fetchHours () {
   loadingEmployeeHours.value = true;
+  // TODO: Add q[employee.id]=employee:afa58dd4b2c525fe6d44e34a3f0f8c3d
   const { data: hours } = await axios.get('hours/hours', {
     params: {
       'q[start_date][ge]': `${currentlySelectedDate.value.toString()} 00:00:00`,
@@ -36,10 +37,14 @@ export async function fetchHours () {
   loadingEmployeeHours.value = false;
 }
 
-export function startPollingFetchHours () {
+function startPollingFetchHours () {
   registerCallback(fetchHours, INTERVALS.long);
 }
 
-export function stopPollingFetchHours () {
+function stopPollingFetchHours () {
   unregisterCallback(fetchHours);
 }
+
+// On init, fetch all hours and start polling.
+fetchHours();
+startPollingFetchHours();
