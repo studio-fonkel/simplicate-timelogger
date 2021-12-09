@@ -17,6 +17,7 @@ if (import.meta.env.VITE_SIMPLICATE_API_KEY === undefined || import.meta.env.VIT
 export const axios = axiosPlugin.create({
   baseURL,
   timeout: 3000,
+  // FIXME: Figure out how the Simplicate browser plugin authenticates someone, because they do send authentication key and secret headers as well, but I don't know where they come from.
   headers: {
     'Authentication-Key': import.meta.env.VITE_SIMPLICATE_API_KEY,
     'Authentication-Secret': import.meta.env.VITE_SIMPLICATE_API_SECRET,

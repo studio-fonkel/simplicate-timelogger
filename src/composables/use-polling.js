@@ -20,7 +20,7 @@ export function registerCallback (callback, interval = INTERVALS.short) {
 }
 
 export function unregisterCallback (callback) {
-  callbacks.value.remove(callback);
+  callbacks.value.delete(callback);
 }
 
 // Look for lowest number that can be divided by all intervals defined in the INTERVALS enum.

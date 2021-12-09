@@ -1,18 +1,24 @@
 <template>
-  <HoursOverview
-    @edit-hours-entry="editHoursEntry"
-  />
+  <EmployeePicker/>
 
-  <TimerForm
-    :mode="timerFormMode"
-    :currentlyEditedHoursEntry="currentlyEditedHoursEntry"
-    @confirm-edit-hours-entry="confirmEditHoursEntry"
-    @cancel-edit-hours-entry="cancelEditHoursEntry"
-  />
+  <template v-if="currentEmployeeID != null">
+    <HoursOverview
+      @edit-hours-entry="editHoursEntry"
+    />
+
+    <TimerForm
+      :mode="timerFormMode"
+      :currentlyEditedHoursEntry="currentlyEditedHoursEntry"
+      @confirm-edit-hours-entry="confirmEditHoursEntry"
+      @cancel-edit-hours-entry="cancelEditHoursEntry"
+    />
+  </template>
 </template>
 
 <script setup>
   import { ref } from 'vue';
+  import { currentEmployeeID } from './composables/use-employees';
+  import EmployeePicker from './components/EmployeePicker.vue';
   import HoursOverview from './components/HoursOverview.vue';
   import TimerForm from './components/TimerForm.vue';
 
@@ -78,7 +84,7 @@
   }
 
   #app {
-    padding: 60px 60px;
+    padding: 120px 60px 60px;
     display: flex;
     flex-flow: row wrap;
     justify-content: center;
@@ -94,7 +100,8 @@
     }
 
     .timer-form {
-      flex: 0 0 400px;
+      flex: 0 0 auto;
+      width: 400px;
     }
   }
 
@@ -324,7 +331,7 @@
 
     &::before {
       margin-top: 0;
-      top: 68%;
+      top: calc(50% + 0.35em);
       color: $grey-5;
       border-color: $grey-5 transparent transparent transparent;
       border-width: var(--multiselect-select-border-width) var(--multiselect-select-border-width) 0 var(--multiselect-select-border-width);

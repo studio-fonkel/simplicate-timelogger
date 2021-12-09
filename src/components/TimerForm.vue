@@ -111,7 +111,7 @@
 </template>
 
 <script setup>
-  import { ref, watch, watchEffect, onMounted, nextTick } from 'vue';
+  import { ref, watch, watchEffect, onMounted, onUnmounted, nextTick } from 'vue';
   import VueMultiselect from 'vue-multiselect';
   import CreateTimerButton from './CreateTimerButton.vue';
   import StartTimerButton from './StartTimerButton.vue';
@@ -123,6 +123,9 @@
     loadingAvailableProjects,
     currentProject,
     setCurrentProject,
+    fetchProjects,
+    startPollingFetchProjects,
+    stopPollingFetchProjects,
   } from '../composables/use-projects.js';
 
   import {
@@ -163,6 +166,8 @@
     'confirm-edit-hours-entry': null,
     'cancel-edit-hours-entry': null,
   });
+
+  // TODO: Group availableProjects by project_status in projects VueMultiSelect
 
   const timerForm = ref(null);
 
@@ -311,7 +316,16 @@
   });
 
   onMounted(() => {
+    // Trap focus inside this component, so user can tab directly to first select.
     timerForm.value.focus();
+
+    // On init, fetch all projects and start polling.
+    fetchProjects();
+    startPollingFetchProjects();
+  });
+
+  onUnmounted(() => {
+    stopPollingFetchProjects();
   });
 </script>
 

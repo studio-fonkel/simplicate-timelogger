@@ -79,24 +79,25 @@
 </template>
 
 <script setup>
-  import { ref, computed, watchEffect } from 'vue';
-  import { hours, initiallyLoadedEmployeeHours } from '../composables/use-hours.js';
+  import { ref, computed, watch, watchEffect, onMounted, onUnmounted } from 'vue';
+  import { hours, initiallyLoadedEmployeeHours, fetchHours, startPollingFetchHours, stopPollingFetchHours } from '../composables/use-hours.js';
   import { timers } from '../composables/use-timer.js';
   import { toTimeString, toDurationString } from '../composables/use-date-helper.js';
 
   import DateBrowser from './DateBrowser.vue';
+  import { currentEmployeeID } from '../composables/use-employees.js';
 
   defineEmits({
     'edit-hours-entry': hoursEntry => hoursEntry != null,
   });
 
-  watchEffect(() => {
-    console.log(timers.value);
+  // watchEffect(() => {
+  //   console.log(timers.value);
 
-    if (timers.value.filter(timer => timer.state === 'running').length > 0) {
-      console.warn('Multiple timers running!');
-    }
-  });
+  //   if (timers.value.filter(timer => timer.state === 'running').length > 0) {
+  //     console.warn('Multiple timers running!');
+  //   }
+  // });
 
   const sortedHours = computed(() => {
     const hoursClone = ref(hours.value.slice());
@@ -118,6 +119,24 @@
 
   const totalHoursDurationString = computed(() => {
     return toDurationString(totalHours.value);
+  });
+
+  // Re-fetch hours, so we can display the new current employee's hours.
+  watch(currentEmployeeID, (employeeID) => {
+    if (employeeID != null) {
+      initiallyLoadedEmployeeHours.value = false;
+      fetchHours();
+    }
+  });
+
+  onMounted(() => {
+    // On init, fetch all hours and start polling.
+    fetchHours();
+    startPollingFetchHours();
+  });
+
+  onUnmounted(() => {
+    stopPollingFetchHours();
   });
 </script>
 
