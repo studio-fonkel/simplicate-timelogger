@@ -6,11 +6,12 @@
       <section>
         <p class="timer-form__select-label"><strong>Project</strong></p>
         <VueMultiselect
+          v-bind="vmsOptions"
+          ref="firstSelect"
           v-model="currentProject"
           :options="availableProjects"
           :loading="loadingAvailableProjects"
           label="name"
-          v-bind="vmsOptions"
           placeholder="Selecteer een project"
           @remove="preventDeselectProject"
         >
@@ -85,7 +86,7 @@
 </template>
 
 <script setup>
-  import { watch, nextTick } from 'vue';
+  import { ref, watch, onMounted, nextTick } from 'vue';
   import VueMultiselect from 'vue-multiselect';
   import CreateTimerButton from './CreateTimerButton.vue';
   import StartTimerButton from './StartTimerButton.vue';
@@ -135,6 +136,8 @@
     'confirm-edit-hours-entry': null,
     'cancel-edit-hours-entry': null,
   });
+
+  const firstSelect = ref(null);
 
   const vmsOptions = {
     'track-by': 'id',
@@ -268,6 +271,10 @@
       resetCurrentProjectServiceHoursType();
       clearProjectServiceHoursTypes();
     }
+  });
+
+  onMounted(() => {
+    firstSelect.value.$el.focus();
   });
 </script>
 
