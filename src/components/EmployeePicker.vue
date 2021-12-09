@@ -93,7 +93,7 @@
     z-index: 1000;
 
     &.employee-picker--pick {
-      top: 50%;
+      top: 15%;
       left: 50%;
       width: 500px;
       font-size: 120%;
