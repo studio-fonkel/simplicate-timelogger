@@ -85,13 +85,12 @@
     justify-content: space-around;
     align-items: flex-start;
     gap: 40px;
-    max-width: 1400px;
+    max-width: 1600px;
     margin: 0 auto;
 
     .hours-overview {
-      flex: 2 0 60%;
+      flex: 1 0 60%;
       min-width: 650px;
-      max-width: 850px;
     }
 
     .timer-form {
