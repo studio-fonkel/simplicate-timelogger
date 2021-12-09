@@ -149,12 +149,35 @@
     }
 
     > i {
-      vertical-align: middle;
+      &.fa,
+      &.fab,
+      &.fad,
+      &.fal,
+      &.far,
+      &.fas {
+        display: block;
+        vertical-align: middle;
+      }
     }
   }
 
   .btn--small {
-    padding: 0.45em 0.6em;
+    padding: 0.6em;
+
+    > i {
+      &.fa,
+      &.fab,
+      &.fad,
+      &.fal,
+      &.far,
+      &.fas {
+        width: 16px;
+      }
+    }
+
+    + .btn--small {
+      margin-left: 0.65ch;
+    }
   }
 
   .btn--green {
@@ -178,6 +201,30 @@
     --button-normal-active-border-color: #{$green-2};
     // Box-shadow
     --button-normal-box-shadow-color: #{rgba($green-1, 0.3)};
+    --button-disabled-box-shadow-color: #{rgba(#585858, 0.15)};
+  }
+
+  .btn--red {
+    // Background
+    --button-normal-default-background-color-1: #{$red-7};
+    --button-normal-default-background-color-2: #{$red-6};
+    --button-normal-hover-background-color-1: #{$red-5};
+    --button-normal-hover-background-color-2: #{$red-4};
+    --button-normal-active-background-color-1: #{$red-3};
+    --button-normal-active-background-color-2: #{$red-2};
+    --button-disabled-background-color-1: #{$grey-7};
+    --button-disabled-background-color-2: #{$grey-7};
+    // Text + shadow
+    --button-normal-text-color: #{$white-0};
+    --button-disabled-text-color: #{$white-0};
+    --button-normal-text-shadow-color: #{$red-4};
+    --button-disabled-text-shadow-color: #{$grey-6};
+    // Borders
+    --button-normal-default-border-color: #{$red-5};
+    --button-normal-hover-border-color: #{$red-4};
+    --button-normal-active-border-color: #{$red-2};
+    // Box-shadow
+    --button-normal-box-shadow-color: #{rgba($red-1, 0.3)};
     --button-disabled-box-shadow-color: #{rgba(#585858, 0.15)};
   }
 
