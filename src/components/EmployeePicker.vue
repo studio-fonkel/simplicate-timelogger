@@ -7,10 +7,12 @@
   >
     <VueMultiselect
       v-if="employeePickerVisible === true"
-      v-model="currentEmployee"
       v-bind="vmsOptions"
+      ref="multiselect"
+      v-model="currentEmployee"
       :options="sortedEmployees"
       :loading="loadingEmployees"
+      @close="onClose"
     >
       <template #noOptions>
         <span class="dim">
@@ -18,6 +20,7 @@
         </span>
       </template>
     </VueMultiselect>
+
     <div
       v-else
       class="employee-initials"
@@ -30,7 +33,7 @@
 </template>
 
 <script setup>
-  import { ref, computed } from 'vue';
+  import { ref, computed, watch, nextTick } from 'vue';
   import VueMultiselect from 'vue-multiselect';
 
   import {
@@ -41,6 +44,25 @@
     employeePickerVisible,
   } from '../composables/use-employees.js';
 
+  // When employee picker becomes visible, give focus to the multiselect.
+  const multiselect = ref(null);
+  watch(employeePickerVisible, (newVisibleStatus) => {
+    if (newVisibleStatus === true) {
+      nextTick(() => {
+        multiselect.value.$el.focus();
+      });
+    }
+  });
+
+  // When the employee picker is visible and an employee is already selected,
+  // we can safely hide the employee picker. This feels better UX-wise.
+  const onClose = (value) => {
+    if (value != null) {
+      showEmployeePicker.value = false;
+    }
+  };
+
+  // Sort employee names alphabetically.
   const sortedEmployees = computed(() => {
     const employeesClone = ref(employees.value.slice());
     return employeesClone.value.sort((a, b) => (a.name < b.name ? -1 : 1));
