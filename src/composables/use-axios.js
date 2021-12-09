@@ -22,3 +22,5 @@ export const axios = axiosPlugin.create({
     'Authentication-Secret': import.meta.env.VITE_SIMPLICATE_API_SECRET,
   },
 });
+
+// TODO: When 429 Too Many Requests occurs, save when the rate limiting will be reset, and create interceptor that blocks requests until that time.
