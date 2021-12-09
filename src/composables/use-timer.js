@@ -1,6 +1,6 @@
 import { ref, shallowRef } from 'vue';
 import { axios } from './use-axios.js';
-import { registerCallback, unregisterCallback } from './use-polling.js';
+import { INTERVALS, registerCallback, unregisterCallback } from './use-polling.js';
 
 export const timers = ref([]);
 export const loadingEmployeeTimers = shallowRef(false);
@@ -25,7 +25,7 @@ export async function fetchTimers () {
 }
 
 export function startPollingFetchTimers () {
-  registerCallback(fetchTimers);
+  registerCallback(fetchTimers, INTERVALS.medium);
 }
 
 export function stopPollingFetchTimers () {
