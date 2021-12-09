@@ -109,7 +109,7 @@
         box-shadow: 0 3px 20px -4px var(--employee-avatar-color);
         z-index: -1;
         background-color: transparent;
-        opacity: 0.5;
+        opacity: 0.35;
         filter: saturate(1.2) brightness(0.7);
       }
     }
