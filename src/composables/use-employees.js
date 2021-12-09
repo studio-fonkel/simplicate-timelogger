@@ -6,15 +6,30 @@ const storedEmployeeID = localStorage.getItem(storageKey);
 
 export const employees = ref([]);
 export const loadingEmployees = shallowRef(false);
+export const showEmployeePicker = shallowRef(false);
 export const currentEmployee = shallowRef(null);
 export const currentEmployeeID = computed(() => {
   return currentEmployee.value?.id ?? null;
 });
 
 watch(currentEmployeeID, (newEmployeeID) => {
-  if (newEmployeeID != null && newEmployeeID !== storedEmployeeID) {
-    localStorage.setItem(storageKey, newEmployeeID);
+  if (newEmployeeID != null) {
+    if (newEmployeeID !== storedEmployeeID) {
+      localStorage.setItem(storageKey, newEmployeeID);
+    }
+
+    showEmployeePicker.value = false;
   }
+});
+
+export const employeePickerVisible = computed(() => {
+  console.log({
+    currentEmployeeID: currentEmployeeID.value,
+    showEmployeePicker: showEmployeePicker.value,
+  });
+  const noCurrentEmployee = currentEmployeeID.value == null;
+  const doShowEmployeePicker = showEmployeePicker.value === true;
+  return noCurrentEmployee || doShowEmployeePicker;
 });
 
 watch(employees.value, (newEmployees) => {

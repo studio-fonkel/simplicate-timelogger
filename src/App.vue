@@ -1,7 +1,7 @@
 <template>
   <EmployeePicker/>
 
-  <template v-if="currentEmployeeID != null">
+  <template v-if="employeePickerVisible === false">
     <HoursOverview
       @edit-hours-entry="editHoursEntry"
     />
@@ -17,7 +17,7 @@
 
 <script setup>
   import { ref } from 'vue';
-  import { currentEmployeeID } from './composables/use-employees';
+  import { employeePickerVisible } from './composables/use-employees';
   import EmployeePicker from './components/EmployeePicker.vue';
   import HoursOverview from './components/HoursOverview.vue';
   import TimerForm from './components/TimerForm.vue';
@@ -97,6 +97,7 @@
     .hours-overview {
       flex: 1 0 60%;
       min-width: 650px;
+      max-width: 960px;
     }
 
     .timer-form {
@@ -285,7 +286,7 @@
   }
 
   .multiselect__input {
-    transform: translateY(-1px);
+    // transform: translateY(-1px);
   }
 
   .multiselect__single,
@@ -330,8 +331,11 @@
     transition: none;
 
     &::before {
+      display: inline-block;
       margin-top: 0;
-      top: calc(50% + 0.35em);
+      top: 50%;
+      transform: translateY(-145%);
+      // top: calc(50% + 0.35em);
       color: $grey-5;
       border-color: $grey-5 transparent transparent transparent;
       border-width: var(--multiselect-select-border-width) var(--multiselect-select-border-width) 0 var(--multiselect-select-border-width);
