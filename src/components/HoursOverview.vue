@@ -1,4 +1,13 @@
 <template>
+  <!-- <p>{{ today }}</p>
+  <p v-if="timers.filter(timer => timer.state === 'running').length > 0" class="error">
+    Multiple timers running!
+  </p>
+  <ul>
+    <li v-for="timer in timers">
+      <span>{{ timer }}</span>
+    </li>
+  </ul> -->
   <table class="hours-overview">
     <thead>
       <tr>
@@ -63,7 +72,9 @@
 </template>
 
 <script setup>
-  import { ref, computed, watch } from 'vue';
+  import { ref, computed } from 'vue';
+
+  import { today } from '../composables/use-date-helper.js';
 
   import {
     hours,
@@ -77,10 +88,6 @@
     fetchTimers,
     startPollingFetchTimers,
   } from '../composables/use-timer.js';
-
-  watch(timers, (timers) => {
-    console.log(timers);
-  });
 
   defineEmits({
     'edit-hours-entry': hoursEntry => hoursEntry != null,
