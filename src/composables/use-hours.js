@@ -1,6 +1,6 @@
 import { ref, shallowRef, watch } from 'vue';
-import { Temporal } from '@js-temporal/polyfill';
 import { axios } from './use-axios.js';
+import { today } from './use-date-helper.js';
 import { registerCallback, unregisterCallback } from './use-polling.js';
 
 export const hours = ref([]);
@@ -24,11 +24,10 @@ function addHours (projects) {
 
 export async function fetchHours () {
   loadingEmployeeHours.value = true;
-  const today = Temporal.Now.plainDateISO().toString();
   const { data: hours } = await axios.get('hours/hours', {
     params: {
-      'q[start_date][ge]': `${today} 00:00:00`,
-      'q[start_date][le]': `${today} 23:59:59`,
+      'q[start_date][ge]': `${today.value} 00:00:00`,
+      'q[start_date][le]': `${today.value} 23:59:59`,
     },
   });
   clearHours();
