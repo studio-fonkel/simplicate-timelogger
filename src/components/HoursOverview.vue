@@ -38,7 +38,7 @@
             </span>
             <span v-else>
               <div><strong>{{ toTimeString(hoursEntry.start_date) }}</strong></div>
-              <div>{{ toTimeString(hoursEntry.end_date) }}</div>
+                <div v-if="'end_date' in hoursEntry">{{ toTimeString(hoursEntry.end_date) }}</div>
             </span>
           </td>
 
