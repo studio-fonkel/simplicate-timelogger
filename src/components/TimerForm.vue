@@ -61,6 +61,23 @@
         </VueMultiselect>
       </section>
 
+      <section>
+        <p class="timer-form__select-label"><strong>Starttijd</strong></p>
+        <input
+          v-model="startTime"
+          type="text"
+          class="timer-form__input"
+          placeholder="hh:mm"
+        />
+        <p class="timer-form__select-label"><strong>Eindtijd</strong></p>
+        <input
+          v-model="startTime"
+          type="text"
+          class="timer-form__input"
+          placeholder="hh:mm"
+        />
+      </section>
+
       <!-- Later on, add option to define both start and end time and show different button to directly create a log -->
       <template v-if="mode === 'add'">
         <StartTimerButton/>
