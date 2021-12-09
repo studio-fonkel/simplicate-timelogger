@@ -7,6 +7,7 @@ export const hours = ref([]);
 export const loadingEmployeeHours = shallowRef(false);
 export const initiallyLoadedEmployeeHours = shallowRef(false);
 export const currentProject = shallowRef(null);
+export const currentlySelectedDate = ref(today.value);
 
 watch(loadingEmployeeHours, (loading) => {
   if (initiallyLoadedEmployeeHours.value === false && loading === false) {
@@ -26,8 +27,8 @@ export async function fetchHours () {
   loadingEmployeeHours.value = true;
   const { data: hours } = await axios.get('hours/hours', {
     params: {
-      'q[start_date][ge]': `${today.value} 00:00:00`,
-      'q[start_date][le]': `${today.value} 23:59:59`,
+      'q[start_date][ge]': `${currentlySelectedDate.value.toString()} 00:00:00`,
+      'q[start_date][le]': `${currentlySelectedDate.value.toString()} 23:59:59`,
     },
   });
   clearHours();

@@ -1,80 +1,94 @@
 <template>
-  <!-- <p>{{ today }}</p>
-  <p v-if="timers.filter(timer => timer.state === 'running').length > 0" class="error">
-    Multiple timers running!
-  </p>
-  <ul>
-    <li v-for="timer in timers">
-      <span>{{ timer }}</span>
-    </li>
-  </ul> -->
-  <table class="hours-overview">
-    <thead>
-      <tr>
-        <th><i class="far fa-clock"></i> Start-/eindtijd</th>
-        <th>Project</th>
-        <th>Aantal uren</th>
-      </tr>
-    </thead>
+  <main class="hours-overview">
+    <DateBrowser/>
 
-    <tbody>
-      <tr
-        v-if="initiallyLoadedEmployeeHours === false"
-        class="hours-overview__empty-row"
-      >
-        <td colspan="3">
-          <i class="fas fa-sync-alt fa-spin"></i>
-        </td>
-      </tr>
-      <template v-else>
+    <!-- <p v-if="timers.filter(timer => timer.state === 'running').length > 0" class="error">
+      Multiple timers running!
+    </p>
+    <ul>
+      <li v-for="timer in timers">
+        <span>{{ timer }}</span>
+      </li>
+    </ul> -->
+
+    <table>
+      <thead>
+        <tr>
+          <th>Start-/eindtijd</th>
+          <th>Project</th>
+          <th>Aantal uren</th>
+        </tr>
+      </thead>
+
+      <tbody>
         <tr
-          v-for="hoursEntry of sortedHours"
-          :key="hoursEntry.id"
-          class="hours-entry"
+          v-if="initiallyLoadedEmployeeHours === false"
+          class="hours-overview__empty-row"
         >
-          <td>
-            <span v-if="hoursEntry.is_time_defined === false" class="semi-dim">
-              Geen start-/eindtijd
-            </span>
-            <span v-else>
-              <div><strong>{{ toTimeString(hoursEntry.start_date) }}</strong></div>
-                <div v-if="'end_date' in hoursEntry">{{ toTimeString(hoursEntry.end_date) }}</div>
-            </span>
-          </td>
-
-          <td>
-            <div><strong>{{ hoursEntry.project.name }}</strong></div>
-            <div>{{ hoursEntry.projectservice.name }}</div>
-            <div v-if="hoursEntry.note" class="hours-entry__description semi-dim">
-              <i class="fas fa-quote-left"></i>{{ hoursEntry.note || '-' }}
-            </div>
-          </td>
-
-          <td>
-            <strong>{{ toDurationString(hoursEntry.hours) }}</strong>
-            <button
-              type="button"
-              class="hours-entry__edit-btn btn--small btn--grey"
-              title="Bewerk log"
-              @click="$emit('edit-hours-entry', hoursEntry)"
-            >
-              <i class="fas fa-pencil-alt"></i>
-            </button>
+          <td colspan="3">
+            <i class="fas fa-sync-alt fa-spin"></i>
+            <div>Uren ophalen</div>
           </td>
         </tr>
-      </template>
 
-      <tr class="hours-overview__totals">
-        <td colspan="3"><strong>Totaal:&nbsp;&nbsp;&nbsp;{{ totalHoursDurationString }}</strong></td>
-      </tr>
-    </tbody>
-  </table>
+        <tr
+          v-else-if="sortedHours.length === 0"
+          class="hours-overview__empty-row"
+        >
+          <td colspan="3">
+            <i class="fas fa-receipt"></i>
+            <div>Geen uren gevonden</div>
+          </td>
+        </tr>
+
+        <template v-else>
+          <tr
+            v-for="hoursEntry of sortedHours"
+            :key="hoursEntry.id"
+            class="hours-entry"
+          >
+            <td>
+              <span v-if="hoursEntry.is_time_defined === false" class="semi-dim">
+                Geen start-/eindtijd ingesteld
+              </span>
+              <span v-else>
+                <div><strong>{{ toTimeString(hoursEntry.start_date) }}</strong></div>
+                <div v-if="'end_date' in hoursEntry">{{ toTimeString(hoursEntry.end_date) }}</div>
+              </span>
+            </td>
+
+            <td>
+              <div><strong>{{ hoursEntry.project.name }}</strong></div>
+              <div>{{ hoursEntry.projectservice.name }}</div>
+              <div v-if="hoursEntry.note" class="hours-entry__description semi-dim">
+                <i class="fas fa-quote-left"></i>{{ hoursEntry.note || '-' }}
+              </div>
+            </td>
+
+            <td>
+              <strong>{{ toDurationString(hoursEntry.hours) }}</strong>
+              <button
+                type="button"
+                class="hours-entry__edit-btn btn--small btn--grey"
+                title="Bewerk log"
+                @click="$emit('edit-hours-entry', hoursEntry)"
+              >
+                <i class="fas fa-pencil-alt"></i>
+              </button>
+            </td>
+          </tr>
+        </template>
+
+        <tr class="hours-overview__totals">
+          <td colspan="3"><strong><i class="far fa-clock"></i>&nbsp;&nbsp;Totaal:&nbsp;&nbsp;&nbsp;{{ totalHoursDurationString }}</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </main>
 </template>
 
 <script setup>
   import { ref, computed } from 'vue';
-
-  import { today } from '../composables/use-date-helper.js';
 
   import {
     hours,
@@ -89,25 +103,13 @@
     startPollingFetchTimers,
   } from '../composables/use-timer.js';
 
+  import { toTimeString, toDurationString } from '../composables/use-date-helper.js';
+
+  import DateBrowser from './DateBrowser.vue';
+
   defineEmits({
     'edit-hours-entry': hoursEntry => hoursEntry != null,
   });
-
-  const timeFormatter = new Intl.DateTimeFormat('nl-NL', {
-    hour: 'numeric',
-    minute: 'numeric',
-  });
-
-  const toTimeString = (value) => {
-    const dateTime = new Date(value);
-    return timeFormatter.format(dateTime);
-  };
-
-  const toDurationString = (value) => {
-    const h = Math.trunc(value);
-    const mm = Math.floor((value - h) * 60);
-    return `${h}:${mm < 10 ? '0' : ''}${mm}`;
-  };
 
   const sortedHours = computed(() => {
     const hoursClone = ref(hours.value.slice());
@@ -142,123 +144,134 @@
 
 <style lang="scss">
   .hours-overview {
-    text-align: left;
-    border-spacing: 0;
-    box-shadow: 0 3px 20px -3px rgba(#585858, 0.06);
-    table-layout: fixed;
-    $th-border-color: lighten($grey-7, 3%);
-    $accent-color-hue: 40;
-
-    // Set first column width to fixed width
-    th:first-child {
-      width: 17.5ch;
-    }
-    // Set last column to minimal width
-    th:last-child {
-      width: 0;
+    .date-browser {
+      margin-bottom: 1em;
     }
 
-    th, td {
-      border: 1px solid $grey-7;
-      min-width: 10ch;
+    table {
+      width: 100%;
+      text-align: left;
+      border-spacing: 0;
+      box-shadow: 0 3px 20px -3px rgba(#585858, 0.06);
+      table-layout: fixed;
+      $th-border-color: lighten($grey-7, 3%);
+      $accent-color-hue: 40;
 
-      &:not(:first-child) {
-        border-left-width: 0;
+      // Set first column width to fixed width
+      th:first-child {
+        width: 19.5ch;
       }
-      &:not(:last-child) {
-        border-right-width: 0;
+      // Set last column to minimal width
+      th:last-child {
+        width: 16ch;
       }
 
-      &:first-child {
-        padding-left: 1.1em;
+      th, td {
+        border: 1px solid $grey-7;
+        min-width: 10ch;
+
+        &:not(:first-child) {
+          border-left-width: 0;
+        }
+        &:not(:last-child) {
+          border-right-width: 0;
+        }
+
+        &:first-child {
+          padding-left: 1.1em;
+        }
+
+        &:last-child {
+          text-align: right;
+          padding-right: 1.6em;
+        }
       }
 
-      &:last-child {
-        text-align: right;
-        padding-right: 1.6em;
+      th {
+        padding: 1.12em 0.85em 0.8em;
+        $th-bg-color: hsl($accent-color-hue, 15%, 96%);
+        background: linear-gradient(to bottom, $th-bg-color, darken($th-bg-color, 2%));
+        border-color: $th-border-color;
+        color: hsl($accent-color-hue, 3%, 25%);
+        font-weight: 900;
+
+        &:first-child {
+          border-top-left-radius: 8px;
+        }
+        &:last-child {
+          border-top-right-radius: 8px;
+        }
       }
-    }
 
-    th {
-      padding: 1.12em 0.85em 0.8em;
-      $th-bg-color: hsl($accent-color-hue, 15%, 96%);
-      background: linear-gradient(to bottom, $th-bg-color, darken($th-bg-color, 2%));
-      border-color: $th-border-color;
-      color: hsl($accent-color-hue, 3%, 25%);
-      font-weight: 900;
+      td {
+        padding: 0.8em 0.85em 0.76em;
+        background-color: $white-0;
 
-      &:first-child {
-        border-top-left-radius: 8px;
+        &:first-child {
+          vertical-align: top;
+        }
       }
-      &:last-child {
-        border-top-right-radius: 8px;
+
+      tbody tr:first-child td {
+        border-top-color: $th-border-color;
       }
-    }
 
-    td {
-      padding: 0.8em 0.85em 0.76em;
-      background-color: $white-0;
-
-      &:first-child {
-        vertical-align: top;
+      th,
+      tbody tr:not(:last-child) td {
+        border-bottom-width: 0;
       }
-    }
 
-    tbody tr:first-child td {
-      border-top-color: $th-border-color;
-    }
+      tr:not(.hours-overview__totals) {
+        font-size: 0.8em;
+        line-height: 1.55;
+      }
 
-    th,
-    tbody tr:not(:last-child) td {
-      border-bottom-width: 0;
-    }
+      .hours-entry__description {
+        margin-top: 0.23em;
+        line-height: 1.26;
 
-    tr:not(.hours-overview__totals) {
-      font-size: 0.8em;
-      line-height: 1.55;
-    }
+        .fa-quote-left {
+          display: inline-block;
+          margin-right: 0.4ch;
+          font-size: 55%;
+          vertical-align: text-top;
+          transform: translateY(50%);
+          color: $grey-7;
+        }
+      }
 
-    .hours-entry__description {
-      margin-top: 0.23em;
-      line-height: 1.26;
-
-      .fa-quote-left {
-        display: inline-block;
-        margin-right: 0.4ch;
-        font-size: 55%;
-        vertical-align: text-top;
-        transform: translateY(50%);
+      tr.hours-overview__empty-row td {
+        text-align: center;
         color: $grey-7;
+        padding: 4em 2.15em 3.8em;
+
+        i {
+          font-size: 250%;
+          transform-origin: 51% 47% !important;
+          animation-duration: 1s;
+        }
+
+        div {
+          font-size: 150%;
+        }
       }
-    }
 
-    tr.hours-overview__empty-row td {
-      text-align: center;
-      font-size: 250%;
-      color: $grey-7;
-      padding: 1.6em 0.85em 1.52em;
+      tr.hours-overview__totals td {
+        padding-top: 1.4em;
+        padding-bottom: 1.4em;
+        background-color: hsl($accent-color-hue, 20%, 95.5%);
 
-      i {
-        transform-origin: 51% 47% !important;
-        animation-duration: 1s;
+        &:first-child {
+          border-bottom-left-radius: 8px;
+        }
+        &:last-child {
+          border-bottom-right-radius: 8px;
+        }
       }
-    }
 
-    tr.hours-overview__totals td {
-      padding-top: 1.4em;
-      padding-bottom: 1.4em;
-      background-color: hsl($accent-color-hue, 20%, 95.5%);
-
-      &:first-child {
-        border-bottom-left-radius: 8px;
+      .hours-entry__edit-btn {
+        margin-left: 0.75em;
       }
-      &:last-child {
-        border-bottom-right-radius: 8px;
-      }
-    }
-
-    .hours-entry__edit-btn {
-      margin-left: 0.75em;
     }
   }
 </style>

@@ -36,6 +36,12 @@
 </script>
 
 <style lang="scss">
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
   body {
     font-family: Avenir, Helvetica, Arial, sans-serif;
     font-size: 1.2rem;
@@ -57,6 +63,18 @@
 
   .error {
     color: #b41200;
+  }
+
+  .full-width {
+    width: 100%;
+  }
+
+  .inline-block {
+    display: inline-block;
+  }
+
+  .margin-0 {
+    margin: 0;
   }
 
   #app {
@@ -178,6 +196,22 @@
     // Box-shadow
     --button-normal-box-shadow-color: #{rgba($grey-3, 0.2)};
     --button-disabled-box-shadow-color: #{rgba(#585858, 0.15)};
+  }
+
+  input {
+    appearance: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: auto;
+    max-width: 100%;
+    padding: 0.9em 0.75em 0.8em;
+    border: 1px solid $grey-7;
+    font-size: inherit;
+    font-family: inherit;
+    font-weight: 500;
+    line-height: 1;
+    border-radius: 5px;
   }
 
   // Tags: wrapper of placeholder/input/single.
