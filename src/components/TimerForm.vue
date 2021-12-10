@@ -12,7 +12,7 @@
         <VueMultiselect
           v-model="currentProject"
           v-bind="vmsOptions"
-          :options="availableProjects"
+          :options="filteredProjects"
           :loading="loadingAvailableProjects"
           label="name"
           placeholder="Selecteer een project"
@@ -154,8 +154,9 @@
   import CreateTimerButton from './CreateTimerButton.vue';
   import StartTimerButton from './StartTimerButton.vue';
 
-  import { createHours, STATUS_CODES } from '../composables/use-hours.js';
-  import { fixTime, getCurrentTime } from '../composables/use-date-helper.js';
+  import { RESULT_CODES } from '../composables/use-misc.js';
+  import { createHours, currentlySelectedDate } from '../composables/use-hours.js';
+  import { compareDates, fixTime, getCurrentTime, toPlainDate } from '../composables/use-date-helper.js';
 
   import {
     availableProjects,
@@ -234,6 +235,39 @@
     if (props.mode === 'add') {
       startTime.value = fixTime(getCurrentTime());
     }
+  });
+
+  const filteredProjects = computed(() => {
+    return availableProjects.value.filter(project => {
+      // TODO: We need to check if the current employee is assigned to the project. Endpoint is /projects/assignments. (https://developer.simplicate.com/explore#!/Projects/get_projects_assignment)
+
+      // TODO: Check what we can do with project_status
+      console.log({ name: project.name, status: project.project_status.label });
+
+      if (project.end_date == null) {
+        return true;
+      }
+      else {
+        // If end date is before currently selected date, project is not available.
+        // REVIEW: Double check if this is the reason why we can't log to the "Telemarketing 2021" project, or if it's because of something else.
+        if (compareDates(toPlainDate(project.end_date), currentlySelectedDate.value) === -1) {
+          return false;
+        }
+      }
+      if (project.start_date == null) {
+        return true;
+      }
+      else {
+        // If start date is after currently selected date, project is not available.
+        // REVIEW: Double check if this can be the reason why you can't log to a project.
+        if (compareDates(toPlainDate(project.start_date), currentlySelectedDate.value) === 1) {
+          return false;
+        }
+      }
+
+      // REVIEW: project.project_status can indicate a project is closed, but I'm not sure how to detect a closed project yet..
+      return true;
+    });
   });
 
   // EXCEPTION: This is only necessary because VueMultiselect doesn't support preventing deselects by clicking the active option.
