@@ -114,7 +114,7 @@
                 description,
               });
 
-              if (res === STATUS_CODES.success) {
+              if (res === RESULT_CODES.success) {
                 startTime = null;
                 endTime = null;
                 description = '';

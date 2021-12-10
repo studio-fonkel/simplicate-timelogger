@@ -5,7 +5,7 @@ const log = (...logs) => (debugPolling === true && console.log(...logs));
 
 const callbacks = ref(new Map);
 
-export const INTERVALS = {
+export const POLLING_INTERVALS = {
   short: 1,
   medium: 10,
   long: 20,
@@ -15,7 +15,7 @@ export const INTERVALS = {
   // hour: 60 * 60,
 };
 
-export function registerCallback (callback, interval = INTERVALS.short) {
+export function registerCallback (callback, interval = POLLING_INTERVALS.short) {
   callbacks.value.set(callback, interval);
 }
 
@@ -24,8 +24,8 @@ export function unregisterCallback (callback) {
 }
 
 // Look for lowest number that can be divided by all intervals defined in the INTERVALS enum.
-let lowestIndexDivisibleByAllIntervals = Math.max(...Object.values(INTERVALS));
-while (Object.values(INTERVALS).every(interval => lowestIndexDivisibleByAllIntervals % interval === 0) === false) {
+let lowestIndexDivisibleByAllIntervals = Math.max(...Object.values(POLLING_INTERVALS));
+while (Object.values(POLLING_INTERVALS).every(interval => lowestIndexDivisibleByAllIntervals % interval === 0) === false) {
   lowestIndexDivisibleByAllIntervals++;
 }
 

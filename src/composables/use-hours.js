@@ -2,7 +2,8 @@ import { ref, shallowRef, watch } from 'vue';
 import { axios } from './use-axios.js';
 import { compareTimes, today, toPlainTime } from './use-date-helper.js';
 import { currentEmployeeID } from './use-employees.js';
-import { INTERVALS, registerCallback, unregisterCallback } from './use-polling.js';
+import { RESULT_CODES } from './use-misc.js';
+import { POLLING_INTERVALS, registerCallback, unregisterCallback } from './use-polling.js';
 
 export const hours = ref([]);
 export const loadingEmployeeHours = shallowRef(false);
@@ -37,11 +38,6 @@ export async function fetchHours () {
   addHours(hours.data);
   loadingEmployeeHours.value = false;
 }
-
-export const STATUS_CODES = {
-  success: Symbol('success'),
-  failure: Symbol('failure'),
-};
 
 export async function createHours ({
   projectId,
@@ -95,11 +91,11 @@ export async function createHours ({
     });
 
     fetchHours();
-    return STATUS_CODES.success;
+    return RESULT_CODES.success;
   }
   catch (err) {
     console.error(err);
-    return STATUS_CODES.failure;
+    return RESULT_CODES.failure;
   }
 }
 
@@ -109,7 +105,7 @@ export async function deleteHours (hoursID) {
 }
 
 export function startPollingFetchHours () {
-  registerCallback(fetchHours, INTERVALS.long);
+  registerCallback(fetchHours, POLLING_INTERVALS.long);
 }
 
 export function stopPollingFetchHours () {

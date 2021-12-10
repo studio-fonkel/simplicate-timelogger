@@ -26,6 +26,10 @@ export function compareTimes (timeA, timeB) {
   return Temporal.PlainTime.compare(timeA, timeB);
 }
 
+export function toPlainDate (dateStr) {
+  return Temporal.PlainDate.from(dateStr);
+}
+
 export function toPlainTime (timeStr) {
   return Temporal.PlainTime.from(timeStr);
 }

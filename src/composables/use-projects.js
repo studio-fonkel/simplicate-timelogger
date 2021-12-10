@@ -1,7 +1,7 @@
 import { ref, shallowRef } from 'vue';
 import { axios } from './use-axios.js';
 // import { currentEmployeeID } from './use-employees.js';
-import { INTERVALS, registerCallback, unregisterCallback } from './use-polling.js';
+import { POLLING_INTERVALS, registerCallback, unregisterCallback } from './use-polling.js';
 
 export const availableProjects = ref([]);
 export const loadingAvailableProjects = shallowRef(false);
@@ -32,7 +32,7 @@ export async function fetchProjects () {
 }
 
 export function startPollingFetchProjects () {
-  registerCallback(fetchProjects, INTERVALS.quarterhour);
+  registerCallback(fetchProjects, POLLING_INTERVALS.quarterhour);
 }
 
 export function stopPollingFetchProjects () {
