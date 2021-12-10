@@ -8,7 +8,7 @@ if (!tenantURL.endsWith('/')) {
   tenantURL += '/';
 }
 
-const baseURL = `${tenantURL}/api/v2/`;
+const baseURL = `${tenantURL}api/v2/`;
 
 if (import.meta.env.VITE_SIMPLICATE_API_KEY === undefined || import.meta.env.VITE_SIMPLICATE_API_SECRET === undefined) {
   throw new Error('VITE_SIMPLICATE_API_KEY and/or VITE_SIMPLICATE_API_SECRET is not defined in .env.local');
