@@ -119,6 +119,9 @@
                 endTime = null;
                 description = '';
               }
+              else {
+                alertError();
+              }
             }"
           >
             Opslaan
@@ -363,6 +366,10 @@
       // && description.value !== ''
     );
   });
+
+  const alertError = () => {
+    alert('Er gaat iets mis. Heb je kloppende tijden ingevuld?');
+  };
 
   onMounted(() => {
     // Trap focus inside this component, so user can tab directly to first select.
