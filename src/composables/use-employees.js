@@ -23,10 +23,6 @@ watch(currentEmployeeID, (newEmployeeID) => {
 });
 
 export const employeePickerVisible = computed(() => {
-  console.log({
-    currentEmployeeID: currentEmployeeID.value,
-    showEmployeePicker: showEmployeePicker.value,
-  });
   const noCurrentEmployee = currentEmployeeID.value == null;
   const doShowEmployeePicker = showEmployeePicker.value === true;
   return noCurrentEmployee || doShowEmployeePicker;
