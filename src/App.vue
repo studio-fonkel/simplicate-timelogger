@@ -394,6 +394,10 @@
     box-shadow: 0 3px 12px -8px $grey-6;
   }
 
+  .multiselect__content {
+    margin: 8px 0;
+  }
+
   .multiselect__option {
     min-height: auto;
     box-sizing: content-box;
@@ -403,18 +407,18 @@
     line-height: inherit;
     font-size: 0.8em;
     transition-property: background-color, color;
-    transition-duration: 0.075s;
+    transition-duration: 0.06s;
     transition-timing-function: ease-out;
     @extend %ellipsis;
 
     &--highlight {
-      background-color: $green-5 !important;
+      background-color: $blue-5 !important;
       color: $white-0 !important;
     }
 
     &--selected {
       font-weight: 700 !important;
-      background-color: #ebf7f2;
+      background-color: lighten($blue-5, 50%);
     }
 
     span {
