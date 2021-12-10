@@ -71,17 +71,9 @@
     color: #b41200;
   }
 
-  .full-width {
-    width: 100%;
-  }
-
-  .inline-block {
-    display: inline-block;
-  }
-
-  .margin-0 {
-    margin: 0;
-  }
+  // .full-width {
+  //   width: 100%;
+  // }
 
   #app {
     padding: 120px 60px 60px;
@@ -252,7 +244,7 @@
     --button-disabled-box-shadow-color: #{rgba(#585858, 0.15)};
   }
 
-  input {
+  input, textarea {
     appearance: none;
     display: flex;
     justify-content: space-between;
@@ -265,8 +257,17 @@
     font-family: inherit;
     font-weight: 500;
     color: inherit;
-    line-height: 1;
     border-radius: 5px;
+  }
+
+  input {
+    line-height: 1;
+  }
+
+  textarea {
+    width: 100%;
+    resize: vertical;
+    line-height: 1.4;
   }
 
   // Tags: wrapper of placeholder/input/single.

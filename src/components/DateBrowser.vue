@@ -9,7 +9,7 @@
     </button>
 
     <h3
-      class="date-browser__date inline-block margin-0"
+      class="date-browser__date"
       :class="{
         'date-browser__date--past': compareDates(currentlySelectedDate, today) === -1,
         'date-browser__date--today': compareDates(currentlySelectedDate, today) === 0,
@@ -87,6 +87,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    &__date {
+      display: inline-block;
+      margin: 0;
+    }
 
     &__date--past {
       color: $grey-6;

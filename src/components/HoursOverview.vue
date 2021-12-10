@@ -75,7 +75,7 @@
                 type="button"
                 class="hours-entry__edit-btn btn--small btn--red"
                 title="Verwijder log"
-                @click="$emit('edit-hours-entry', hoursEntry)"
+                @click="confirmDeleteHours(hoursEntry.id)"
               >
                 <i class="fas fa-trash"></i>
               </button>
@@ -96,12 +96,26 @@
 
 <script setup>
   import { ref, computed, watch, watchEffect, onMounted, onUnmounted } from 'vue';
-  import { hours, initiallyLoadedEmployeeHours, fetchHours, startPollingFetchHours, stopPollingFetchHours } from '../composables/use-hours.js';
+
+  import {
+    hours,
+    initiallyLoadedEmployeeHours,
+    fetchHours,
+    startPollingFetchHours,
+    stopPollingFetchHours,
+    deleteHours,
+  } from '../composables/use-hours.js';
+
   import { timers } from '../composables/use-timer.js';
-  import { toTimeString, toDurationString } from '../composables/use-date-helper.js';
+
+  import {
+    toTimeString,
+    toDurationString,
+  } from '../composables/use-date-helper.js';
+
+  import { currentEmployeeID } from '../composables/use-employees.js';
 
   import DateBrowser from './DateBrowser.vue';
-  import { currentEmployeeID } from '../composables/use-employees.js';
 
   defineEmits({
     'edit-hours-entry': hoursEntry => hoursEntry != null,
@@ -137,7 +151,14 @@
     return toDurationString(totalHours.value);
   });
 
-  // Re-fetch hours, so we can display the new current employee's hours.
+  const confirmDeleteHours = (hoursID) => {
+    const res = window.confirm('Weet je zeker dat je deze uren wilt verwijderen?');
+    if (res === true) {
+      deleteHours(hoursID);
+    }
+  };
+
+  // When the current employee ID changes, re-fetch hours, so we can display the new current employee's hours.
   watch(currentEmployeeID, (employeeID) => {
     if (employeeID != null) {
       initiallyLoadedEmployeeHours.value = false;
@@ -173,7 +194,7 @@
 
       th {
         &.hours-overview__col--start-end-time {
-          width: 19.5ch;
+          width: 18ch;
         }
         &.hours-overview__col--project {
           width: auto;

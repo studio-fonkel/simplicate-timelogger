@@ -22,6 +22,14 @@ export function compareDates (dateA, dateB) {
   return Temporal.PlainDate.compare(dateA, dateB);
 }
 
+export function compareTimes (timeA, timeB) {
+  return Temporal.PlainTime.compare(timeA, timeB);
+}
+
+export function toPlainTime (timeStr) {
+  return Temporal.PlainTime.from(timeStr);
+}
+
 const timeFormatter = new Intl.DateTimeFormat('nl-NL', {
   hour: 'numeric',
   minute: 'numeric',

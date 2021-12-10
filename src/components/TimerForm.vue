@@ -64,6 +64,14 @@
         </VueMultiselect>
       </section>
 
+      <section>
+        <p class="timer-form__select-label"><strong>Omschrijving</strong></p>
+        <textarea
+          v-model="description"
+          rows="3"
+        ></textarea>
+      </section>
+
       <section class="split-view">
         <div>
           <p class="timer-form__select-label"><strong>Starttijd</strong></p>
@@ -88,7 +96,34 @@
 
       <!-- Later on, add option to define both start and end time and show different button to directly create a log -->
       <template v-if="mode === 'add'">
-        <StartTimerButton/>
+        <StartTimerButton
+          v-if="endTime == null || endTime === ''"
+        />
+        <template v-else>
+          <button
+            type="button"
+            class="btn--green"
+            :disabled="createLogButtonEnabled === false"
+            @click="async () => {
+              const res = await createHours({
+                projectId: currentProject.id,
+                projectServiceId: currentProjectService.id,
+                projectServiceHoursTypeId: currentProjectServiceHoursType.id,
+                startTime: fixTime(startTime),
+                endTime: fixTime(endTime),
+                description,
+              });
+
+              if (res === STATUS_CODES.success) {
+                startTime = null;
+                endTime = null;
+                description = '';
+              }
+            }"
+          >
+            Opslaan
+          </button>
+        </template>
       </template>
       <template v-else-if="mode === 'edit'">
         <button
@@ -111,11 +146,12 @@
 </template>
 
 <script setup>
-  import { ref, watch, watchEffect, onMounted, onUnmounted, nextTick } from 'vue';
+  import { ref, computed, watch, watchEffect, onMounted, onUnmounted, nextTick } from 'vue';
   import VueMultiselect from 'vue-multiselect';
   import CreateTimerButton from './CreateTimerButton.vue';
   import StartTimerButton from './StartTimerButton.vue';
 
+  import { createHours, STATUS_CODES } from '../composables/use-hours.js';
   import { fixTime, getCurrentTime } from '../composables/use-date-helper.js';
 
   import {
@@ -189,6 +225,7 @@
 
   const startTime = ref(null);
   const endTime = ref(null);
+  const description = ref('');
 
   watchEffect(() => {
     if (props.mode === 'add') {
@@ -313,6 +350,18 @@
       resetCurrentProjectServiceHoursType();
       clearProjectServiceHoursTypes();
     }
+  });
+
+  const createLogButtonEnabled = computed(() => {
+    return (
+      currentProject.value !== null
+      && currentProjectService.value !== null
+      && currentProjectServiceHoursType.value !== null
+      && fixTime(startTime.value) !== null
+      && fixTime(endTime.value) !== null
+      && startTime.value !== endTime.value // Because Simplicate doesn't allow 0-minute logs.
+      // && description.value !== ''
+    );
   });
 
   onMounted(() => {
