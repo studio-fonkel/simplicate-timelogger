@@ -486,8 +486,9 @@
 
         button {
           position: absolute;
-          right: 8px;
           top: 50%;
+          right: 12px;
+          font-size: 0.8em;
           transform: translateY(-50%);
           transition-property: opacity, visibility;
           transition-duration: 0.1s;
