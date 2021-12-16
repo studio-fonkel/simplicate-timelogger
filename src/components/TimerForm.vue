@@ -89,7 +89,7 @@
               title="Nu"
               @click="startTime = fixTime(getCurrentTime())"
             >
-              <i class="fas fa-hand-point-down"></i>
+              <i class="far fa-clock"></i>
             </button>
           </div>
         </div>
@@ -110,7 +110,7 @@
               title="Nu"
               @click="endTime = fixTime(getCurrentTime())"
             >
-              <i class="fas fa-hand-point-down"></i>
+              <i class="far fa-clock"></i>
             </button>
           </div>
         </div>
