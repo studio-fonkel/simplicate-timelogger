@@ -116,7 +116,6 @@
         </div>
       </section>
 
-      <!-- Later on, add option to define both start and end time and show different button to directly create a log -->
       <template v-if="mode === 'add'">
         <StartTimerButton
           v-if="endTime == null || endTime === ''"
@@ -125,7 +124,7 @@
           <button
             type="button"
             class="btn--green"
-            :disabled="createLogButtonEnabled === false"
+            :disabled="createHoursButtonEnabled === false"
             @click="async () => {
               creatingHours = true;
 
@@ -418,7 +417,7 @@
     }
   });
 
-  const createLogButtonEnabled = computed(() => {
+  const createHoursButtonEnabled = computed(() => {
     return (
       creatingHours.value !== true
       && currentProject.value !== null
