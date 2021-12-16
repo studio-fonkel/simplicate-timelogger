@@ -25,7 +25,10 @@
       v-else
       class="employee-initials"
       :style="`--employee-avatar-color: ${currentEmployee?.avatar?.color}`"
+      tabindex="0"
       @click="showEmployeePicker = true"
+      @keydown.space="showEmployeePicker = true"
+      @keydown.enter="showEmployeePicker = true"
     >
       {{ currentEmployee?.avatar?.initials }}
     </div>
