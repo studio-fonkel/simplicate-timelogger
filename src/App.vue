@@ -147,8 +147,9 @@
       &.fal,
       &.far,
       &.fas {
-        display: block;
-        vertical-align: middle;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
     }
   }
