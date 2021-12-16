@@ -75,22 +75,42 @@
       <section class="split-view">
         <div>
           <p class="timer-form__select-label"><strong>Starttijd</strong></p>
-          <input
-            v-model="startTime"
-            type="text"
-            class="timer-form__input"
-            @blur="startTime = fixTime(startTime)"
-          />
+          <div class="timer-form__input-wrapper">
+            <input
+              v-model="startTime"
+              type="text"
+              class="timer-form__input"
+              @blur="startTime = fixTime(startTime)"
+            />
+            <button
+              type="button"
+              class="btn--small btn--grey"
+              title="Nu"
+              @click="startTime = fixTime(getCurrentTime())"
+            >
+              <i class="fas fa-hand-point-down"></i>
+            </button>
+          </div>
         </div>
 
         <div>
           <p class="timer-form__select-label"><strong>Eindtijd</strong></p>
-          <input
-            v-model="endTime"
-            type="text"
-            class="timer-form__input"
-            @blur="endTime = fixTime(endTime)"
-          />
+          <div class="timer-form__input-wrapper">
+            <input
+              v-model="endTime"
+              type="text"
+              class="timer-form__input"
+              @blur="endTime = fixTime(endTime)"
+            />
+            <button
+              type="button"
+              class="btn--small btn--grey"
+              title="Nu"
+              @click="endTime = fixTime(getCurrentTime())"
+            >
+              <i class="fas fa-hand-point-down"></i>
+            </button>
+          </div>
         </div>
       </section>
 
@@ -448,6 +468,27 @@
       .timer-form__select-label {
         font-size: 70%;
         margin: 0 0 0.5em;
+      }
+
+      .timer-form__input-wrapper {
+        position: relative;
+
+        button {
+          position: absolute;
+          right: 8px;
+          top: 50%;
+          transform: translateY(-50%);
+          transition-property: opacity, visibility;
+          transition-duration: 0.1s;
+          transition-timing-function: ease-out;
+        }
+
+        &:not(:focus-within):not(:hover) {
+          button {
+            visibility: hidden;
+            opacity: 0;
+          }
+        }
       }
 
       &.split-view {
