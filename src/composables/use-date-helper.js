@@ -74,6 +74,8 @@ export const toDurationString = (value) => {
 /**
  * Fix time to be in the format (h)h:mm.
  *
+ * NOTE: This does not (yet) maximize hours to 23 or minutes to 59.
+ *
  * Scenarios:
  * - 0: time is not set or wrong type
  * - 1: time is in format 'hh:mm'
