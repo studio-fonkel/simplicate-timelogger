@@ -125,29 +125,7 @@
             type="button"
             class="btn--green"
             :disabled="createHoursButtonEnabled === false"
-            @click="async () => {
-              creatingHours = true;
-
-              const res = await createHours({
-                projectId: currentProject.id,
-                projectServiceId: currentProjectService.id,
-                projectServiceHoursTypeId: currentProjectServiceHoursType.id,
-                startTime: fixTime(startTime),
-                endTime: fixTime(endTime),
-                description,
-              });
-
-              if (res === RESULT_CODES.success) {
-                startTime = null;
-                endTime = null;
-                description = '';
-              }
-              else {
-                alertError();
-              }
-
-              creatingHours = false;
-            }"
+            @click="doCreateHours"
           >
             Opslaan
           </button>
@@ -416,6 +394,30 @@
       clearProjectServiceHoursTypes();
     }
   });
+
+  const doCreateHours = async () => {
+    creatingHours.value = true;
+
+    const res = await createHours({
+      projectId: currentProject.value.id,
+      projectServiceId: currentProjectService.value.id,
+      projectServiceHoursTypeId: currentProjectServiceHoursType.value.id,
+      startTime: fixTime(startTime.value),
+      endTime: fixTime(endTime.value),
+      description: description.value,
+    });
+
+    if (res === RESULT_CODES.success) {
+      startTime.value = null;
+      endTime.value = null;
+      description.value = '';
+    }
+    else {
+      alertError();
+    }
+
+    creatingHours.value = false;
+  };
 
   const createHoursButtonEnabled = computed(() => {
     return (
