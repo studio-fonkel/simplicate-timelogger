@@ -81,6 +81,7 @@
               type="text"
               class="timer-form__input"
               @blur="startTime = fixTime(startTime)"
+              @paste.prevent="(event) => startTime = fixTime((event.clipboardData || window.clipboardData).getData('text'))"
             />
             <button
               type="button"
@@ -101,6 +102,7 @@
               type="text"
               class="timer-form__input"
               @blur="endTime = fixTime(endTime)"
+              @paste.prevent="(event) => endTime = fixTime((event.clipboardData || window.clipboardData).getData('text'))"
             />
             <button
               type="button"
