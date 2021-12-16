@@ -433,7 +433,7 @@
   });
 
   const alertError = () => {
-    alert('Er gaat iets mis. Heb je kloppende tijden ingevuld?');
+    alert('Er gaat iets mis. Je kunt de error in de browser console terugvinden.');
   };
 
   onMounted(() => {
