@@ -127,6 +127,8 @@
             class="btn--green"
             :disabled="createLogButtonEnabled === false"
             @click="async () => {
+              creatingHours = true;
+
               const res = await createHours({
                 projectId: currentProject.id,
                 projectServiceId: currentProjectService.id,
@@ -144,6 +146,8 @@
               else {
                 alertError();
               }
+
+              creatingHours = false;
             }"
           >
             Opslaan
@@ -252,6 +256,8 @@
   const startTime = ref(null);
   const endTime = ref(null);
   const description = ref('');
+
+  const creatingHours = ref(false);
 
   watchEffect(() => {
     if (props.mode === 'add') {
@@ -414,7 +420,8 @@
 
   const createLogButtonEnabled = computed(() => {
     return (
-      currentProject.value !== null
+      creatingHours.value !== true
+      && currentProject.value !== null
       && currentProjectService.value !== null
       && currentProjectServiceHoursType.value !== null
       && fixTime(startTime.value) !== null
