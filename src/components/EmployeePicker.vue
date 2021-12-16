@@ -13,6 +13,7 @@
       :options="sortedEmployees"
       :loading="loadingEmployees"
       @close="onClose"
+      @remove="preventDeselectEmployee"
     >
       <template #noOptions>
         <span class="dim">
@@ -63,6 +64,13 @@
     if (value != null) {
       showEmployeePicker.value = false;
     }
+  };
+
+  // EXCEPTION: This is only necessary because VueMultiselect doesn't support preventing deselects by clicking the active option.
+  const preventDeselectEmployee = (deselectedOption) => {
+    nextTick(() => {
+      currentEmployee.value = deselectedOption;
+    });
   };
 
   // Sort employee names alphabetically.
