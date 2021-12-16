@@ -40,13 +40,13 @@
             class="hours-entry"
           >
             <td class="hours-overview__col--start-end-time">
-              <span v-if="hoursEntry.is_time_defined === false" class="semi-dim">
+              <div v-if="hoursEntry.is_time_defined === false" class="semi-dim">
                 Geen start-/eindtijd ingesteld
-              </span>
-              <span v-else>
+              </div>
+              <div v-else>
                 <div><strong>{{ toTimeString(hoursEntry.start_date) }}</strong></div>
                 <div v-if="'end_date' in hoursEntry">{{ toTimeString(hoursEntry.end_date) }}</div>
-              </span>
+              </div>
             </td>
 
             <td class="hours-overview__col--project">
@@ -75,7 +75,7 @@
                 type="button"
                 class="hours-entry__edit-btn btn--small btn--red"
                 title="Verwijder log"
-                @click="confirmDeleteHours(hoursEntry.id)"
+                @click="(event) => confirmDeleteHours(hoursEntry.id, event.target)"
               >
                 <i class="fas fa-trash"></i>
               </button>
@@ -151,9 +151,10 @@
     return toDurationString(totalHours.value);
   });
 
-  const confirmDeleteHours = (hoursID) => {
+  const confirmDeleteHours = (hoursID, buttonElement) => {
     const res = window.confirm('Weet je zeker dat je deze uren wilt verwijderen?');
     if (res === true) {
+      buttonElement.closest('tr').classList.add('hours-entry--deleting');
       deleteHours(hoursID);
     }
   };
@@ -315,6 +316,11 @@
         &:last-child {
           border-bottom-right-radius: 8px;
         }
+      }
+
+      tr.hours-entry--deleting td > * {
+        opacity: 0.3;
+        pointer-events: none;
       }
     }
   }
