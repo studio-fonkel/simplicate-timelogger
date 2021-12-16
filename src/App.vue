@@ -164,7 +164,7 @@
       &.fal,
       &.far,
       &.fas {
-        width: 16px;
+        width: 1em;
       }
     }
 
