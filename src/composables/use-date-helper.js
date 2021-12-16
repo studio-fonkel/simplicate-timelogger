@@ -15,7 +15,18 @@ registerCallback(updateToday);
 
 export function getCurrentTime () {
   const now = Temporal.Now.plainTimeISO();
-  return `${now.hour}:${now.minute}`;
+
+  let { hour, minute } = now;
+
+  if (hour < 10) {
+    hour = `0${hour}`;
+  }
+
+  if (minute < 10) {
+    minute = `0${minute}`;
+  }
+
+  return `${hour}:${minute}`;
 }
 
 export function compareDates (dateA, dateB) {
