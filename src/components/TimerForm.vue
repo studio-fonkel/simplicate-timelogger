@@ -276,6 +276,7 @@
           return false;
         }
       }
+      // NOTE: I tried to make a project the other day and I think a start date is obligatory.
       if (project.start_date == null) {
         return true;
       }
