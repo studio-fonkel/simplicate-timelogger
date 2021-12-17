@@ -51,7 +51,7 @@
 
             <td class="hours-overview__col--project">
               <div><strong>{{ overviewEntry.project.name }}</strong></div>
-              <div>{{ overviewEntry.projectservice.name }}</div>
+              <div>{{ overviewEntry.projectservice.name }} ({{ getHoursTypeProperty(overviewEntry).label }})</div>
               <!-- TODO: Is it .note for hours and .description for timers? Would be weird.. -->
               <div v-if="overviewEntry.note" class="hours-entry__description semi-dim">
                 <i class="fas fa-quote-left"></i>{{ overviewEntry.note || '-' }}
@@ -135,6 +135,7 @@
   });
 
   const getStartDateProperty = (entry) => entry[entry._entry_type === 'timer' ? 'created_at' : 'start_date'];
+  const getHoursTypeProperty = (entry) => entry[entry._entry_type === 'timer' ? 'hourstype' : 'type'];
 
   const sortedHoursAndTimers = computed(() => {
     const hoursAndTimers = [
