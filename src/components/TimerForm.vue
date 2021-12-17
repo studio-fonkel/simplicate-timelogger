@@ -119,6 +119,9 @@
       <template v-if="mode === 'add'">
         <StartTimerButton
           v-if="endTime == null || endTime === ''"
+          :startTime="startTime"
+          :description="description"
+          @timer-created="onTimerCreated"
         />
         <template v-else>
           <button
@@ -152,7 +155,7 @@
 </template>
 
 <script setup>
-  import { ref, computed, watch, watchEffect, onMounted, onUnmounted, nextTick } from 'vue';
+  import { ref, shallowRef, computed, watch, watchEffect, onMounted, onUnmounted, nextTick } from 'vue';
   import VueMultiselect from 'vue-multiselect';
   import CreateTimerButton from './CreateTimerButton.vue';
   import StartTimerButton from './StartTimerButton.vue';
@@ -233,8 +236,13 @@
   const startTime = ref(null);
   const endTime = ref(null);
   const description = ref('');
+  const resetTimeAndDescription = () => {
+    startTime.value = null;
+    endTime.value = null;
+    description.value = '';
+  };
 
-  const creatingHours = ref(false);
+  const creatingHours = shallowRef(false);
 
   watchEffect(() => {
     if (props.mode === 'add') {
@@ -408,9 +416,7 @@
     });
 
     if (res === RESULT_CODES.success) {
-      startTime.value = null;
-      endTime.value = null;
-      description.value = '';
+      resetTimeAndDescription();
     }
     else {
       alertError();
@@ -432,9 +438,13 @@
     );
   });
 
-  const alertError = () => {
+  function onTimerCreated () {
+    resetTimeAndDescription();
+  }
+
+  function alertError () {
     alert('Er gaat iets mis. Je kunt de error in de browser console terugvinden.');
-  };
+  }
 
   onMounted(() => {
     // Trap focus inside this component, so user can tab directly to first select.
