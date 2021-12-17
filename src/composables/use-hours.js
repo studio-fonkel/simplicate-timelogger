@@ -9,7 +9,7 @@ export const hours = ref([]);
 export const loadingEmployeeHours = shallowRef(false);
 export const initiallyLoadedEmployeeHours = shallowRef(false);
 export const currentProject = shallowRef(null);
-export const currentlySelectedDate = ref(today.value);
+export const currentlySelectedDate = ref(today.value); // TODO: Move elsewhere
 
 watch(loadingEmployeeHours, (loading) => {
   if (initiallyLoadedEmployeeHours.value === false && loading === false) {
