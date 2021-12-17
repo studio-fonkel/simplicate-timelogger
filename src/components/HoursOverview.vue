@@ -24,7 +24,7 @@
         </tr>
 
         <tr
-          v-else-if="sortedHours.length === 0"
+          v-else-if="sortedHoursAndTimers.length === 0"
           class="hours-overview__empty-row"
         >
           <td colspan="4">
@@ -35,30 +35,35 @@
 
         <template v-else>
           <tr
-            v-for="hoursEntry of sortedHours"
+            v-for="hoursEntry of sortedHoursAndTimers"
             :key="hoursEntry.id"
             class="hours-entry"
           >
             <td class="hours-overview__col--start-end-time">
-              <div v-if="hoursEntry.is_time_defined === false" class="semi-dim">
+              <div v-if="hoursEntry._entry_type === 'hours' && hoursEntry.is_time_defined === false" class="semi-dim">
                 Geen start-/eindtijd ingesteld
               </div>
               <div v-else>
-                <div><strong>{{ toTimeString(hoursEntry.start_date) }}</strong></div>
-                <div v-if="'end_date' in hoursEntry">{{ toTimeString(hoursEntry.end_date) }}</div>
+                <div><strong>{{ toTimeString(getStartDateProperty(hoursEntry)) }}</strong></div>
+                <div v-if="hoursEntry._entry_type === 'hours' && 'end_date' in hoursEntry">{{ toTimeString(hoursEntry.end_date) }}</div>
               </div>
             </td>
 
             <td class="hours-overview__col--project">
               <div><strong>{{ hoursEntry.project.name }}</strong></div>
               <div>{{ hoursEntry.projectservice.name }}</div>
+              <!-- TODO: Is it .note for hours and .description for timers? Would be weird.. -->
               <div v-if="hoursEntry.note" class="hours-entry__description semi-dim">
                 <i class="fas fa-quote-left"></i>{{ hoursEntry.note || '-' }}
               </div>
             </td>
 
             <td class="hours-overview__col--hours-amount">
-              <strong>{{ toDurationString(hoursEntry.hours) }}</strong>
+              <strong v-if="hoursEntry._entry_type === 'hours'">{{ toDurationString(hoursEntry.hours) }}</strong>
+              <strong v-else>
+                <!-- TODO: Subtract below from now with Temporal to calculate number of hours -->
+                {{ getStartDateProperty(hoursEntry) }}
+              </strong>
             </td>
 
             <td class="hours-overview__col--actions">
@@ -95,7 +100,7 @@
 </template>
 
 <script setup>
-  import { ref, computed, watch, watchEffect, onMounted, onUnmounted } from 'vue';
+  import { computed, watch, watchEffect, onMounted, onUnmounted } from 'vue';
 
   import {
     hours,
@@ -129,15 +134,21 @@
     }
   });
 
-  const sortedHours = computed(() => {
-    const hoursClone = ref(hours.value.slice());
-    return hoursClone.value.sort((a, b) => {
-      if (a.is_time_defined === false) {
+  const getStartDateProperty = (entry) => entry[entry._entry_type === 'timer' ? 'created_at' : 'start_date'];
+
+  const sortedHoursAndTimers = computed(() => {
+    const hoursAndTimers = [
+      ...hours.value.map(entry => ({ _entry_type: 'hours', ...entry })),
+      ...timers.value.map(entry => ({ _entry_type: 'timer', ...entry })),
+    ];
+
+    return hoursAndTimers.sort((a, b) => {
+      if (a._entry_type === 'timer' && a.is_time_defined === false) {
         return -1;
       }
 
-      const dateA = new Date(a.start_date);
-      const dateB = new Date(b.start_date);
+      const dateA = new Date(getStartDateProperty(a));
+      const dateB = new Date(getStartDateProperty(b));
       const res = Math.sign(dateA - dateB);
       return res;
     });

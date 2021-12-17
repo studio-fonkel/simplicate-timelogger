@@ -2,6 +2,7 @@ import { ref, shallowRef } from 'vue';
 import { axios } from './use-axios.js';
 // import { compareTimes, today, toPlainTime } from './use-date-helper.js';
 import { currentEmployeeID } from './use-employees.js';
+import { currentlySelectedDate } from './use-hours.js';
 import { RESULT_CODES } from './use-misc.js';
 import { POLLING_INTERVALS, registerCallback, unregisterCallback } from './use-polling.js';
 
@@ -21,8 +22,14 @@ function addTimers (projects) {
 
 export async function fetchTimers () {
   loadingEmployeeTimers.value = true;
-  // TODO: Add q[employee.id]=employee:afa58dd4b2c525fe6d44e34a3f0f8c3d
-  const { data: timers } = await axios.get('timers/timer');
+  // REVIEW: What to do when someone forgot to turn off their timer? They currently won't get displayed, so they may never find out about the running timer...
+  const { data: timers } = await axios.get('timers/timer', {
+    params: {
+      'q[created_at][ge]': `${currentlySelectedDate.value.toString()} 00:00:00`,
+      'q[created_at][le]': `${currentlySelectedDate.value.toString()} 23:59:59`,
+      'q[employee.id]': currentEmployeeID.value,
+    },
+  });
   clearTimers();
   addTimers(timers.data);
   loadingEmployeeTimers.value = false;
