@@ -65,10 +65,10 @@ export const toFullDate = (value) => {
   return capitalizeFirstLetter(fullDate);
 };
 
-export const toDurationString = (value) => {
-  const h = Math.trunc(value);
-  const mm = Math.floor((value - h) * 60);
-  return `${h}:${mm < 10 ? '0' : ''}${mm}`;
+export const toDurationString = (hours) => {
+  const fullHours = Math.trunc(hours);
+  const minutes = Math.floor((hours - fullHours) * 60);
+  return `${fullHours}:${minutes < 10 ? '0' : ''}${minutes}`;
 };
 
 /**
