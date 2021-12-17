@@ -121,13 +121,13 @@
     'edit-hours-entry': hoursEntry => hoursEntry != null,
   });
 
-  // watchEffect(() => {
-  //   console.log(timers.value);
+  watchEffect(() => {
+    console.log(timers.value);
 
-  //   if (timers.value.filter(timer => timer.state === 'running').length > 0) {
-  //     console.warn('Multiple timers running!');
-  //   }
-  // });
+    if (timers.value.filter(timer => timer.state === 'running').length > 0) {
+      console.warn('Multiple timers running!');
+    }
+  });
 
   const sortedHours = computed(() => {
     const hoursClone = ref(hours.value.slice());
