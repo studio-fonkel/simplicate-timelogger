@@ -255,7 +255,7 @@
       // TODO: We need to check if the current employee is assigned to the project. Endpoint is /projects/assignments. (https://developer.simplicate.com/explore#!/Projects/get_projects_assignment)
 
       // TODO: Check what we can do with project_status
-      console.log({ name: project.name, status: project.project_status.label });
+      // console.log({ name: project.name, status: project.project_status.label });
 
       if (project.end_date == null) {
         return true;
