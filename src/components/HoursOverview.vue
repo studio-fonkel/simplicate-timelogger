@@ -45,7 +45,9 @@
               </div>
               <div v-else>
                 <div><strong>{{ toTimeString(getStartDateProperty(overviewEntry)) }}</strong></div>
-                <div v-if="overviewEntry._entry_type === 'hours' && 'end_date' in overviewEntry">{{ toTimeString(overviewEntry.end_date) }}</div>
+                <div v-if="overviewEntry._entry_type === 'hours' && 'end_date' in overviewEntry">
+                  {{ toTimeString(overviewEntry.end_date) }}
+                </div>
               </div>
             </td>
 
@@ -134,9 +136,6 @@
     }
   });
 
-  const getStartDateProperty = (entry) => entry[entry._entry_type === 'timer' ? 'created_at' : 'start_date'];
-  const getHoursTypeProperty = (entry) => entry[entry._entry_type === 'timer' ? 'hourstype' : 'type'];
-
   const sortedHoursAndTimers = computed(() => {
     const hoursAndTimers = [
       ...hours.value.map(entry => ({ _entry_type: 'hours', ...entry })),
@@ -163,13 +162,22 @@
     return toDurationString(totalHours.value);
   });
 
-  const confirmDeleteHours = (hoursID, buttonElement) => {
+
+  function getStartDateProperty (entry) {
+    return entry[entry._entry_type === 'timer' ? 'created_at' : 'start_date'];
+  }
+
+  function getHoursTypeProperty (entry) {
+    return entry[entry._entry_type === 'timer' ? 'hourstype' : 'type'];
+  }
+
+  function confirmDeleteHours (hoursID, buttonElement) {
     const res = window.confirm('Weet je zeker dat je deze uren wilt verwijderen?');
     if (res === true) {
       buttonElement.closest('tr').classList.add('hours-entry--deleting');
       deleteHours(hoursID);
     }
-  };
+  }
 
   // When the current employee ID changes, re-fetch hours, so we can display the new current employee's hours.
   watch(currentEmployeeID, (employeeID) => {
