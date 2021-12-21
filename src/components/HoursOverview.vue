@@ -35,36 +35,36 @@
 
         <template v-else>
           <tr
-            v-for="overviewEntry of sortedHoursAndTimers"
-            :key="overviewEntry.id"
+            v-for="entry of sortedHoursAndTimers"
+            :key="entry.id"
             class="hours-entry"
           >
             <td class="hours-overview__col--start-end-time">
-              <div v-if="overviewEntry._entry_type === 'hours' && overviewEntry.is_time_defined === false" class="semi-dim">
+              <div v-if="entry._entry_type === 'hours' && entry.is_time_defined === false" class="semi-dim">
                 Geen start-/eindtijd ingesteld
               </div>
               <div v-else>
-                <div><strong>{{ toTimeString(getStartDateProperty(overviewEntry)) }}</strong></div>
-                <div v-if="overviewEntry._entry_type === 'hours' && 'end_date' in overviewEntry">
-                  {{ toTimeString(overviewEntry.end_date) }}
+                <div><strong>{{ toTimeString(getStartDateProperty(entry)) }}</strong></div>
+                <div v-if="entry._entry_type === 'hours' && 'end_date' in entry">
+                  {{ toTimeString(entry.end_date) }}
                 </div>
               </div>
             </td>
 
             <td class="hours-overview__col--project">
-              <div><strong>{{ overviewEntry.project.name }}</strong></div>
-              <div>{{ overviewEntry.projectservice.name }} ({{ getHoursTypeProperty(overviewEntry).label }})</div>
+              <div><strong>{{ entry.project.name }}</strong></div>
+              <div>{{ entry.projectservice.name }} ({{ getHoursTypeProperty(entry).label }})</div>
               <!-- TODO: Is it .note for hours and .description for timers? Would be weird.. -->
-              <div v-if="overviewEntry.note" class="hours-entry__description semi-dim">
-                <i class="fas fa-quote-left"></i>{{ overviewEntry.note || '-' }}
+              <div v-if="entry.note" class="hours-entry__description semi-dim">
+                <i class="fas fa-quote-left"></i>{{ entry.note || '-' }}
               </div>
             </td>
 
             <td class="hours-overview__col--hours-amount">
-              <strong v-if="overviewEntry._entry_type === 'hours'">{{ toDurationString(overviewEntry.hours) }}</strong>
+              <strong v-if="entry._entry_type === 'hours'">{{ toDurationString(entry.hours) }}</strong>
               <strong v-else>
                 <!-- TODO: Subtract below from now with Temporal to calculate number of hours -->
-                {{ getStartDateProperty(overviewEntry) }}
+                {{ getStartDateProperty(entry) }}
               </strong>
             </td>
 
@@ -73,7 +73,7 @@
                 type="button"
                 class="hours-entry__edit-btn btn--small btn--grey"
                 title="Bewerk log"
-                @click="$emit('edit-hours-entry', overviewEntry)"
+                @click="$emit('edit-hours-entry', entry)"
               >
                 <i class="fas fa-pencil-alt"></i>
               </button>
@@ -82,7 +82,7 @@
                 type="button"
                 class="hours-entry__edit-btn btn--small btn--red"
                 title="Verwijder log"
-                @click="(event) => confirmDeleteHours(overviewEntry.id, event.target)"
+                @click="(event) => confirmDeleteHours(entry.id, event.target)"
               >
                 <i class="fas fa-trash"></i>
               </button>
