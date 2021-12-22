@@ -145,8 +145,6 @@
   });
 
   watchEffect(() => {
-    console.log(timers.value);
-
     if (timers.value.filter(timer => timer.state === 'running').length > 0) {
       console.warn('Multiple timers running!');
     }
