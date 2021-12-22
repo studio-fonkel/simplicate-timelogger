@@ -75,7 +75,30 @@
             <td class="hours-overview__col--actions">
               <button
                 type="button"
-                class="hours-entry__edit-btn btn--small btn--grey"
+                class="btn--small btn--small-with-text"
+                :class="entry._entry_type === 'timer' ? 'btn--blue' : 'btn--grey'"
+                :title="entry._entry_type === 'timer' ? 'Stop timer' : 'Start timer'"
+                @click="() => {
+                  if (entry._entry_type === 'hours') {
+                    // TODO: Start new timer
+                  }
+                  else if (entry._entry_type === 'timer') {
+                    stopTimer(entry.id);
+                  }
+                }"
+              >
+                <!-- <i class="fas fa-stop"></i> -->
+                <template v-if="entry._entry_type === 'timer'">
+                  <i class="fas fa-stopwatch"></i> Stop
+                </template>
+                <template v-else>
+                  <i class="fas fa-play"></i> Start
+                </template>
+              </button>
+
+              <button
+                type="button"
+                class="btn--small btn--grey"
                 title="Bewerk log"
                 @click="$emit('edit-hours-entry', entry)"
               >
@@ -128,6 +151,7 @@
     timers,
     fetchTimers,
     deleteTimer,
+    stopTimer,
     startPollingFetchTimers,
     stopPollingFetchTimers,
   } from '../composables/use-timer.js';
@@ -272,7 +296,7 @@
           width: 16ch;
         }
         &.hours-overview__col--actions {
-          width: 13ch;
+          width: 22ch;
         }
       }
 

@@ -71,6 +71,21 @@ export async function createTimer ({
   }
 }
 
+export async function stopTimer (timerID) {
+  /**
+   * TODO:
+   * 1. Get latest timer data
+   * 2. Determine start time by subtracting seconds_spent from current time
+   * 3. Execute createHours(), but with care!
+   * 4. Delete timer
+   * 5. fetchTimers() and fetchHours().
+   */
+  const timerData = await axios.get(`timers/timer/${timerID}`);
+  console.log({ timerData });
+  // await axios.delete(`timers/timer/${timerID}`);
+  // fetchTimers();
+}
+
 export async function deleteTimer (timerID) {
   await axios.delete(`timers/timer/${timerID}`);
   fetchTimers();
