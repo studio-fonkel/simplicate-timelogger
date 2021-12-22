@@ -80,14 +80,14 @@
               v-model="startTime"
               type="text"
               class="timer-form__input"
-              @blur="startTime = fixTime(startTime)"
+              @blur="startTime = fixTime(startTime) ?? ''"
               @paste.prevent="(event) => startTime = fixTime((event.clipboardData || window.clipboardData).getData('text'))"
             />
             <button
               type="button"
               class="btn--small btn--grey"
               title="Nu"
-              @click="startTime = fixTime(getCurrentTime())"
+              @click="startTime = fixTime(getCurrentTime()) ?? ''"
             >
               <i class="far fa-clock"></i>
             </button>
@@ -101,14 +101,14 @@
               v-model="endTime"
               type="text"
               class="timer-form__input"
-              @blur="endTime = fixTime(endTime)"
+              @blur="endTime = fixTime(endTime) ?? ''"
               @paste.prevent="(event) => endTime = fixTime((event.clipboardData || window.clipboardData).getData('text'))"
             />
             <button
               type="button"
               class="btn--small btn--grey"
               title="Nu"
-              @click="endTime = fixTime(getCurrentTime())"
+              @click="endTime = fixTime(getCurrentTime()) ?? ''"
             >
               <i class="far fa-clock"></i>
             </button>
