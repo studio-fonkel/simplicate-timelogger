@@ -10,7 +10,6 @@ export const timers = ref([]);
 export const loadingEmployeeTimers = shallowRef(false);
 export const initiallyLoadedEmployeeTimers = shallowRef(false);
 export const creatingTimer = shallowRef(false);
-// export const currentProject = shallowRef(null);
 
 function clearTimers () {
   timers.value.length = 0;
@@ -60,7 +59,7 @@ export async function createTimer ({
       hourstype_id: projectServiceHoursTypeId,
       state: 'running',
       seconds_spent: 0, // TODO: See if this works if we set it to e.g. 3600
-      ...(description != null ? { note: description } : {}),
+      ...(description != null ? { description } : {}),
     });
 
     fetchTimers();
