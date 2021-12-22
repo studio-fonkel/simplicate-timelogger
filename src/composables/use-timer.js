@@ -2,7 +2,7 @@ import { ref, shallowRef } from 'vue';
 import { axios } from './use-axios.js';
 // import { compareTimes, today, toPlainTime } from './use-date-helper.js';
 import { currentEmployeeID } from './use-employees.js';
-import { currentlySelectedDate } from './use-hours.js';
+// import { currentlySelectedDate } from './use-hours.js';
 import { RESULT_CODES } from './use-misc.js';
 import { POLLING_INTERVALS, registerCallback, unregisterCallback } from './use-polling.js';
 
@@ -22,11 +22,13 @@ function addTimers (projects) {
 
 export async function fetchTimers () {
   loadingEmployeeTimers.value = true;
-  // REVIEW: What to do when someone forgot to turn off their timer? They currently won't get displayed, so they may never find out about the running timer...
   const { data: timers } = await axios.get('timers/timer', {
     params: {
-      'q[created_at][ge]': `${currentlySelectedDate.value.toString()} 00:00:00`,
-      'q[created_at][le]': `${currentlySelectedDate.value.toString()} 23:59:59`,
+      // We cannot rely on the created date. It's the server date, not the local date.
+      // Also, if we filter on timers created today and someone forgot to turn off their timer,
+      // this timer wouldn't get displayed, so they may never find out about the running timer...
+      // 'q[created_at][ge]': `${currentlySelectedDate.value.toString()} 00:00:00`,
+      // 'q[created_at][le]': `${currentlySelectedDate.value.toString()} 23:59:59`,
       'q[employee.id]': currentEmployeeID.value,
     },
   });
