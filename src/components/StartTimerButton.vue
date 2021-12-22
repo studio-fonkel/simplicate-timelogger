@@ -59,6 +59,7 @@
     alert('Er gaat iets mis. Je kunt de error in de browser console terugvinden.');
   }
 
+  // REVIEW: Maybe it’s bad UX to disable this button when things are loading. It could cause clicks to be lost.
   const startTimerButtonEnabled = computed(() => {
     return (
       creatingTimer.value !== true
