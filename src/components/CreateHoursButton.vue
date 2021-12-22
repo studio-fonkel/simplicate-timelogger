@@ -2,10 +2,10 @@
   <button
     type="button"
     class="btn--green"
-    :disabled="startTimerButtonEnabled === false"
-    @click="doCreateTimer"
+    :disabled="createHoursButtonEnabled === false"
+    @click="doCreateHours"
   >
-    Start timer
+    Opslaan
   </button>
 </template>
 
@@ -13,7 +13,7 @@
   import { computed } from 'vue';
 
   import { RESULT_CODES } from '../composables/use-misc.js';
-  import { createTimer, creatingTimer } from '../composables/use-timer.js';
+  import { createHours, creatingHours } from '../composables/use-hours.js';
   import { currentProject, loadingAvailableProjects } from '../composables/use-projects.js';
   import { currentProjectService, loadingAvailableProjectServices } from '../composables/use-project-services.js';
   import { currentProjectServiceHoursType, loadingAvailableProjectServiceHoursTypes } from '../composables/use-project-service-hours-types.js';
@@ -24,6 +24,10 @@
       type: String,
       required: true,
     },
+    endTime: {
+      type: String,
+      required: true,
+    },
     description: {
       type: String,
       required: true,
@@ -31,37 +35,38 @@
   });
 
   const emit = defineEmits({
-    'timer-created': null,
+    'hours-created': null,
   });
 
-  async function doCreateTimer () {
-    creatingTimer.value = true;
+  const doCreateHours = async () => {
+    creatingHours.value = true;
 
-    const res = await createTimer({
+    const res = await createHours({
       projectId: currentProject.value.id,
       projectServiceId: currentProjectService.value.id,
       projectServiceHoursTypeId: currentProjectServiceHoursType.value.id,
       startTime: fixTime(props.startTime),
+      endTime: fixTime(props.endTime),
       description: props.description,
     });
 
     if (res === RESULT_CODES.success) {
-      emit('timer-created');
+      emit('hours-created');
     }
     else {
       alertError();
     }
 
-    creatingTimer.value = false;
-  }
+    creatingHours.value = false;
+  };
 
   function alertError () {
     alert('Er gaat iets mis. Je kunt de error in de browser console terugvinden.');
   }
 
-  const startTimerButtonEnabled = computed(() => {
+  const createHoursButtonEnabled = computed(() => {
     return (
-      creatingTimer.value !== true
+      creatingHours.value !== true
       && currentProject.value !== null
       && currentProjectService.value !== null
       && currentProjectServiceHoursType.value !== null
@@ -69,6 +74,8 @@
       && loadingAvailableProjectServices.value !== true
       && loadingAvailableProjectServiceHoursTypes.value !== true
       && fixTime(props.startTime) !== null
+      && fixTime(props.endTime) !== null
+      && props.startTime !== props.endTime // Because Simplicate doesn't allow 0-minute logs.
     );
   });
 </script>

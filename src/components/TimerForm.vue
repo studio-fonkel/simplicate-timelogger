@@ -121,18 +121,15 @@
           v-if="endTime == null || endTime === ''"
           :startTime="startTime"
           :description="description"
-          @timer-created="onTimerCreated"
+          @timer-created="resetTimesAndDescription"
         />
-        <template v-else>
-          <button
-            type="button"
-            class="btn--green"
-            :disabled="createHoursButtonEnabled === false"
-            @click="doCreateHours"
-          >
-            Opslaan
-          </button>
-        </template>
+        <CreateHoursButton
+          v-else
+          :startTime="startTime"
+          :endTime="endTime"
+          :description="description"
+          @hours-created="resetTimesAndDescription"
+        />
       </template>
       <template v-else-if="mode === 'edit'">
         <button
@@ -155,14 +152,22 @@
 </template>
 
 <script setup>
-  import { ref, shallowRef, computed, watch, watchEffect, onMounted, onBeforeUnmount, nextTick } from 'vue';
+  import { ref, computed, watch, watchEffect, onMounted, onBeforeUnmount, nextTick } from 'vue';
   import VueMultiselect from 'vue-multiselect';
   import CreateTimerButton from './CreateTimerButton.vue';
   import StartTimerButton from './StartTimerButton.vue';
+  import CreateHoursButton from './CreateHoursButton.vue';
 
-  import { RESULT_CODES } from '../composables/use-misc.js';
-  import { createHours, currentlySelectedDate } from '../composables/use-hours.js';
-  import { compareDates, fixTime, getCurrentTime, toPlainDate } from '../composables/use-date-helper.js';
+  import {
+    currentlySelectedDate,
+  } from '../composables/use-hours.js';
+
+  import {
+    compareDates,
+    fixTime,
+    getCurrentTime,
+    toPlainDate,
+  } from '../composables/use-date-helper.js';
 
   import {
     availableProjects,
@@ -241,8 +246,6 @@
     endTime.value = null;
     description.value = '';
   };
-
-  const creatingHours = shallowRef(false);
 
   watchEffect(() => {
     if (props.mode === 'add') {
@@ -402,49 +405,6 @@
       clearProjectServiceHoursTypes();
     }
   });
-
-  const doCreateHours = async () => {
-    creatingHours.value = true;
-
-    const res = await createHours({
-      projectId: currentProject.value.id,
-      projectServiceId: currentProjectService.value.id,
-      projectServiceHoursTypeId: currentProjectServiceHoursType.value.id,
-      startTime: fixTime(startTime.value),
-      endTime: fixTime(endTime.value),
-      description: description.value,
-    });
-
-    if (res === RESULT_CODES.success) {
-      resetTimeAndDescription();
-    }
-    else {
-      alertError();
-    }
-
-    creatingHours.value = false;
-  };
-
-  const createHoursButtonEnabled = computed(() => {
-    return (
-      creatingHours.value !== true
-      && currentProject.value !== null
-      && currentProjectService.value !== null
-      && currentProjectServiceHoursType.value !== null
-      && fixTime(startTime.value) !== null
-      && fixTime(endTime.value) !== null
-      && startTime.value !== endTime.value // Because Simplicate doesn't allow 0-minute logs.
-      // && description.value !== ''
-    );
-  });
-
-  function onTimerCreated () {
-    resetTimeAndDescription();
-  }
-
-  function alertError () {
-    alert('Er gaat iets mis. Je kunt de error in de browser console terugvinden.');
-  }
 
   onMounted(() => {
     // Trap focus inside this component, so user can tab directly to first select.
