@@ -59,7 +59,7 @@
                   || (entry._entry_type === 'timer' && entry.description)"
                 class="hours-entry__description semi-dim"
               >
-                <i class="fas fa-quote-left"></i>{{ entry._entry_type === 'hours' ? entry.note : entry.description || '-' }}
+                <i class="fas fa-quote-left"></i>{{ getDescriptionProperty(entry) || '-' }}
               </div>
             </td>
 
@@ -84,13 +84,13 @@
 
               <button
                 type="button"
-                class="hours-entry__edit-btn btn--small btn--red"
+                class="btn--small btn--red"
                 title="Verwijder log"
                 @click="(event) => {
                   if (entry._entry_type === 'hours') {
                     confirmDeleteHours(entry.id, event.target);
                   }
-                  else {
+                  else if (entry._entry_type === 'timer') {
                     confirmDeleteTimer(entry.id, event.target);
                   }
                 }"
@@ -179,11 +179,30 @@
 
 
   function getStartDateProperty (entry) {
-    return entry[entry._entry_type === 'timer' ? 'created_at' : 'start_date'];
+    switch (entry._entry_type) {
+      case 'hours':
+        return entry.start_date;
+      case 'timer':
+        return entry.created_at;
+    }
   }
 
   function getHoursTypeProperty (entry) {
-    return entry[entry._entry_type === 'timer' ? 'hourstype' : 'type'];
+    switch (entry._entry_type) {
+      case 'hours':
+        return entry.type;
+      case 'timer':
+        return entry.hourstype;
+    }
+  }
+
+  function getDescriptionProperty (entry) {
+    switch (entry._entry_type) {
+      case 'hours':
+        return entry.note;
+      case 'timer':
+        return entry.description;
+    }
   }
 
   function confirmDeleteHours (hoursID, buttonElement) {
