@@ -238,12 +238,13 @@
     'max-height': 500,
   };
 
-  const startTime = ref(null);
-  const endTime = ref(null);
+  const startTime = ref('');
+  const endTime = ref('');
   const description = ref('');
-  const resetTimeAndDescription = () => {
-    startTime.value = null;
-    endTime.value = null;
+
+  const resetTimesAndDescription = () => {
+    startTime.value = '';
+    endTime.value = '';
     description.value = '';
   };
 
