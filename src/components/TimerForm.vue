@@ -155,7 +155,7 @@
 </template>
 
 <script setup>
-  import { ref, shallowRef, computed, watch, watchEffect, onMounted, onUnmounted, nextTick } from 'vue';
+  import { ref, shallowRef, computed, watch, watchEffect, onMounted, onBeforeUnmount, nextTick } from 'vue';
   import VueMultiselect from 'vue-multiselect';
   import CreateTimerButton from './CreateTimerButton.vue';
   import StartTimerButton from './StartTimerButton.vue';
@@ -455,7 +455,7 @@
     startPollingFetchProjects();
   });
 
-  onUnmounted(() => {
+  onBeforeUnmount(() => {
     stopPollingFetchProjects();
   });
 </script>

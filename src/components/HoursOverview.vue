@@ -102,7 +102,7 @@
 </template>
 
 <script setup>
-  import { computed, watch, watchEffect, onMounted, onUnmounted } from 'vue';
+  import { computed, watch, watchEffect, onMounted, onBeforeUnmount } from 'vue';
 
   import {
     hours,
@@ -193,7 +193,7 @@
     startPollingFetchHours();
   });
 
-  onUnmounted(() => {
+  onBeforeUnmount(() => {
     stopPollingFetchHours();
   });
 </script>
