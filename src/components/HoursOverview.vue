@@ -54,9 +54,12 @@
             <td class="hours-overview__col--project">
               <div><strong>{{ entry.project.name }}</strong></div>
               <div>{{ entry.projectservice.name }} ({{ getHoursTypeProperty(entry).label }})</div>
-              <!-- TODO: Is it .note for hours and .description for timers? Would be weird.. -->
-              <div v-if="entry.note" class="hours-entry__description semi-dim">
-                <i class="fas fa-quote-left"></i>{{ entry.note || '-' }}
+              <div
+                v-if="(entry._entry_type === 'hours' && entry.note)
+                  || (entry._entry_type === 'timer' && entry.description)"
+                class="hours-entry__description semi-dim"
+              >
+                <i class="fas fa-quote-left"></i>{{ entry._entry_type === 'hours' ? entry.note : entry.description || '-' }}
               </div>
             </td>
 
