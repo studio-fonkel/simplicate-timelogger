@@ -173,6 +173,14 @@
     }
   }
 
+  .btn--small-with-text {
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.65ch;
+    line-height: 1;
+  }
+
   .btn--green {
     // Background
     --button-normal-default-background-color-1: #{$green-7};
@@ -218,6 +226,30 @@
     --button-normal-active-border-color: #{$red-2};
     // Box-shadow
     --button-normal-box-shadow-color: #{rgba($red-1, 0.3)};
+    --button-disabled-box-shadow-color: #{rgba(#585858, 0.15)};
+  }
+
+  .btn--blue {
+    // Background
+    --button-normal-default-background-color-1: #{$blue-7};
+    --button-normal-default-background-color-2: #{$blue-6};
+    --button-normal-hover-background-color-1: #{$blue-5};
+    --button-normal-hover-background-color-2: #{$blue-4};
+    --button-normal-active-background-color-1: #{$blue-3};
+    --button-normal-active-background-color-2: #{$blue-2};
+    --button-disabled-background-color-1: #{$grey-7};
+    --button-disabled-background-color-2: #{$grey-7};
+    // Text + shadow
+    --button-normal-text-color: #{$white-0};
+    --button-disabled-text-color: #{$white-0};
+    --button-normal-text-shadow-color: #{$blue-4};
+    --button-disabled-text-shadow-color: #{$grey-6};
+    // Borders
+    --button-normal-default-border-color: #{$blue-5};
+    --button-normal-hover-border-color: #{$blue-4};
+    --button-normal-active-border-color: #{$blue-2};
+    // Box-shadow
+    --button-normal-box-shadow-color: #{rgba($blue-1, 0.3)};
     --button-disabled-box-shadow-color: #{rgba(#585858, 0.15)};
   }
 
@@ -413,13 +445,13 @@
     @extend %ellipsis;
 
     &--highlight {
-      background-color: $blue-5 !important;
+      background-color: $blue-9 !important;
       color: $white-0 !important;
     }
 
     &--selected {
       font-weight: 700 !important;
-      background-color: lighten($blue-5, 50%);
+      background-color: lighten($blue-9, 50%);
     }
 
     span {

@@ -97,7 +97,7 @@
       color: $grey-6;
     }
     &__date--today {
-      color: $blue-5;
+      color: $blue-9;
     }
   }
 </style>
