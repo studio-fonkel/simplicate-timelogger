@@ -72,14 +72,15 @@ export async function createTimer ({
   }
 }
 
-function startPollingFetchTimers () {
+export async function deleteTimer (timerID) {
+  await axios.delete(`timers/timer/${timerID}`);
+  fetchTimers();
+}
+
+export function startPollingFetchTimers () {
   registerCallback(fetchTimers, POLLING_INTERVALS.medium);
 }
 
-function stopPollingFetchTimers () {
+export function stopPollingFetchTimers () {
   unregisterCallback(fetchTimers);
 }
-
-// On init, fetch all timers and start polling.
-fetchTimers();
-startPollingFetchTimers();

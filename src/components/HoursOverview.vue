@@ -82,7 +82,14 @@
                 type="button"
                 class="hours-entry__edit-btn btn--small btn--red"
                 title="Verwijder log"
-                @click="(event) => confirmDeleteHours(entry.id, event.target)"
+                @click="(event) => {
+                  if (entry._entry_type === 'hours') {
+                    confirmDeleteHours(entry.id, event.target);
+                  }
+                  else {
+                    confirmDeleteTimer(entry.id, event.target);
+                  }
+                }"
               >
                 <i class="fas fa-trash"></i>
               </button>
@@ -108,12 +115,18 @@
     hours,
     initiallyLoadedEmployeeHours,
     fetchHours,
+    deleteHours,
     startPollingFetchHours,
     stopPollingFetchHours,
-    deleteHours,
   } from '../composables/use-hours.js';
 
-  import { timers } from '../composables/use-timer.js';
+  import {
+    timers,
+    fetchTimers,
+    deleteTimer,
+    startPollingFetchTimers,
+    stopPollingFetchTimers,
+  } from '../composables/use-timer.js';
 
   import {
     toTimeString,
@@ -179,11 +192,20 @@
     }
   }
 
+  function confirmDeleteTimer (timerID, buttonElement) {
+    const res = window.confirm('Weet je zeker dat je deze timer wilt verwijderen?');
+    if (res === true) {
+      buttonElement.closest('tr').classList.add('hours-entry--deleting');
+      deleteTimer(timerID);
+    }
+  }
+
   // When the current employee ID changes, re-fetch hours, so we can display the new current employee's hours.
   watch(currentEmployeeID, (employeeID) => {
     if (employeeID != null) {
       initiallyLoadedEmployeeHours.value = false;
       fetchHours();
+      fetchTimers();
     }
   });
 
@@ -191,10 +213,15 @@
     // On init, fetch all hours and start polling.
     fetchHours();
     startPollingFetchHours();
+
+    // On init, fetch all timers and start polling.
+    fetchTimers();
+    startPollingFetchTimers();
   });
 
   onBeforeUnmount(() => {
     stopPollingFetchHours();
+    stopPollingFetchTimers();
   });
 </script>
 
