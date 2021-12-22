@@ -80,7 +80,7 @@
                 :title="entry._entry_type === 'timer' ? 'Stop timer' : 'Start timer'"
                 @click="() => {
                   if (entry._entry_type === 'hours') {
-                    // TODO: Start new timer
+                    doCreateTimerFromHours(entry);
                   }
                   else if (entry._entry_type === 'timer') {
                     stopTimer(entry.id);
@@ -149,7 +149,9 @@
 
   import {
     timers,
+    creatingTimer,
     fetchTimers,
+    createTimer,
     deleteTimer,
     stopTimer,
     startPollingFetchTimers,
@@ -200,6 +202,21 @@
   const totalHoursDurationString = computed(() => {
     return toDurationString(totalHours.value);
   });
+
+  async function doCreateTimerFromHours (hoursEntry) {
+    creatingTimer.value = true;
+
+    const res = await createTimer({
+      projectId: hoursEntry.project.id,
+      projectServiceId: hoursEntry.projectservice.id,
+      projectServiceHoursTypeId: hoursEntry.type.id,
+      description: hoursEntry.note,
+    });
+
+    console.log(res); // TODO: Finish
+
+    creatingTimer.value = false;
+  }
 
 
   function getStartDateProperty (entry) {

@@ -40,15 +40,15 @@ export async function createTimer ({
   projectId,
   projectServiceId,
   projectServiceHoursTypeId,
-  startTime,
+  // startTime,
   description,
 }) {
   try {
-    if (startTime.length === 4) {
-      startTime = `0${startTime}`;
-    }
+    // if (startTime.length === 4) {
+    //   startTime = `0${startTime}`;
+    // }
 
-    startTime += ':00'; // NOTE: Currently unused
+    // startTime += ':00'; // NOTE: Currently unused
 
     // TODO: Check if timer's start time is in the future
 
