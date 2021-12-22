@@ -64,10 +64,11 @@
             </td>
 
             <td class="hours-overview__col--hours-amount">
-              <strong v-if="entry._entry_type === 'hours'">{{ toDurationString(entry.hours) }}</strong>
-              <strong v-else>
-                <!-- TODO: Subtract below from now with Temporal to calculate number of hours -->
-                {{ getStartDateProperty(entry) }}
+              <strong v-if="entry._entry_type === 'hours'">
+                {{ toDurationString(entry.hours) }}
+              </strong>
+              <strong v-else-if="entry._entry_type === 'timer'">
+                {{ toDurationString(entry.seconds_spent / 3600) }}
               </strong>
             </td>
 
