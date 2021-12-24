@@ -21,11 +21,13 @@ function addProjects (projects) {
 
 export async function fetchProjects () {
   loadingAvailableProjects.value = true;
+
   const { data: projects } = await axios.get('projects/project', {
     // params: {
     //   'q[employee.id]': currentEmployeeID.value,
     // },
   });
+
   clearProjects();
   addProjects(projects.data);
   loadingAvailableProjects.value = false;

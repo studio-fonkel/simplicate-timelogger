@@ -1,20 +1,33 @@
 import { ref } from 'vue';
 import { Temporal } from '@js-temporal/polyfill';
-import { registerCallback } from './use-polling.js';
+import { POLLING_INTERVALS, registerCallback } from './use-polling.js';
 import { capitalizeFirstLetter } from './use-string-helper.js';
 
+// TODO: Rename to `now` and use PlainDateTime instead.
 export const today = ref(null);
 
 function updateToday () {
   // REVIEW: Shouldn't we use Temporal.Now.zonedDateTimeISO() somehow?
-  today.value = Temporal.Now.plainDateISO();
+  today.value = getCurrentDate();
 }
 
 updateToday();
-registerCallback(updateToday);
+registerCallback(updateToday, POLLING_INTERVALS.short);
+
+export function getCurrentDate () {
+  return Temporal.Now.plainDateISO();
+}
+
+export function getCurrentDateTime () {
+  return Temporal.Now.plainDateTimeISO();
+}
 
 export function getCurrentTime () {
-  const now = Temporal.Now.plainTimeISO();
+  return Temporal.Now.plainTimeISO();
+}
+
+export function getCurrentTimeString () {
+  const now = getCurrentTime();
 
   let { hour, minute } = now;
 
@@ -33,6 +46,10 @@ export function compareDates (dateA, dateB) {
   return Temporal.PlainDate.compare(dateA, dateB);
 }
 
+export function compareDateTimes (dateTimeA, dateTimeB) {
+  return Temporal.PlainDateTime.compare(dateTimeA, dateTimeB);
+}
+
 export function compareTimes (timeA, timeB) {
   return Temporal.PlainTime.compare(timeA, timeB);
 }
@@ -41,13 +58,34 @@ export function toPlainDate (dateStr) {
   return Temporal.PlainDate.from(dateStr);
 }
 
+export function toPlainDateTime (dateTimeStr) {
+  return Temporal.PlainDateTime.from(dateTimeStr);
+}
+
 export function toPlainTime (timeStr) {
   return Temporal.PlainTime.from(timeStr);
+}
+
+export function secondsToDuration (seconds) {
+  return Temporal.Duration.from({
+    seconds,
+  });
+}
+
+export function dateIsToday (date) {
+  const today = new Date();
+  return date.getDate() === today.getDate()
+    && date.getMonth() === today.getMonth()
+    && date.getFullYear() === today.getFullYear();
 }
 
 const timeFormatter = new Intl.DateTimeFormat('nl-NL', {
   hour: 'numeric',
   minute: 'numeric',
+});
+
+const relativeDateFormatter = new Intl.RelativeTimeFormat('nl-NL', {
+  numeric: 'auto',
 });
 
 const fullDateFormatter = new Intl.DateTimeFormat('nl-NL', {
@@ -56,7 +94,16 @@ const fullDateFormatter = new Intl.DateTimeFormat('nl-NL', {
 
 export const toTimeString = (value) => {
   const dateTime = new Date(value);
-  return timeFormatter.format(dateTime);
+  const dateTimeTemporal = toPlainDateTime(value);
+
+  let timeString = timeFormatter.format(dateTime);
+
+  if (dateIsToday(dateTime) === false) {
+    const relativeDays = Math.ceil(getCurrentDateTime().until(dateTimeTemporal).total({ unit: 'days' }));
+    timeString += ` (${relativeDateFormatter.format(relativeDays, 'day')})`;
+  }
+
+  return timeString;
 };
 
 export const toFullDate = (value) => {

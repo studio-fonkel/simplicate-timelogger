@@ -1,6 +1,15 @@
 import { ref, shallowRef } from 'vue';
 import { axios } from './use-axios.js';
-// import { compareTimes, today, toPlainTime } from './use-date-helper.js';
+
+import {
+  getCurrentDate,
+  getCurrentDateTime,
+  secondsToDuration,
+  toPlainTime,
+  // compareTimes,
+  // today,
+} from './use-date-helper.js';
+
 import { currentEmployeeID } from './use-employees.js';
 // import { currentlySelectedDate } from './use-hours.js';
 import { RESULT_CODES } from './use-misc.js';
@@ -19,8 +28,33 @@ function addTimers (projects) {
   timers.value.push(...projects);
 }
 
+export function getTimerStartDateTime (startTime) {
+  // TODO: Use `today` instead
+
+  // Get PlainDate obj of today.
+  const currentDate = getCurrentDate();
+
+  // Convert startTime to PlainTime.
+  startTime = toPlainTime(startTime);
+
+  // Create PlainDateTime from currentDate and startTime combined.
+  const startDateTime = currentDate.toPlainDateTime(startTime);
+
+  return startDateTime;
+}
+
+export function calculateStartDateTimeFromSecondsSpent (secondsSpent) {
+  // Get PlainDateTime obj of now.
+  const now = getCurrentDateTime();
+
+  const startDateTime = now.subtract(secondsToDuration(secondsSpent));
+
+  return startDateTime;
+}
+
 export async function fetchTimers () {
   loadingEmployeeTimers.value = true;
+
   const { data: timers } = await axios.get('timers/timer', {
     params: {
       // We cannot rely on the created date. It's the server date, not the local date.
@@ -31,6 +65,18 @@ export async function fetchTimers () {
       'q[employee.id]': currentEmployeeID.value,
     },
   });
+
+  for (const timer of timers.data) {
+    if ('metadata' in timer) {
+      try {
+        timer.metadata = JSON.parse(timer.metadata);
+      }
+      catch (err) {
+        console.error(`Could not parse metadata, maybe it’s not JSON?`, { metadata: timer.metadata });
+      }
+    }
+  }
+
   clearTimers();
   addTimers(timers.data);
   loadingEmployeeTimers.value = false;
@@ -40,17 +86,26 @@ export async function createTimer ({
   projectId,
   projectServiceId,
   projectServiceHoursTypeId,
-  // startTime,
+  startTime,
   description,
 }) {
   try {
-    // if (startTime.length === 4) {
-    //   startTime = `0${startTime}`;
-    // }
+    // Get PlainDateTime obj of now.
+    // REVIEW: I think we don't support starting a timer on a date other than today right now.
+    const now = getCurrentDateTime();
 
-    // startTime += ':00'; // NOTE: Currently unused
+    // Get PlainDateTime obj of startTime.
+    const startDateTime = getTimerStartDateTime(startTime);
 
-    // TODO: Check if timer's start time is in the future
+    // Measure seconds between now and startDateTime.
+    const secondsSpent = startDateTime.until(now).total({
+      unit: 'second',
+    });
+
+    if (secondsSpent < 0) {
+      // NOTE: This should never happen, because Start timer button will be disabled if startTime is in the future.
+      throw new Error('Start time cannot be in the future.');
+    }
 
     await axios.post('timers/timer', {
       employee_id: currentEmployeeID.value,
@@ -58,7 +113,10 @@ export async function createTimer ({
       projectservice_id: projectServiceId,
       hourstype_id: projectServiceHoursTypeId,
       state: 'running',
-      seconds_spent: 0, // TODO: See if this works if we set it to e.g. 3600
+      seconds_spent: secondsSpent,
+      metadata: JSON.stringify({
+        started_at: startDateTime.toString(),
+      }),
       ...(description != null ? { description } : {}),
     });
 

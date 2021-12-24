@@ -10,14 +10,14 @@
 </template>
 
 <script setup>
-  import { computed } from 'vue';
+  import { ref, computed } from 'vue';
 
   import { RESULT_CODES } from '../composables/use-misc.js';
-  import { createTimer, creatingTimer } from '../composables/use-timer.js';
+  import { createTimer, creatingTimer, getTimerStartDateTime } from '../composables/use-timer.js';
   import { currentProject, loadingAvailableProjects } from '../composables/use-projects.js';
   import { currentProjectService, loadingAvailableProjectServices } from '../composables/use-project-services.js';
   import { currentProjectServiceHoursType, loadingAvailableProjectServiceHoursTypes } from '../composables/use-project-service-hours-types.js';
-  import { fixTime } from '../composables/use-date-helper.js';
+  import { compareDateTimes, fixTime, getCurrentDateTime } from '../composables/use-date-helper.js';
 
   const props = defineProps({
     startTime: {
@@ -33,6 +33,12 @@
   const emit = defineEmits({
     'timer-created': null,
   });
+
+  // TODO: Use `today`
+  const currentDateTime = ref(getCurrentDateTime());
+  setInterval(() => {
+    currentDateTime.value = getCurrentDateTime();
+  }, 1000);
 
   async function doCreateTimer () {
     creatingTimer.value = true;
@@ -61,15 +67,22 @@
 
   // REVIEW: Maybe it’s bad UX to disable this button when things are loading. It could cause clicks to be lost.
   const startTimerButtonEnabled = computed(() => {
-    return (
-      creatingTimer.value !== true
-      && currentProject.value !== null
-      && currentProjectService.value !== null
-      && currentProjectServiceHoursType.value !== null
-      && loadingAvailableProjects.value !== true
-      && loadingAvailableProjectServices.value !== true
-      && loadingAvailableProjectServiceHoursTypes.value !== true
-      && fixTime(props.startTime) !== null
-    );
+    try {
+      return (
+        creatingTimer.value !== true
+        && currentProject.value !== null
+        && currentProjectService.value !== null
+        && currentProjectServiceHoursType.value !== null
+        && loadingAvailableProjects.value !== true
+        && loadingAvailableProjectServices.value !== true
+        && loadingAvailableProjectServiceHoursTypes.value !== true
+        && fixTime(props.startTime) !== null
+        && compareDateTimes(getTimerStartDateTime(fixTime(props.startTime)), currentDateTime.value) !== 1
+      );
+    }
+    catch (err) {
+      console.error(`Could not determine if start timer button should be enabled.`, { err });
+      return false;
+    }
   });
 </script>

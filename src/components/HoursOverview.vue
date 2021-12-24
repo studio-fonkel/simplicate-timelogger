@@ -44,7 +44,7 @@
                 Geen start-/eindtijd ingesteld
               </div>
               <div v-else>
-                <div><strong>{{ toTimeString(getStartDateProperty(entry)) }}</strong></div>
+                <div><strong>{{ toTimeString(getEntryStartDateTime(entry).toString()) }}</strong></div>
                 <div v-if="entry._entry_type === 'hours' && 'end_date' in entry">
                   {{ toTimeString(entry.end_date) }}
                 </div>
@@ -150,6 +150,7 @@
   import {
     timers,
     creatingTimer,
+    calculateStartDateTimeFromSecondsSpent,
     fetchTimers,
     createTimer,
     deleteTimer,
@@ -159,8 +160,10 @@
   } from '../composables/use-timer.js';
 
   import {
+    toPlainDateTime,
     toTimeString,
     toDurationString,
+    compareDateTimes,
   } from '../composables/use-date-helper.js';
 
   import { currentEmployeeID } from '../composables/use-employees.js';
@@ -172,8 +175,9 @@
   });
 
   watchEffect(() => {
-    if (timers.value.filter(timer => timer.state === 'running').length > 0) {
-      console.warn('Multiple timers running!');
+    const currentlyRunningTimers = timers.value.filter(timer => timer.state === 'running');
+    if (currentlyRunningTimers.length > 1) {
+      console.warn('Multiple timers running!', currentlyRunningTimers);
     }
   });
 
@@ -188,9 +192,9 @@
         return -1;
       }
 
-      const dateA = new Date(getStartDateProperty(a));
-      const dateB = new Date(getStartDateProperty(b));
-      const res = Math.sign(dateA - dateB);
+      const dateA = getEntryStartDateTime(a);
+      const dateB = getEntryStartDateTime(b);
+      const res = compareDateTimes(dateA, dateB);
       return res;
     });
   });
@@ -219,12 +223,12 @@
   }
 
 
-  function getStartDateProperty (entry) {
+  function getEntryStartDateTime (entry) {
     switch (entry._entry_type) {
       case 'hours':
-        return entry.start_date;
+        return toPlainDateTime(entry.start_date);
       case 'timer':
-        return entry.created_at;
+        return calculateStartDateTimeFromSecondsSpent(entry.seconds_spent);
     }
   }
 

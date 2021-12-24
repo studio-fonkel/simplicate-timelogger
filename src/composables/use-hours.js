@@ -59,6 +59,7 @@ export async function createHours ({
     startTime += ':00';
     endTime += ':00';
 
+    // TODO: Use DateTime instead, because when end time is before start time, it means the end time is probably the day after!
     const startTimeObj = toPlainTime(startTime);
     const endTimeObj = toPlainTime(endTime);
 
@@ -66,12 +67,7 @@ export async function createHours ({
       throw new Error('End time cannot be before or equal to start time.');
     }
 
-    const duration = startTimeObj.until(endTimeObj, {
-      // largestUnit: 'minute',
-      // smallestUnit: 'minute',
-      // roundingIncrement: 3,
-      // roundingMode: 'halfExpand',
-    });
+    const duration = startTimeObj.until(endTimeObj);
 
     const hours = duration.total({
       unit: 'hour',

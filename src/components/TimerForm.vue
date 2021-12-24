@@ -87,7 +87,7 @@
               type="button"
               class="btn--small btn--grey"
               title="Nu"
-              @click="startTime = fixTime(getCurrentTime()) ?? ''"
+              @click="startTime = fixTime(getCurrentTimeString()) ?? ''"
             >
               <i class="far fa-clock"></i>
             </button>
@@ -108,7 +108,7 @@
               type="button"
               class="btn--small btn--grey"
               title="Nu"
-              @click="endTime = fixTime(getCurrentTime()) ?? ''"
+              @click="endTime = fixTime(getCurrentTimeString()) ?? ''"
             >
               <i class="far fa-clock"></i>
             </button>
@@ -165,7 +165,7 @@
   import {
     compareDates,
     fixTime,
-    getCurrentTime,
+    getCurrentTimeString,
     toPlainDate,
   } from '../composables/use-date-helper.js';
 
@@ -250,7 +250,7 @@
 
   watchEffect(() => {
     if (props.mode === 'add') {
-      startTime.value = fixTime(getCurrentTime());
+      startTime.value = fixTime(getCurrentTimeString());
     }
   });
 
