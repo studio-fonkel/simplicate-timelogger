@@ -89,7 +89,7 @@
     .hours-overview {
       flex: 1 0 60%;
       min-width: 650px;
-      max-width: 960px;
+      max-width: 980px;
     }
 
     .timer-form {
