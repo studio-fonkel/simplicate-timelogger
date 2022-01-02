@@ -160,9 +160,6 @@
 
   import {
     currentlySelectedDate,
-  } from '../composables/use-hours.js';
-
-  import {
     compareDates,
     fixTime,
     getCurrentTimeString,

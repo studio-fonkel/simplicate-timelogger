@@ -11,12 +11,12 @@
     <h3
       class="date-browser__date"
       :class="{
-        'date-browser__date--past': compareDates(currentlySelectedDate, today) === -1,
-        'date-browser__date--today': compareDates(currentlySelectedDate, today) === 0,
+        'date-browser__date--past': compareDates(currentlySelectedDate, currentDate) === -1,
+        'date-browser__date--today': compareDates(currentlySelectedDate, currentDate) === 0,
       }"
     >
       {{ toFullDate(currentlySelectedDate.toString()) }}
-      {{ currentlySelectedDate.equals(today) ? ' (vandaag)' : '' }}
+      {{ currentlySelectedDate.equals(currentDate) ? ' (vandaag)' : '' }}
     </h3>
 
     <button
@@ -34,11 +34,15 @@
 
   import {
     initiallyLoadedEmployeeHours,
-    currentlySelectedDate,
     fetchHours,
   } from '../composables/use-hours.js';
 
-  import { today, toFullDate, compareDates } from '../composables/use-date-helper.js';
+  import {
+    currentDate,
+    currentlySelectedDate,
+    toFullDate,
+    compareDates,
+  } from '../composables/use-date-helper.js';
 
   const dateBrowser = ref(null);
 

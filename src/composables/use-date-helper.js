@@ -1,22 +1,24 @@
-import { ref } from 'vue';
-import { Temporal } from '@js-temporal/polyfill';
+import { ref, computed } from 'vue';
+import { Temporal, Intl as TemporalIntl, toTemporalInstant } from '@js-temporal/polyfill';
 import { POLLING_INTERVALS, registerCallback } from './use-polling.js';
 import { capitalizeFirstLetter } from './use-string-helper.js';
 
-// TODO: Rename to `now` and use PlainDateTime instead.
-export const today = ref(null);
+Date.prototype.toTemporalInstant = toTemporalInstant;
+// Object.assign(Intl, TemporalIntl);
 
-function updateToday () {
-  // REVIEW: Shouldn't we use Temporal.Now.zonedDateTimeISO() somehow?
-  today.value = getCurrentDate();
+export const currentDateTime = ref(getCurrentDateTime());
+registerCallback(updateCurrentDateTime, POLLING_INTERVALS.short);
+
+export const currentDate = computed(() => currentDateTime.value.toPlainDate());
+export const currentlySelectedDate = ref(currentDateTime.value.toPlainDate());
+
+function updateCurrentDateTime () {
+  currentDateTime.value = getCurrentDateTime();
 }
 
-updateToday();
-registerCallback(updateToday, POLLING_INTERVALS.short);
-
-export function getCurrentDate () {
-  return Temporal.Now.plainDateISO();
-}
+// export function getCurrentDate () {
+//   return Temporal.Now.plainDateISO();
+// }
 
 export function getCurrentDateTime () {
   return Temporal.Now.plainDateTimeISO();

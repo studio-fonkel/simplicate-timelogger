@@ -2,16 +2,15 @@ import { ref, shallowRef } from 'vue';
 import { axios } from './use-axios.js';
 
 import {
-  getCurrentDate,
-  getCurrentDateTime,
+  currentDateTime,
+  currentDate,
+  // currentlySelectedDate,
   secondsToDuration,
   toPlainTime,
   // compareTimes,
-  // today,
 } from './use-date-helper.js';
 
 import { currentEmployeeID } from './use-employees.js';
-// import { currentlySelectedDate } from './use-hours.js';
 import { RESULT_CODES } from './use-misc.js';
 import { POLLING_INTERVALS, registerCallback, unregisterCallback } from './use-polling.js';
 
@@ -29,25 +28,17 @@ function addTimers (projects) {
 }
 
 export function getTimerStartDateTime (startTime) {
-  // TODO: Use `today` instead
-
-  // Get PlainDate obj of today.
-  const currentDate = getCurrentDate();
-
   // Convert startTime to PlainTime.
   startTime = toPlainTime(startTime);
 
   // Create PlainDateTime from currentDate and startTime combined.
-  const startDateTime = currentDate.toPlainDateTime(startTime);
+  const startDateTime = currentDate.value.toPlainDateTime(startTime);
 
   return startDateTime;
 }
 
 export function calculateStartDateTimeFromSecondsSpent (secondsSpent) {
-  // Get PlainDateTime obj of now.
-  const now = getCurrentDateTime();
-
-  const startDateTime = now.subtract(secondsToDuration(secondsSpent));
+  const startDateTime = currentDateTime.value.subtract(secondsToDuration(secondsSpent));
 
   return startDateTime;
 }

@@ -1,6 +1,6 @@
 import { ref, shallowRef, watch } from 'vue';
 import { axios } from './use-axios.js';
-import { compareTimes, today, toPlainTime } from './use-date-helper.js';
+import { compareTimes, currentlySelectedDate, toPlainTime } from './use-date-helper.js';
 import { currentEmployeeID } from './use-employees.js';
 import { RESULT_CODES } from './use-misc.js';
 import { POLLING_INTERVALS, registerCallback, unregisterCallback } from './use-polling.js';
@@ -9,7 +9,6 @@ export const hours = ref([]);
 export const loadingEmployeeHours = shallowRef(false);
 export const initiallyLoadedEmployeeHours = shallowRef(false);
 export const currentProject = shallowRef(null);
-export const currentlySelectedDate = ref(today.value); // TODO: Move elsewhere
 export const creatingHours = shallowRef(false);
 
 watch(loadingEmployeeHours, (loading) => {
@@ -28,6 +27,7 @@ function addHours (projects) {
 
 export async function fetchHours () {
   loadingEmployeeHours.value = true;
+
   const { data: hours } = await axios.get('hours/hours', {
     params: {
       'q[start_date][ge]': `${currentlySelectedDate.value.toString()} 00:00:00`,
@@ -35,6 +35,7 @@ export async function fetchHours () {
       'q[employee.id]': currentEmployeeID.value,
     },
   });
+
   clearHours();
   addHours(hours.data);
   loadingEmployeeHours.value = false;
