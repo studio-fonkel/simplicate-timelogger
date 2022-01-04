@@ -317,7 +317,7 @@
           width: 16ch;
         }
         &.hours-overview__col--actions {
-          width: 22ch;
+          width: 23ch;
         }
       }
 
