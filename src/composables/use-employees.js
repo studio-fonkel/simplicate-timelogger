@@ -2,6 +2,8 @@ import { ref, shallowRef, computed, watch } from 'vue';
 import { axios } from './use-axios.js';
 
 const storageKey = 'simplicate_timelogger:currentEmployeeID';
+
+// TODO: Shouldn't we set storageEmployeeID as well when updating the value in localStorage?
 const storedEmployeeID = localStorage.getItem(storageKey);
 
 export const employees = ref([]);
@@ -20,6 +22,10 @@ watch(currentEmployeeID, (newEmployeeID) => {
 
     showEmployeePicker.value = false;
   }
+  else {
+    localStorage.removeItem(storageKey);
+    showEmployeePicker.value = true;
+  }
 });
 
 export const employeePickerVisible = computed(() => {
@@ -28,12 +34,27 @@ export const employeePickerVisible = computed(() => {
   return noCurrentEmployee || doShowEmployeePicker;
 });
 
+// Sets currentEmployee based on which and how many accessible employees
+// are found in Simplicate.
 watch(employees.value, (newEmployees) => {
-  if (storedEmployeeID != null && Array.isArray(newEmployees)) {
-    const employee = newEmployees.find((employee) => employee.id === storedEmployeeID);
-    if (employee !== undefined) {
-      currentEmployee.value = employee;
+  if (storedEmployeeID != null) {
+    if (Array.isArray(newEmployees)) {
+      const employee = newEmployees.find(employee => employee.id === storedEmployeeID);
+
+      // If stored employee ID exists in employee list, set current employee
+      // to employee with the stored employee ID.
+      if (employee !== undefined) {
+        currentEmployee.value = employee;
+        return;
+      }
     }
+  }
+
+  // Auto-select first employee if there’s only one available.
+  if (Array.isArray(newEmployees) && newEmployees.length === 1) {
+    // eslint-disable-next-line prefer-destructuring
+    currentEmployee.value = newEmployees[0];
+    return;
   }
 });
 
