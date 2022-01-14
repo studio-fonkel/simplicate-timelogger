@@ -52,8 +52,8 @@
             </td>
 
             <td class="hours-overview__col--project">
-              <div><strong>{{ entry.project.name }}</strong></div>
-              <div>{{ entry.projectservice.name }} ({{ getHoursTypeProperty(entry).label }})</div>
+              <div><strong>{{ entry.project.organization.name }} – {{ entry.project.name }}</strong></div>
+              <div>{{ entry.projectservice.name }} (<i class="fas fa-stopwatch"></i> {{ getHoursTypeProperty(entry).label }})</div>
               <div
                 v-if="(entry._entry_type === 'hours' && entry.note)
                   || (entry._entry_type === 'timer' && entry.description)"
