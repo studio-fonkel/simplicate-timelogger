@@ -3,6 +3,7 @@
 
   <template v-if="employeePickerVisible === false">
     <HoursOverview
+      :currentlyEditedHoursEntry="currentlyEditedHoursEntry"
       @edit-hours-entry="editHoursEntry"
     />
 

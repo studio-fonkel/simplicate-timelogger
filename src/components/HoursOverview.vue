@@ -98,7 +98,8 @@
 
               <button
                 type="button"
-                class="btn--small btn--grey"
+                class="btn--small"
+                :class="currentlyEditedHoursEntry?.id === entry.id ? 'btn--blue' : 'btn--grey'"
                 title="Bewerk log"
                 @click="$emit('edit-hours-entry', entry)"
               >
@@ -169,6 +170,14 @@
   import { currentEmployeeID } from '../composables/use-employees.js';
 
   import DateBrowser from './DateBrowser.vue';
+
+  defineProps({
+    // TODO: We're only temporarily using a prop for this. Move somewhere else later.
+    currentlyEditedHoursEntry: {
+      type: [Object, null],
+      required: true,
+    },
+  });
 
   defineEmits({
     'edit-hours-entry': hoursEntry => hoursEntry != null,
