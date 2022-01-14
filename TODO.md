@@ -1,4 +1,15 @@
 # TODO:
+- Stop timer
+- Edit timer
+- Edit hours
+- Timer in het verleden kunnen starten
+- Gebruik Date.toTemporalInstant() om ze te converten naar Temporals!
+- Probeer zoveel mogelijk Date te vermijden en Temporal te gebruiken
+- Dubbelcheck bij alle plekken waar we getCurrentDate/DateTime/Time gebruiken of we niet `today` zouden moeten gebruiken
+- Rename `today` naar `now` ofzo.
+- Duration van timer meerekenen in aantal uur gewerkt op een dag.
+
+# TODO:
 ### Bij urenlogjes niet "(x dagen geleden)" weergeven, alleen bij timers en alleen bij starttijden
 
 ### Voor genereren van strings "(x dagen geleden)": gebruik de huidige date in plaats van de huidige datetime
@@ -42,3 +53,13 @@ Controleer hoe dat nu wordt weergegeven en fix zo nodig.
 
 ### Urenoverzicht gaten snel kunnen opvullen
 - Geef plusje o.i.d. weer waar een gat zit tussen bepaalde logs, waardoor je snel een log kunt maken die tussen twee andere logs zit
+
+--------------------------
+
+<details>
+  <summary><strong>Troep</strong></summary>
+
+internal/timeline/hours?startDate=2021-12-06&endDate=2021-12-19
+
+Request URL: https://demofonkel.simplicate.nl/api/v2/hours/hours?q[start_date][ge]=2021-12-06%2000:00:00&q[start_date][le]=2021-12-12%2023:59:59&q[employee.id]=employee:afa58dd4b2c525fe6d44e34a3f0f8c3d&select=id,start_date,end_date,project.,organization.,person.,projectservice.,type.,hours,note,is_time_defined,is_recurring,recurrence,recurrence.id,recurrence.rrule,locked,corrections,leave_id,leave_status.,absence_id,assignment_id,billable,is_productive
+</details>
