@@ -165,6 +165,7 @@
     toTimeString,
     toDurationString,
     compareDateTimes,
+    getCurrentTime,
   } from '../composables/use-date-helper.js';
 
   import { currentEmployeeID } from '../composables/use-employees.js';
@@ -223,10 +224,11 @@
       projectId: hoursEntry.project.id,
       projectServiceId: hoursEntry.projectservice.id,
       projectServiceHoursTypeId: hoursEntry.type.id,
+      startTime: getCurrentTime(),
       description: hoursEntry.note,
     });
 
-    console.log(res); // TODO: Finish
+    console.log(res); // TODO: Finish!
 
     creatingTimer.value = false;
   }

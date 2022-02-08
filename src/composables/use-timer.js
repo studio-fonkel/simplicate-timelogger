@@ -8,6 +8,7 @@ import {
   secondsToDuration,
   toPlainTime,
   getCurrentDateTime,
+  isPlainTime,
   // compareTimes,
 } from './use-date-helper.js';
 
@@ -30,8 +31,10 @@ function addTimers (projects) {
 }
 
 export function getTimerStartDateTime (startTime) {
-  // Convert startTime to PlainTime.
-  startTime = toPlainTime(startTime);
+  // Convert startTime to PlainTime if needed.
+  if (isPlainTime(startTime) === false) {
+    startTime = toPlainTime(startTime);
+  }
 
   // Create PlainDateTime from currentDate and startTime combined.
   const startDateTime = currentDate.value.toPlainDateTime(startTime);
