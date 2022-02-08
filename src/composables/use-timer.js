@@ -12,6 +12,7 @@ import {
 } from './use-date-helper.js';
 
 import { currentEmployeeID } from './use-employees.js';
+import { fetchHours, startPollingFetchHours, stopPollingFetchHours } from './use-hours.js';
 import { RESULT_CODES } from './use-misc.js';
 import { POLLING_INTERVALS, registerCallback, unregisterCallback } from './use-polling.js';
 
@@ -122,18 +123,27 @@ export async function createTimer ({
 }
 
 export async function stopTimer (timerID) {
+  stopPollingFetchHours();
+  stopPollingFetchTimers();
+
   /**
+   * When stopping a timer, a new hours entry is created for us automatically.
+   * The timer is preserved though, so we need to clean it up immediately after.
+   *
    * TODO:
-   * 1. Get latest timer data
-   * 2. Determine start time by subtracting seconds_spent from current time
-   * 3. Execute createHours(), but with care!
-   * 4. Delete timer
-   * 5. fetchTimers() and fetchHours().
+   * The new hours entries somehow miss the 'projectservice' property, until you
+   * manually edit the hours entry in the Simplicate UI. Maybe if we resave the
+   * hours entry, it *will* get the 'projectservice' property?
    */
-  const timerData = await axios.get(`timers/timer/${timerID}`);
-  console.log({ timerData });
-  // await axios.delete(`timers/timer/${timerID}`);
-  // fetchTimers();
+  await axios.put(`timers/timer/${timerID}`, {
+    state: 'finished',
+  });
+
+  await deleteTimer(timerID);
+  await fetchHours();
+
+  startPollingFetchHours();
+  startPollingFetchTimers();
 }
 
 export async function deleteTimer (timerID) {

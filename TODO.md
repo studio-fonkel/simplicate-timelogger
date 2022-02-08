@@ -1,13 +1,14 @@
 # TODO:
-- Stop timer
-- Edit timer
-- Edit hours
-- Timer in het verleden kunnen starten
-- Gebruik Date.toTemporalInstant() om ze te converten naar Temporals!
-- Probeer zoveel mogelijk Date te vermijden en Temporal te gebruiken
-- Dubbelcheck bij alle plekken waar we getCurrentDate/DateTime/Time gebruiken of we niet `today` zouden moeten gebruiken
-- Rename `today` naar `now` ofzo.
-- Duration van timer meerekenen in aantal uur gewerkt op een dag.
+- [x] Stop en delete timer
+- [ ] Edit timer
+- [ ] Edit hours
+- [ ] Timer in het verleden kunnen starten
+- [ ] Bij starten timer in het verleden, vraag of deze op vandaag had moeten beginnen d.m.v. confirm.
+- [ ] Gebruik Date.toTemporalInstant() om ze te converten naar Temporals!
+- [ ] Probeer zoveel mogelijk Date te vermijden en Temporal te gebruiken
+- [ ] Dubbelcheck bij alle plekken waar we getCurrentDate/DateTime/Time gebruiken of we niet `today` zouden moeten gebruiken
+- [ ] Rename `today` naar `now` o.i.d.
+- [ ] Duration van timer meerekenen in aantal uur gewerkt op een dag (?)
 
 # TODO:
 ### Bij urenlogjes niet "(x dagen geleden)" weergeven, alleen bij timers en alleen bij starttijden
@@ -26,7 +27,7 @@ Start-/eindtijd	            Project	          Aantal uren
 Als je als starttijd 12:00 kiest wordt deze weergegeven als 11:59, omdat voor het berekenen van de seconds_spent net 0-59 seconden teveel worden meegenomen, omdat de huidige tijd nooit precies 0 seconden bevat (bijv het is nu 14:25:22 en start tijd is 14:00, dan moet seconds_spent berekend worden met 14:25:00)
 
 ### Eindtijden van timers fixen
-Eindtijd moet vóór een starttijd kunnen zijn
+Eindtijd moet vóór een starttijd kunnen zijn als een timer (over meerdere dagen loopt)
 
 ### Weergave van urenlogs die over meerdere dagen spannen fixen
 Controleer hoe dat nu wordt weergegeven en fix zo nodig.
