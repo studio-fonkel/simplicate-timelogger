@@ -198,6 +198,10 @@
     getProjectServiceHoursTypes,
   } from '../composables/use-project-service-hours-types.js';
 
+  import {
+    latestHours,
+  } from '../composables/use-hours.js';
+
   const props = defineProps({
     mode: {
       type: String,
@@ -306,6 +310,41 @@
       setCurrentProjectServiceHoursType(deselectedOption);
     });
   };
+
+  // Watch for changes in the available projects and pre-fill the last used project, project service and hours type.
+  watch(availableProjects, () => {
+    if (currentProject.value === null && latestHours.value.length > 0) {
+      // eslint-disable-next-line prefer-destructuring
+      const latestHoursEntry = latestHours.value[0];
+      const lastUsedProject = availableProjects.value.find(project => project.id === latestHoursEntry.project.id);
+
+      if (lastUsedProject !== undefined) {
+        setCurrentProject(lastUsedProject);
+
+        // Code in the watchers below will fetch the project services.
+        // We watch the project services here and try to find the projectservice that is used in the latest hours entry.
+        const unwatch = watch(availableProjectServices, (newVal) => {
+          unwatch(); // run once
+
+          const lastUsedProjectService = newVal.find(projectService => projectService.id === latestHoursEntry.projectservice.id);
+
+          if (lastUsedProjectService !== undefined) {
+            setCurrentProjectService(lastUsedProjectService);
+
+            const unwatch = watch(availableProjectServiceHoursTypes, (newVal) => {
+              unwatch(); // run once
+
+              const lastUsedProjectServiceHoursType = newVal.find(projectServiceHoursType => projectServiceHoursType.id === latestHoursEntry.type.id);
+
+              if (lastUsedProjectServiceHoursType !== undefined) {
+                setCurrentProjectServiceHoursType(lastUsedProjectServiceHoursType);
+              }
+            }, { deep: true });
+          }
+        }, { deep: true });
+      }
+    }
+  }, { deep: true });
 
   // Watch current project so we can update the available project services.
   watch(currentProject, (newCurrentProject, oldCurrentProject) => {
