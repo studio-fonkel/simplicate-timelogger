@@ -245,11 +245,12 @@
     description.value = '';
   };
 
-  watchEffect(() => {
-    if (props.mode === 'add') {
-      startTime.value = fixTime(getCurrentTimeString());
-    }
-  });
+  // Pre-fills the start time field with the current time. Disabled for now, seemed impractical.
+  // watchEffect(() => {
+  //   if (props.mode === 'add') {
+  //     startTime.value = fixTime(getCurrentTimeString());
+  //   }
+  // });
 
   const filteredProjects = computed(() => {
     return availableProjects.value.filter(project => {
