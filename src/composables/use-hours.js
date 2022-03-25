@@ -1,4 +1,4 @@
-import { ref, shallowRef, watch } from 'vue';
+import { ref, shallowRef, computed, watch } from 'vue';
 import { axios } from './use-axios.js';
 import { compareTimes, currentlySelectedDate, toPlainTime } from './use-date-helper.js';
 import { currentEmployeeID } from './use-employees.js';
@@ -6,8 +6,10 @@ import { RESULT_CODES } from './use-misc.js';
 import { POLLING_INTERVALS, registerCallback, unregisterCallback } from './use-polling.js';
 
 export const hours = ref([]);
-/** Latest x hours, regardless of date. */
+/** Latest x hours entries, regardless of the current date. */
 export const latestHours = ref([]);
+/** Latest hours entry, regardless of the current date. */
+export const latestHoursEntry = computed(() => latestHours.value[0] ?? null);
 export const loadingEmployeeHours = shallowRef(false);
 export const initiallyLoadedEmployeeHours = shallowRef(false);
 export const currentProject = shallowRef(null);

@@ -152,7 +152,7 @@
 </template>
 
 <script setup>
-  import { ref, computed, watch, watchEffect, onMounted, onBeforeUnmount, nextTick } from 'vue';
+  import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
   import VueMultiselect from 'vue-multiselect';
   import CreateTimerButton from './CreateTimerButton.vue';
   import StartTimerButton from './StartTimerButton.vue';
@@ -200,6 +200,7 @@
 
   import {
     latestHours,
+    latestHoursEntry,
   } from '../composables/use-hours.js';
 
   const props = defineProps({
@@ -311,37 +312,15 @@
     });
   };
 
-  // Watch for changes in the available projects and pre-fill the last used project, project service and hours type.
+  // Watch for changes in the available projects and pre-fill the last used project.
   watch(availableProjects, () => {
-    if (currentProject.value === null && latestHours.value.length > 0) {
-      // eslint-disable-next-line prefer-destructuring
-      const latestHoursEntry = latestHours.value[0];
-      const lastUsedProject = availableProjects.value.find(project => project.id === latestHoursEntry.project.id);
+    if (currentProject.value === null && latestHoursEntry.value != null) {
+      const lastUsedProject = availableProjects.value
+        .find(project => project.id === latestHoursEntry.value.project.id);
 
+      // Try to select the last used project.
       if (lastUsedProject !== undefined) {
         setCurrentProject(lastUsedProject);
-
-        // Code in the watchers below will fetch the project services.
-        // We watch the project services here and try to find the projectservice that is used in the latest hours entry.
-        const unwatch = watch(availableProjectServices, (newVal) => {
-          unwatch(); // run once
-
-          const lastUsedProjectService = newVal.find(projectService => projectService.id === latestHoursEntry.projectservice.id);
-
-          if (lastUsedProjectService !== undefined) {
-            setCurrentProjectService(lastUsedProjectService);
-
-            const unwatch = watch(availableProjectServiceHoursTypes, (newVal) => {
-              unwatch(); // run once
-
-              const lastUsedProjectServiceHoursType = newVal.find(projectServiceHoursType => projectServiceHoursType.id === latestHoursEntry.type.id);
-
-              if (lastUsedProjectServiceHoursType !== undefined) {
-                setCurrentProjectServiceHoursType(lastUsedProjectServiceHoursType);
-              }
-            }, { deep: true });
-          }
-        }, { deep: true });
       }
     }
   }, { deep: true });
@@ -383,9 +362,27 @@
           }
         }
 
-        // If new available project services has only one entry, select it.
-        if (hasSelectedNewOption === false && availableProjectServices.value.length === 1) {
-          selectFirstProjectService();
+        if (hasSelectedNewOption === false) {
+          // If new available project services has only one entry, select it.
+          if (availableProjectServices.value.length === 1) {
+            selectFirstProjectService();
+          }
+          // Otherwise, try to select the last used project services.
+          // TODO: Consider moving this to before checking for a project service with the same name/id.
+          else {
+            const latestHoursEntryWithProject = latestHours.value.find((hoursEntry) => {
+              return hoursEntry.project.id === newCurrentProject.id;
+            });
+
+            if (latestHoursEntryWithProject !== undefined) {
+              const usedProjectService = availableProjectServices.value
+                .find(projectService => projectService.id === latestHoursEntryWithProject.projectservice.id);
+
+              if (usedProjectService !== undefined) {
+                setCurrentProjectService(usedProjectService);
+              }
+            }
+          }
         }
       });
     }
@@ -432,9 +429,30 @@
           }
         }
 
-        // If new available project service hours types has only one entry, select it.
-        if (hasSelectedNewOption === false && availableProjectServiceHoursTypes.value.length === 1) {
-          selectFirstProjectServiceHoursType();
+        if (hasSelectedNewOption === false) {
+          // If new available project service hours types has only one entry, select it.
+          if (availableProjectServiceHoursTypes.value.length === 1) {
+            selectFirstProjectServiceHoursType();
+          }
+          // Otherwise, try to select the last used project services hours type.
+          // TODO: Consider moving this to before checking for a project service hours type with the same label/id.
+          else {
+            const latestHoursEntryWithProjectAndProjectService = latestHours.value.find((hoursEntry) => {
+              return (
+                hoursEntry.project.id === currentProject.value.id
+                && hoursEntry.projectservice.id === newCurrentProjectService.id
+              );
+            });
+
+            if (latestHoursEntryWithProjectAndProjectService !== undefined) {
+              const usedProjectServiceHoursType = availableProjectServiceHoursTypes.value
+                .find(projectServiceHoursType => projectServiceHoursType.id === latestHoursEntryWithProjectAndProjectService.type.id);
+
+              if (usedProjectServiceHoursType !== undefined) {
+                setCurrentProjectServiceHoursType(usedProjectServiceHoursType);
+              }
+            }
+          }
         }
       });
     }
