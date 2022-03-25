@@ -1,8 +1,9 @@
 import axiosPlugin from 'axios';
+import { localStoragePrefix } from '../config.js';
 
-let tenantURL = import.meta.env.VITE_SIMPLICATE_TENANT_BASE_URL;
+let tenantURL = import.meta.env.VITE_SIMPLICATE_TENANT_BASE_URL ?? localStorage.getItem(`${localStoragePrefix}tenantURL`);
 if (!tenantURL) {
-  throw new Error('VITE_SIMPLICATE_TENANT_BASE_URL is not defined in .env.local');
+  throw new Error('VITE_SIMPLICATE_TENANT_BASE_URL is not defined in .env.local and no alternatives found in localStorage');
 }
 if (!tenantURL.endsWith('/')) {
   tenantURL += '/';
@@ -10,8 +11,11 @@ if (!tenantURL.endsWith('/')) {
 
 const baseURL = `${tenantURL}api/v2/`;
 
-if (import.meta.env.VITE_SIMPLICATE_API_KEY === undefined || import.meta.env.VITE_SIMPLICATE_API_SECRET === undefined) {
-  throw new Error('VITE_SIMPLICATE_API_KEY and/or VITE_SIMPLICATE_API_SECRET is not defined in .env.local');
+const apiKey = import.meta.env.VITE_SIMPLICATE_API_KEY ?? localStorage.getItem(`${localStoragePrefix}apiKey`);
+const apiSecret = import.meta.env.VITE_SIMPLICATE_API_SECRET ?? localStorage.getItem(`${localStoragePrefix}apiSecret`);
+
+if (!apiKey || !apiSecret) {
+  throw new Error('VITE_SIMPLICATE_API_KEY and/or VITE_SIMPLICATE_API_SECRET is not defined in .env.local and no alternatives found in localStorage');
 }
 
 export const axios = axiosPlugin.create({

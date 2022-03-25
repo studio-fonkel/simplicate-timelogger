@@ -1,7 +1,8 @@
 import { ref, shallowRef, computed, watch } from 'vue';
+import { localStoragePrefix } from '../config.js';
 import { axios } from './use-axios.js';
 
-const storageKey = 'simplicate_timelogger:currentEmployeeID';
+const storageKey = `${localStoragePrefix}currentEmployeeID`;
 
 // TODO: Shouldn't we set storageEmployeeID as well when updating the value in localStorage?
 const storedEmployeeID = localStorage.getItem(storageKey);
