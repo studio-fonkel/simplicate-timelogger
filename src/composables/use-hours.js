@@ -6,6 +6,8 @@ import { RESULT_CODES } from './use-misc.js';
 import { POLLING_INTERVALS, registerCallback, unregisterCallback } from './use-polling.js';
 
 export const hours = ref([]);
+/** Latest x hours, regardless of date. */
+export const latestHours = ref([]);
 export const loadingEmployeeHours = shallowRef(false);
 export const initiallyLoadedEmployeeHours = shallowRef(false);
 export const currentProject = shallowRef(null);
@@ -42,6 +44,21 @@ export async function fetchHours () {
   clearHours();
   addHours(hours.data);
   loadingEmployeeHours.value = false;
+}
+
+/**
+ * Fetches the last X hours of the current employee.
+ */
+export async function fetchLatestHours () {
+  const { data: hours } = await axios.get('hours/hours', {
+    params: {
+      'sort': '-start_date',
+      'limit': 30,
+      'q[employee.id]': currentEmployeeID.value,
+    },
+  });
+
+  latestHours.value = hours.data;
 }
 
 export async function createHours ({

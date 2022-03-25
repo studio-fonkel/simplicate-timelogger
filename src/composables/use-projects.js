@@ -1,11 +1,12 @@
 import { ref, shallowRef } from 'vue';
 import { axios } from './use-axios.js';
-import { currentEmployeeID } from './use-employees.js';
+import { latestHours, fetchLatestHours } from './use-hours.js';
 import { POLLING_INTERVALS, registerCallback, unregisterCallback } from './use-polling.js';
 
 export const availableProjects = ref([]);
 export const loadingAvailableProjects = shallowRef(false);
 export const currentProject = shallowRef(null);
+export const latestLogs = ref([]);
 
 export function setCurrentProject (value) {
   currentProject.value = value;
@@ -22,46 +23,36 @@ function addProjects (projects) {
 export async function fetchProjects () {
   loadingAvailableProjects.value = true;
 
-  let projects, latestLogs;
+  let projects;
 
   await Promise.all([
-    await axios.get('projects/project', {
-      params: {
-        // 'sort': '-modified',
-        // 'q[employee.id]': currentEmployeeID.value,
-      },
-    }).then(({ data }) => {
+    axios.get('projects/project').then(({ data }) => {
       projects = data;
     }),
 
-    await axios.get('hours/hours', {
-      params: {
-        'sort': '-start_date',
-        'limit': 30,
-        'q[employee.id]': currentEmployeeID.value,
-      },
-    }).then(({ data }) => {
-      latestLogs = data;
-    }),
+    fetchLatestHours(),
   ]);
 
-  const indexOfProjectInLatestLogs = (project) => {
-    return latestLogs.data.findIndex(log => log.project.id === project.id);
+  const indexOfProjectInLatestHours = (project) => {
+    return latestHours.value.findIndex(log => log.project.id === project.id);
   };
 
   // Copy for earlier debugging purposes.
   const projectsData = [...projects.data]
     .sort((a, b) => {
-      const indexOfAInLatestLogs = indexOfProjectInLatestLogs(a);
-      const indexOfBInLatestLogs = indexOfProjectInLatestLogs(b);
+      const indexOfAInLatestHours = indexOfProjectInLatestHours(a);
+      const indexOfBInLatestHours = indexOfProjectInLatestHours(b);
 
-      if (indexOfAInLatestLogs > -1 && indexOfBInLatestLogs === -1) {
+      // If A found in latest projects, but B not, A comes before B.
+      if (indexOfAInLatestHours > -1 && indexOfBInLatestHours === -1) {
         return -1;
       }
-      else if (indexOfAInLatestLogs === -1 && indexOfBInLatestLogs > -1) {
+      // If B found in latest projects, but A not, B comes before A.
+      else if (indexOfAInLatestHours === -1 && indexOfBInLatestHours > -1) {
         return 1;
       }
-      else if (indexOfAInLatestLogs === -1 && indexOfBInLatestLogs === -1) {
+      // If neither A nor B found in latest projects, sort by modified date.
+      else if (indexOfAInLatestHours === -1 && indexOfBInLatestHours === -1) {
         const modifiedA = a.modified,
               modifiedB = b.modified;
 
@@ -73,11 +64,12 @@ export async function fetchProjects () {
         }
         return 0;
       }
+      // If both A and B found in latest projects, sort by index in latest projects.
       else {
-        if (indexOfAInLatestLogs > indexOfBInLatestLogs) {
+        if (indexOfAInLatestHours > indexOfBInLatestHours) {
           return 1;
         }
-        else if (indexOfAInLatestLogs < indexOfBInLatestLogs) {
+        else if (indexOfAInLatestHours < indexOfBInLatestHours) {
           return -1;
         }
         return 0;
