@@ -68,7 +68,8 @@
   // REVIEW: Maybe it’s bad UX to disable this button when things are loading. It could cause clicks to be lost.
   const startTimerButtonEnabled = computed(() => {
     try {
-      return (
+      // These are the minimum requirements for the start timer button to be enabled.
+      const basicConditions = (
         creatingTimer.value !== true
         && currentProject.value !== null
         && currentProjectService.value !== null
@@ -76,9 +77,28 @@
         && loadingAvailableProjects.value !== true
         && loadingAvailableProjectServices.value !== true
         && loadingAvailableProjectServiceHoursTypes.value !== true
-        && fixTime(props.startTime) !== null
-        && compareDateTimes(getTimerStartDateTime(fixTime(props.startTime)), currentDateTime.value) !== 1
       );
+
+      if (basicConditions === false) {
+        return false;
+      }
+
+      // If start time is filled in, start time cannot be later than now.
+      if (fixTime(props.startTime) !== null) {
+        const now = currentDateTime.value;
+        const nowWithoutSeconds = now.round({ smallestUnit: 'minute', roundingMode: 'floor' });
+
+        // Get PlainDateTime obj of startTime.
+        const startDateTime = getTimerStartDateTime(fixTime(props.startTime) ?? now);
+        const startDateTimeWithoutSeconds = startDateTime.round({ smallestUnit: 'minute', roundingMode: 'floor' });
+
+        if (compareDateTimes(startDateTimeWithoutSeconds, nowWithoutSeconds) === 1) {
+          return false;
+        }
+      }
+
+      // In all other cases, the button is enabled.
+      return true;
     }
     catch (err) {
       console.error(`Could not determine if start timer button should be enabled.`, { err });

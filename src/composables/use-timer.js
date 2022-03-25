@@ -87,14 +87,16 @@ export async function createTimer ({
 }) {
   try {
     // Get PlainDateTime obj of now.
-    // REVIEW: I think we don't support starting a timer on a date other than today right now.
+    // NOTE: We don't support starting a timer on a date other than today right now.
     const now = getCurrentDateTime();
+    const nowWithoutSeconds = now.round({ smallestUnit: 'minute', roundingMode: 'floor' });
 
     // Get PlainDateTime obj of startTime.
-    const startDateTime = getTimerStartDateTime(startTime);
+    const startDateTime = getTimerStartDateTime(startTime ?? now);
+    const startDateTimeWithoutSeconds = startDateTime.round({ smallestUnit: 'minute', roundingMode: 'floor' });
 
-    // Measure seconds between now and startDateTime.
-    const secondsSpent = startDateTime.until(now).total({
+    // Measure seconds between now (excluding passed seconds) and startDateTime (excluding passed seconds).
+    const secondsSpent = startDateTimeWithoutSeconds.until(nowWithoutSeconds).total({
       unit: 'second',
     });
 
