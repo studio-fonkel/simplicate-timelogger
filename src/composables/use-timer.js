@@ -1,3 +1,4 @@
+import { Temporal } from '@js-temporal/polyfill';
 import { ref, shallowRef } from 'vue';
 import { axios } from './use-axios.js';
 
@@ -13,7 +14,7 @@ import {
 } from './use-date-helper.js';
 
 import { currentEmployeeID } from './use-employees.js';
-import { fetchHours, startPollingFetchHours, stopPollingFetchHours } from './use-hours.js';
+import { createHours, fetchHours, startPollingFetchHours, stopPollingFetchHours } from './use-hours.js';
 import { RESULT_CODES } from './use-misc.js';
 import { POLLING_INTERVALS, registerCallback, unregisterCallback } from './use-polling.js';
 
@@ -63,19 +64,38 @@ export async function fetchTimers () {
   });
 
   for (const timer of timers.data) {
-    if ('metadata' in timer) {
-      try {
-        timer.metadata = JSON.parse(timer.metadata);
-      }
-      catch (err) {
-        console.error(`Could not parse metadata, maybe it’s not JSON?`, { metadata: timer.metadata });
-      }
-    }
+    normalizeTimerMetadata(timer);
   }
 
   clearTimers();
   addTimers(timers.data);
   loadingEmployeeTimers.value = false;
+}
+
+function normalizeTimerMetadata (timer) {
+  if ('metadata' in timer) {
+    try {
+      timer.metadata = JSON.parse(timer.metadata);
+    }
+    catch (err) {
+      console.error(`Could not parse metadata, maybe it’s not JSON?`, { metadata: timer.metadata });
+    }
+  }
+}
+
+function hasStartDatetimeInMetadata (timer) {
+  return (
+    ('metadata' in timer) &&
+    ('started_at' in timer.metadata)
+  );
+}
+
+export async function getTimer (timerID) {
+  const { data: { data: timer } } = await axios.get(`timers/timer/${timerID}`);
+
+  normalizeTimerMetadata(timer);
+
+  return timer;
 }
 
 export async function createTimer ({
@@ -131,20 +151,47 @@ export async function stopTimer (timerID) {
   stopPollingFetchHours();
   stopPollingFetchTimers();
 
-  /**
-   * When stopping a timer, a new hours entry is created for us automatically.
-   * The timer is preserved though, so we need to clean it up immediately after.
-   *
-   * TODO:
-   * The new hours entries somehow miss the 'projectservice' property, until you
-   * manually edit the hours entry in the Simplicate UI. Maybe if we resave the
-   * hours entry, it *will* get the 'projectservice' property?
-   */
-  await axios.put(`timers/timer/${timerID}`, {
-    state: 'finished',
-  });
+  const timer = await getTimer(timerID);
 
-  await deleteTimer(timerID);
+  if (hasStartDatetimeInMetadata(timer) === true) {
+    await axios.put(`timers/timer/${timerID}`, {
+      state: 'paused',
+    });
+
+    const now = getCurrentDateTime();
+    const nowWithoutSeconds = now.round({ smallestUnit: 'minute', roundingMode: 'floor' });
+
+    const startTime = Temporal.PlainDateTime.from(timer.metadata.started_at).toPlainTime().toString().substring(0, 5);
+    const endTime = nowWithoutSeconds.toPlainTime().toString().substring(0, 5);
+
+    const res = await createHours({
+      projectId: timer.project.id,
+      projectServiceId: timer.projectservice.id,
+      projectServiceHoursTypeId: timer.hourstype.id,
+      startTime,
+      endTime,
+      description: timer.description,
+    });
+
+    if (res === RESULT_CODES.success) {
+      await deleteTimer(timerID);
+    }
+    else {
+      alert('Er gaat iets mis. Je kunt de error in de browser console terugvinden.');
+    }
+  }
+  else {
+    /**
+     * When stopping a timer, a new hours entry is created for us automatically.
+     * The timer is preserved though, so we need to clean it up immediately after.
+     */
+    await axios.put(`timers/timer/${timerID}`, {
+      state: 'finished',
+    });
+
+    await deleteTimer(timerID);
+  }
+
   await fetchHours();
 
   startPollingFetchHours();
