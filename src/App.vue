@@ -1,27 +1,33 @@
 <template>
-  <EmployeePicker/>
+  <APIKeyPrompt v-if="credentialsComplete === false"/>
 
-  <template v-if="employeePickerVisible === false">
-    <HoursOverview
-      :currentlyEditedHoursEntry="currentlyEditedHoursEntry"
-      @edit-hours-entry="editHoursEntry"
-    />
+  <template v-else>
+    <EmployeePicker/>
 
-    <TimerForm
-      :mode="timerFormMode"
-      :currentlyEditedHoursEntry="currentlyEditedHoursEntry"
-      @confirm-edit-hours-entry="confirmEditHoursEntry"
-      @cancel-edit-hours-entry="cancelEditHoursEntry"
-    />
+    <template v-if="employeePickerVisible === false">
+      <HoursOverview
+        :currentlyEditedHoursEntry="currentlyEditedHoursEntry"
+        @edit-hours-entry="editHoursEntry"
+      />
+
+      <TimerForm
+        :mode="timerFormMode"
+        :currentlyEditedHoursEntry="currentlyEditedHoursEntry"
+        @confirm-edit-hours-entry="confirmEditHoursEntry"
+        @cancel-edit-hours-entry="cancelEditHoursEntry"
+      />
+    </template>
   </template>
 </template>
 
 <script setup>
   import { ref } from 'vue';
   import { employeePickerVisible } from './composables/use-employees';
+  import APIKeyPrompt from './components/APIKeyPrompt.vue';
   import EmployeePicker from './components/EmployeePicker.vue';
   import HoursOverview from './components/HoursOverview.vue';
   import TimerForm from './components/TimerForm.vue';
+  import { credentialsComplete } from './composables/use-axios.js';
 
   const timerFormMode = ref('add');
   const currentlyEditedHoursEntry = ref(null);
@@ -49,14 +55,23 @@
     box-sizing: border-box;
   }
 
+  html {
+    height: 100%;
+    min-height: 100%;
+  }
+
   body {
     font-family: Avenir, Helvetica, Arial, sans-serif;
     font-size: 1.2rem;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     color: $black-1;
+    display: flex;
+    justify-content: stretch;
+    align-items: stretch;
     margin: 0;
     padding: 0;
+    min-height: 100%;
     background-color: hsl(30deg 13% 98.5%);
   }
 
@@ -85,6 +100,7 @@
     align-items: flex-start;
     gap: 40px;
     max-width: 1600px;
+    min-height: 100%;
     margin: 0 auto;
 
     .hours-overview {
@@ -97,6 +113,10 @@
       flex: 0 0 auto;
       width: 400px;
     }
+  }
+
+  h3 {
+    line-height: 1.6;
   }
 
   button {
@@ -276,6 +296,12 @@
     // Box-shadow
     --button-normal-box-shadow-color: #{rgba($grey-3, 0.2)};
     --button-disabled-box-shadow-color: #{rgba(#585858, 0.15)};
+  }
+
+  label {
+    margin: 0 0 0.5em;
+    font-size: 70%;
+    font-weight: 700;
   }
 
   input, textarea {

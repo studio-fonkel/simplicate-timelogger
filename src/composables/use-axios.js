@@ -1,4 +1,5 @@
 import axiosPlugin from 'axios';
+import { computed, ref } from 'vue';
 import { localStoragePrefix } from '../config.js';
 
 let tenantURL = import.meta.env.VITE_SIMPLICATE_TENANT_BASE_URL ?? localStorage.getItem(`${localStoragePrefix}tenantURL`);
@@ -11,20 +12,26 @@ if (!tenantURL.endsWith('/')) {
 
 const baseURL = `${tenantURL}api/v2/`;
 
-const apiKey = import.meta.env.VITE_SIMPLICATE_API_KEY ?? localStorage.getItem(`${localStoragePrefix}apiKey`);
-const apiSecret = import.meta.env.VITE_SIMPLICATE_API_SECRET ?? localStorage.getItem(`${localStoragePrefix}apiSecret`);
+export const apiKey = ref(import.meta.env.VITE_SIMPLICATE_API_KEY ?? localStorage.getItem(`${localStoragePrefix}apiKey`) ?? '');
+export const apiSecret = ref(import.meta.env.VITE_SIMPLICATE_API_SECRET ?? localStorage.getItem(`${localStoragePrefix}apiSecret`) ?? '');
+export const credentialsComplete = computed(() => apiKey.value && apiSecret.value);
 
-if (!apiKey || !apiSecret) {
-  throw new Error('VITE_SIMPLICATE_API_KEY and/or VITE_SIMPLICATE_API_SECRET is not defined in .env.local and no alternatives found in localStorage');
-}
+export const saveApiKey = (newApiKey) => {
+  localStorage.setItem(`${localStoragePrefix}apiKey`, newApiKey);
+  apiKey.value = newApiKey;
+};
+export const saveApiSecret = (newApiSecret) => {
+  localStorage.setItem(`${localStoragePrefix}apiSecret`, newApiSecret);
+  apiSecret.value = newApiSecret;
+};
 
+// credentialsComplete.value === true ? () => {}
 export const axios = axiosPlugin.create({
   baseURL,
   timeout: 8000,
-  // FIXME: Figure out how the Simplicate browser plugin authenticates someone, because they do send authentication key and secret headers as well, but I don't know where they come from.
   headers: {
-    'Authentication-Key': apiKey,
-    'Authentication-Secret': apiSecret,
+    'Authentication-Key': apiKey.value,
+    'Authentication-Secret': apiSecret.value,
   },
 });
 
