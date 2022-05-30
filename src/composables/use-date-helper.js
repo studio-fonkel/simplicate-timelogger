@@ -156,13 +156,23 @@ export const fixTime = (time) => {
   }
 
   // Early return for perfectly formatted times
-  if (time.match(/^(\d)?\d:\d\d$/)) {
+  if (time.match(/^\d\d:\d\d$/)) {
     return time;
   }
 
-  // Scenario 3 & 4
-  if (time.match(/^(\d)?\d:\d$/)) {
+  // Scenario 2: Add leading zero to single digit hours
+  if (time.match(/^\d:\d\d$/)) {
+    return `0${time}`;
+  }
+
+  // Scenario 3
+  if (time.match(/^\d\d:\d$/)) {
     return `${time}0`;
+  }
+
+  // Scenario 4
+  if (time.match(/^\d:\d$/)) {
+    return `0${time}0`;
   }
 
   // Scenario 1 & 2 become 5 & 6
@@ -181,9 +191,13 @@ export const fixTime = (time) => {
   else if (time.length === 3) {
     return `${time.slice(0, 1)}:${time.slice(1)}`;
   }
-  // Scenario 7 & 8
-  else if (time.length === 2 || time.length === 1) {
+  // Scenario 7
+  else if (time.length === 2) {
     return `${time}:00`;
+  }
+  // Scenario 8
+  else if (time.length === 1) {
+    return `0${time}:00`;
   }
   // Scenario 9
   else {
