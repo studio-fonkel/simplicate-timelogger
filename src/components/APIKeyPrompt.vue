@@ -10,7 +10,7 @@
         <input type="password" autocomplete="off" id="api_key" v-model="apiKey"/>
         <label for="api_secret">API secret</label>
         <input type="password" autocomplete="off" id="api_secret" v-model="apiSecret"/>
-        <button type="submit" class="btn--green">Opslaan</button>
+        <button type="submit" class="btn--green">Log in</button>
       </form>
     </div>
   </div>
@@ -36,7 +36,8 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    gap: 80px;
+    flex-wrap: wrap;
+    gap: 100px;
 
     .left {
       width: 240px;
@@ -48,7 +49,7 @@
       align-items: stretch;
       justify-content: center;
       height: 100%;
-      width: 580px;
+      width: 520px;
     }
 
     h3 {
@@ -70,6 +71,10 @@
 
     input {
       width: 100%;
+    }
+
+    button {
+      margin-top: 1.25em;
     }
   }
 </style>

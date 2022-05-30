@@ -14,18 +14,18 @@ const baseURL = `${tenantURL}api/v2/`;
 
 export const apiKey = ref(import.meta.env.VITE_SIMPLICATE_API_KEY ?? localStorage.getItem(`${localStoragePrefix}apiKey`) ?? '');
 export const apiSecret = ref(import.meta.env.VITE_SIMPLICATE_API_SECRET ?? localStorage.getItem(`${localStoragePrefix}apiSecret`) ?? '');
-export const credentialsComplete = computed(() => apiKey.value && apiSecret.value);
+export const credentialsComplete = computed(() => apiKey.value !== '' && apiSecret.value !== '  ');
 
 export const saveApiKey = (newApiKey) => {
   localStorage.setItem(`${localStoragePrefix}apiKey`, newApiKey);
   apiKey.value = newApiKey;
 };
+
 export const saveApiSecret = (newApiSecret) => {
   localStorage.setItem(`${localStoragePrefix}apiSecret`, newApiSecret);
   apiSecret.value = newApiSecret;
 };
 
-// credentialsComplete.value === true ? () => {}
 export const axios = axiosPlugin.create({
   baseURL,
   timeout: 8000,
