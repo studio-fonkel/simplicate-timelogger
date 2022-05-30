@@ -40,9 +40,6 @@ export async function fetchHours () {
     },
   });
 
-  // See TODO at `stopTimer` in `use-timer.js`.
-  console.log(hours.data.map(({ project, projectservice }) => ({ project, projectservice })));
-
   clearHours();
   addHours(hours.data);
   loadingEmployeeHours.value = false;
