@@ -161,6 +161,8 @@ export async function stopTimer (timerID) {
     const now = getCurrentDateTime();
     const nowWithoutSeconds = now.round({ smallestUnit: 'minute', roundingMode: 'floor' });
 
+    // NOTE: For now, this uses the time part of the start and end date time only. This means that
+    // if a timer was created yesterday, it will create a wrong hours entry, but so be it for now.
     const startTime = Temporal.PlainDateTime.from(timer.metadata.started_at).toPlainTime().toString().substring(0, 5);
     const endTime = nowWithoutSeconds.toPlainTime().toString().substring(0, 5);
 
