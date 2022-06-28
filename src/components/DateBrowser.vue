@@ -21,6 +21,14 @@
 
     <button
       type="button"
+      class="btn--grey btn--refresh"
+      @click="refresh"
+    >
+      <i class="fa fa-refresh"></i>
+    </button>
+
+    <button
+      type="button"
       class="btn--grey"
       @click="goToNextDay"
     >
@@ -54,6 +62,11 @@
 
   const goToNextDay = () => {
     currentlySelectedDate.value = currentlySelectedDate.value.add({ days: 1 });
+    initiallyLoadedEmployeeHours.value = false;
+    fetchHours();
+  };
+
+  const refresh = () => {
     initiallyLoadedEmployeeHours.value = false;
     fetchHours();
   };
@@ -94,7 +107,7 @@
 
     &__date {
       display: inline-block;
-      margin: 0;
+      margin: 0 auto;
     }
 
     &__date--past {
@@ -102,6 +115,10 @@
     }
     &__date--today {
       color: $blue-9;
+    }
+
+    .btn--refresh {
+      margin-right: 1ch;
     }
   }
 </style>
