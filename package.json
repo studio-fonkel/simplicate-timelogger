@@ -2,7 +2,7 @@
   "name": "simplicate-timelogger",
   "version": "0.0.0",
   "engines": {
-    "node": ">=18",
+    "node": ">=16",
     "pnpm": ">=7"
   },
   "scripts": {
