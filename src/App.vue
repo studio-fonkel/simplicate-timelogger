@@ -105,9 +105,12 @@
     color: #b41200;
   }
 
-  // .full-width {
-  //   width: 100%;
-  // }
+  .overflow-ellipsis {
+    width: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
 
   #app {
     width: 100%;
@@ -387,15 +390,6 @@
     border: 1px solid $grey-7;
   }
 
-  %ellipsis {
-    width: 100%;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    // REVIEW: Check if ellipsis works without overflow: hidden, because text was being cut off.
-    overflow: visible;
-    // overflow: hidden;
-  }
-
   .multiselect__placeholder,
   .multiselect__single,
   .multiselect__input {
@@ -409,7 +403,6 @@
     margin: 0 !important;
     background: none;
     border-radius: 0 !important;
-    @extend %ellipsis;
   }
 
   .multiselect__input {
@@ -488,7 +481,6 @@
     transition-property: background-color, color;
     transition-duration: 0.06s;
     transition-timing-function: ease-out;
-    @extend %ellipsis;
 
     &--highlight {
       background-color: $blue-9 !important;

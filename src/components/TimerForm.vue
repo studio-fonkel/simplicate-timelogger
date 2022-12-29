@@ -22,6 +22,10 @@
             <span>{{ optionProps.option.name }} ({{ optionProps.option.organization.name }})</span>
           </template>
 
+          <template #singleLabel="singleLabelProps">
+            <span class="overflow-ellipsis">{{ singleLabelProps.option.name }} ({{ singleLabelProps.option.organization.name }})</span>
+          </template>
+
           <template #noOptions>
             <span class="dim">
               {{ loadingAvailableProjects ? 'Bezig met projecten ophalen' : 'Geen projecten beschikbaar' }}
@@ -41,6 +45,10 @@
           placeholder="Selecteer een dienst"
           @remove="preventDeselectProjectService"
         >
+          <template #singleLabel="singleLabelProps">
+            <span class="overflow-ellipsis">{{ singleLabelProps.option.name }}</span>
+          </template>
+
           <template #noOptions>
             <span class="dim">
               {{ loadingAvailableProjectServices ? 'Bezig met diensten ophalen' : 'Geen diensten beschikbaar' }}
@@ -60,6 +68,10 @@
           placeholder="Selecteer een uursoort"
           @remove="preventDeselectProjectServiceHoursType"
         >
+          <template #singleLabel="singleLabelProps">
+            <span class="overflow-ellipsis">{{ singleLabelProps.option.label }}</span>
+          </template>
+
           <template #noOptions>
             <span class="dim">
               {{ loadingAvailableProjectServiceHoursTypes ? 'Bezig met uursoorten ophalen' : 'Geen uursoorten beschikbaar' }}
