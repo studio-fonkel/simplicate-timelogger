@@ -7,9 +7,19 @@
       <h3>Log in met je Simplicate API key en secret om te beginnen</h3>
       <form @submit.prevent="saveCredentials">
         <label for="api_key">API key</label>
-        <input type="password" autocomplete="off" id="api_key" v-model="apiKey"/>
+        <input
+          id="api_key"
+          v-model="apiKey"
+          type="password"
+          autocomplete="off"
+        />
         <label for="api_secret">API secret</label>
-        <input type="password" autocomplete="off" id="api_secret" v-model="apiSecret"/>
+        <input
+          id="api_secret"
+          v-model="apiSecret"
+          type="password"
+          autocomplete="off"
+        />
         <button type="submit" class="btn--green">Log in</button>
       </form>
     </div>
@@ -32,24 +42,40 @@
 
 <style lang="scss">
   .api-key-prompt {
+    max-width: 100%;
+    min-height: 100%;
+    margin-top: $page-padding - $page-padding-top;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 100px;
+    $left-width: 240px;
+    $right-width: 520px;
+    $col-gap: 100px;
+    column-gap: $col-gap;
+    row-gap: 40px;
 
     .left {
-      width: 240px;
+      flex: 1 0 auto;
+      width: $left-width;
+      text-align: center;
+
+      @media screen and (max-width: #{$left-width + $right-width + $col-gap + 2 * $page-padding - 1px}) {
+        img {
+          max-height: 25vh;
+        }
+      }
     }
 
     .right {
+      flex: 1 1 auto;
       display: flex;
       flex-direction: column;
       align-items: stretch;
       justify-content: center;
       height: 100%;
-      width: 520px;
+      width: $right-width;
     }
 
     h3 {

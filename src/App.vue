@@ -6,11 +6,13 @@
 
     <template v-if="employeePickerVisible === false">
       <HoursOverview
+        ref="hoursOverviewRef"
         :currentlyEditedHoursEntry="currentlyEditedHoursEntry"
         @edit-hours-entry="editHoursEntry"
       />
 
       <TimerForm
+        ref="timerFormRef"
         :mode="timerFormMode"
         :currentlyEditedHoursEntry="currentlyEditedHoursEntry"
         @confirm-edit-hours-entry="confirmEditHoursEntry"
@@ -21,13 +23,16 @@
 </template>
 
 <script setup>
-  import { ref } from 'vue';
+  import { ref, onMounted, onBeforeUnmount } from 'vue';
   import { employeePickerVisible } from './composables/use-employees';
   import APIKeyPrompt from './components/APIKeyPrompt.vue';
   import EmployeePicker from './components/EmployeePicker.vue';
   import HoursOverview from './components/HoursOverview.vue';
   import TimerForm from './components/TimerForm.vue';
   import { credentialsComplete } from './composables/use-axios.js';
+
+  const hoursOverviewRef = ref(null);
+  const timerFormRef = ref(null);
 
   const timerFormMode = ref('add');
   const currentlyEditedHoursEntry = ref(null);
@@ -46,6 +51,32 @@
     timerFormMode.value = 'add';
     currentlyEditedHoursEntry.value = null;
   };
+
+  // All this ResizeObserver nonsense makes sure we can check if the timer-form is displayed below or beside the hours-overview.
+  const resizeObserver = new ResizeObserver(() => {
+    if (!hoursOverviewRef.value || !timerFormRef.value) {
+      return;
+    }
+
+    const hoursOverviewEl = hoursOverviewRef.value.$el;
+    const timerFormEl = timerFormRef.value.$el;
+
+    // Compare y's. If identical, the elements are displayed horizontally.
+    if (hoursOverviewEl.getBoundingClientRect().y === timerFormEl.getBoundingClientRect().y) {
+      document.documentElement.dataset.view = 'horizontal';
+    }
+    else {
+      document.documentElement.dataset.view = 'vertical';
+    }
+  });
+
+  onMounted(() => {
+    resizeObserver.observe(document.body);
+  });
+
+  onBeforeUnmount(() => {
+    resizeObserver.unobserve(document.body);
+  });
 </script>
 
 <style lang="scss">
@@ -59,13 +90,17 @@
     height: 100%;
     min-height: 100%;
     width: 100%;
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    font-size: 120%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    @media screen and (max-width: 920px) {
+      font-size: 100%;
+    }
   }
 
   body {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    font-size: 1.2rem;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
     color: $black-1;
     display: flex;
     justify-content: stretch;
@@ -116,14 +151,15 @@
     width: 100%;
     max-width: 1700px;
     min-height: 100%;
-    padding: 120px min(6%, 60px) 60px;
+    padding: $page-padding-top min(6%, #{$page-padding}) $page-padding;
     margin: 0 auto;
     display: flex;
     flex-flow: row wrap;
     justify-content: center;
     justify-content: space-around;
     align-items: flex-start;
-    gap: 40px;
+    column-gap: 40px;
+    row-gap: 60px;
 
     .hours-overview {
       flex: 8 0 0;

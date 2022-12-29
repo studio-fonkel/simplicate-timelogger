@@ -495,7 +495,14 @@
 <style lang="scss">
   .timer-form {
     // This aligns the top of the form with the bottom of the date-browser.
-    padding-top: var(--current-date-browser-height, 0);
+    html[data-view="horizontal"] & {
+      padding-top: var(--current-date-browser-height, 0);
+    }
+    // This fixes vertical positioning of the timer form, which is a bit off, because there
+    // is an absolute positioned label with font-size: 70% and margin-bottom: 0.5em (.timer-form__select-label).
+    html[data-view="vertical"] & {
+      padding-top: 0.7 * (1em + 0.5em);
+    }
 
     &:focus {
       outline: none;

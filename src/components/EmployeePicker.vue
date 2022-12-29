@@ -102,6 +102,7 @@
   .employee-picker {
     position: fixed;
     z-index: 1000;
+    max-width: calc(100% - 30px);
 
     &.employee-picker--pick {
       top: 15%;
