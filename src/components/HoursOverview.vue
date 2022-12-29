@@ -168,6 +168,9 @@
     toDurationString,
     compareDateTimes,
     getCurrentTime,
+    currentDate,
+    currentlySelectedDate,
+    compareDates,
   } from '../composables/use-date-helper.js';
 
   import { currentEmployeeID } from '../composables/use-employees.js';
@@ -186,10 +189,11 @@
     'edit-hours-entry': hoursEntry => hoursEntry != null,
   });
 
+  const currentlyRunningTimers = computed(() => timers.value.filter(timer => timer.state === 'running'));
+
   watchEffect(() => {
-    const currentlyRunningTimers = timers.value.filter(timer => timer.state === 'running');
-    if (currentlyRunningTimers.length > 1) {
-      console.warn('Multiple timers running!', currentlyRunningTimers);
+    if (currentlyRunningTimers.value.length > 1) {
+      console.warn('Multiple timers running!', currentlyRunningTimers.value);
     }
   });
 
@@ -215,8 +219,18 @@
     return hours.value.reduce((total, curr) => total + curr.hours, 0);
   });
 
+  const totalTimersHours = computed(() => {
+    return currentlyRunningTimers.value.reduce((total, curr) => total + curr.seconds_spent, 0) / 3600;
+  });
+
   const totalHoursDurationString = computed(() => {
-    return toDurationString(totalHours.value);
+    let duration = totalHours.value;
+
+    if (compareDates(currentlySelectedDate.value, currentDate.value) === 0) {
+      duration += totalTimersHours.value;
+    }
+
+    return toDurationString(duration);
   });
 
   async function doCreateTimerFromHours (hoursEntry) {
