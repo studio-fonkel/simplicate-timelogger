@@ -58,6 +58,7 @@
   html {
     height: 100%;
     min-height: 100%;
+    width: 100%;
   }
 
   body {
@@ -72,6 +73,7 @@
     margin: 0;
     padding: 0;
     min-height: 100%;
+    width: 100%;
     background-color: hsl(30deg 13% 98.5%);
   }
 
@@ -92,26 +94,27 @@
   // }
 
   #app {
-    padding: 120px 60px 60px;
+    width: 100%;
+    max-width: 1700px;
+    min-height: 100%;
+    padding: 120px min(6%, 60px) 60px;
+    margin: 0 auto;
     display: flex;
     flex-flow: row wrap;
     justify-content: center;
     justify-content: space-around;
     align-items: flex-start;
     gap: 40px;
-    max-width: 1600px;
-    min-height: 100%;
-    margin: 0 auto;
 
     .hours-overview {
-      flex: 1 0 60%;
-      min-width: 650px;
-      max-width: 980px;
+      flex: 8 0 0;
+      min-width: min(750px, 100%);
     }
 
     .timer-form {
-      flex: 0 0 auto;
-      width: 400px;
+      flex: 3 0 0;
+      min-width: min(400px, 100%);
+      max-width: 700px;
     }
   }
 
