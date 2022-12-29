@@ -77,6 +77,22 @@
     background-color: hsl(30deg 13% 98.5%);
   }
 
+  .align-center {
+    align-items: center;
+  }
+
+  .justify-start {
+    justify-content: flex-start;
+  }
+
+  .justify-center {
+    justify-content: center;
+  }
+
+  .justify-end {
+    justify-content: flex-end;
+  }
+
   .dim {
     color: #bbb;
   }
