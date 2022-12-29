@@ -18,6 +18,10 @@
           placeholder="Selecteer een project"
           @remove="preventDeselectProject"
         >
+          <template #option="optionProps">
+            <span>{{ optionProps.option.name }} ({{ optionProps.option.organization.name }})</span>
+          </template>
+
           <template #noOptions>
             <span class="dim">
               {{ loadingAvailableProjects ? 'Bezig met projecten ophalen' : 'Geen projecten beschikbaar' }}
