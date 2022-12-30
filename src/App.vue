@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-  import { ref, onMounted, onBeforeUnmount } from 'vue';
+  import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
   import { employeePickerVisible } from './composables/use-employees';
   import APIKeyPrompt from './components/APIKeyPrompt.vue';
   import EmployeePicker from './components/EmployeePicker.vue';
@@ -52,8 +52,7 @@
     currentlyEditedHoursEntry.value = null;
   };
 
-  // All this ResizeObserver nonsense makes sure we can check if the timer-form is displayed below or beside the hours-overview.
-  const resizeObserver = new ResizeObserver(() => {
+  const setOrientation = () => {
     if (!hoursOverviewRef.value || !timerFormRef.value) {
       return;
     }
@@ -62,11 +61,21 @@
     const timerFormEl = timerFormRef.value.$el;
 
     // Compare y's. If identical, the elements are displayed horizontally.
-    if (hoursOverviewEl.getBoundingClientRect().y === timerFormEl.getBoundingClientRect().y) {
-      document.documentElement.dataset.view = 'horizontal';
-    }
-    else {
-      document.documentElement.dataset.view = 'vertical';
+    document.documentElement.dataset.view = (
+      hoursOverviewEl.getBoundingClientRect().y === timerFormEl.getBoundingClientRect().y
+    ) ? 'horizontal' : 'vertical';
+  };
+
+  // All this ResizeObserver nonsense makes sure we can check if
+  // the timer-form is displayed below or beside the hours-overview.
+  const resizeObserver = new ResizeObserver(() => {
+    setOrientation();
+  });
+
+  // We need to watch, because either APIKeyPrompt or EmployeePicker will be visible at first render.
+  watch([hoursOverviewRef, timerFormRef], ([hoursOverviewNewVal, timerFormNewVal]) => {
+    if (hoursOverviewNewVal && timerFormNewVal) {
+      setOrientation();
     }
   });
 
