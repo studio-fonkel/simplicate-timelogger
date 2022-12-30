@@ -14,7 +14,7 @@ const baseURL = `${tenantURL}api/v2/`;
 
 export const apiKey = ref(import.meta.env.VITE_SIMPLICATE_API_KEY ?? localStorage.getItem(`${localStoragePrefix}apiKey`) ?? '');
 export const apiSecret = ref(import.meta.env.VITE_SIMPLICATE_API_SECRET ?? localStorage.getItem(`${localStoragePrefix}apiSecret`) ?? '');
-export const credentialsComplete = computed(() => apiKey.value !== '' && apiSecret.value !== '  ');
+export const credentialsComplete = computed(() => apiKey.value.trim() !== '' && apiSecret.value.trim() !== '');
 
 export const saveApiKey = (newApiKey) => {
   localStorage.setItem(`${localStoragePrefix}apiKey`, newApiKey);
