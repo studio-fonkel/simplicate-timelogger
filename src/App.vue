@@ -167,6 +167,7 @@
     justify-content: center;
     justify-content: space-around;
     align-items: flex-start;
+    align-content: flex-start; // prevents space between rows in vertical view
     column-gap: 40px;
     row-gap: 60px;
 
