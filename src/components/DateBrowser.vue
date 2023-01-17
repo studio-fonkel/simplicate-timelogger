@@ -1,12 +1,14 @@
 <template>
   <div ref="dateBrowser" class="date-browser">
-    <button
-      type="button"
-      class="btn--grey"
-      @click="goToPreviousDay"
-    >
-      <i class="fas fa-chevron-left"></i>
-    </button>
+    <div class="date-browser__buttons-left">
+      <button
+        type="button"
+        class="btn--grey"
+        @click="goToPreviousDay"
+      >
+        <i class="fas fa-chevron-left"></i>
+      </button>
+    </div>
 
     <h3
       class="date-browser__date"
@@ -19,21 +21,23 @@
       {{ currentlySelectedDate.equals(currentDate) ? ' (vandaag)' : '' }}
     </h3>
 
-    <button
-      type="button"
-      class="btn--grey btn--refresh"
-      @click="refresh"
-    >
-      <i class="fa fa-refresh"></i>
-    </button>
+    <div class="date-browser__buttons-right">
+      <button
+        type="button"
+        class="btn--grey btn--refresh"
+        @click="refresh"
+      >
+        <i class="fa fa-refresh"></i>
+      </button>
 
-    <button
-      type="button"
-      class="btn--grey"
-      @click="goToNextDay"
-    >
-      <i class="fas fa-chevron-right"></i>
-    </button>
+      <button
+        type="button"
+        class="btn--grey"
+        @click="goToNextDay"
+      >
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
   </div>
 </template>
 
@@ -102,12 +106,36 @@
 <style lang="scss">
   .date-browser {
     display: flex;
+    flex-flow: row wrap;
     justify-content: space-between;
     align-items: center;
+    column-gap: 1ch;
+    row-gap: 1em;
 
     &__date {
       display: inline-block;
-      margin: 0 auto;
+      margin: 0;
+      flex: 0 1 auto;
+
+      @media screen and (max-width: 920px) {
+        order: -1;
+        flex: 0 0 100%;
+        text-align: center;
+      }
+    }
+
+    &__buttons-left,
+    &__buttons-right {
+      flex: 1 1 0;
+      display: flex;
+      align-items: stretch;
+      gap: 1ch;
+    }
+    &__buttons-left {
+      justify-content: flex-start;
+    }
+    &__buttons-right {
+      justify-content: flex-end;
     }
 
     &__date--past {
@@ -115,10 +143,6 @@
     }
     &__date--today {
       color: $blue-9;
-    }
-
-    .btn--refresh {
-      margin-right: 1ch;
     }
   }
 </style>

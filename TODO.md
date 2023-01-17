@@ -1,5 +1,4 @@
 # TODO:
-- [x] Stop en delete timer
 - [ ] Edit timer
 - [ ] Edit hours
 - [ ] Timer in het verleden kunnen starten
@@ -8,7 +7,6 @@
 - [ ] Probeer zoveel mogelijk Date te vermijden en Temporal te gebruiken
 - [ ] Dubbelcheck bij alle plekken waar we getCurrentDate/DateTime/Time gebruiken of we niet `today` zouden moeten gebruiken
 - [ ] Rename `today` naar `now` o.i.d.
-- [ ] Duration van timer meerekenen in aantal uur gewerkt op een dag (?)
 
 # TODO:
 ### Bij urenlogjes niet "(x dagen geleden)" weergeven, alleen bij timers en alleen bij starttijden
@@ -50,7 +48,6 @@ Controleer hoe dat nu wordt weergegeven en fix zo nodig.
 ### UX algemeen
 - Bij starten timer op andere dag dan vandaag, vraag of deze op timesheet van vandaag gestart moet worden of op die dag
 - Starten timer op dag in toekomst verbieden
-- Styling mobiel
 
 ### Urenoverzicht gaten snel kunnen opvullen
 - Geef plusje o.i.d. weer waar een gat zit tussen bepaalde logs, waardoor je snel een log kunt maken die tussen twee andere logs zit

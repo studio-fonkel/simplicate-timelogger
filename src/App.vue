@@ -6,11 +6,13 @@
 
     <template v-if="employeePickerVisible === false">
       <HoursOverview
+        ref="hoursOverviewRef"
         :currentlyEditedHoursEntry="currentlyEditedHoursEntry"
         @edit-hours-entry="editHoursEntry"
       />
 
       <TimerForm
+        ref="timerFormRef"
         :mode="timerFormMode"
         :currentlyEditedHoursEntry="currentlyEditedHoursEntry"
         @confirm-edit-hours-entry="confirmEditHoursEntry"
@@ -21,13 +23,16 @@
 </template>
 
 <script setup>
-  import { ref } from 'vue';
+  import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
   import { employeePickerVisible } from './composables/use-employees';
   import APIKeyPrompt from './components/APIKeyPrompt.vue';
   import EmployeePicker from './components/EmployeePicker.vue';
   import HoursOverview from './components/HoursOverview.vue';
   import TimerForm from './components/TimerForm.vue';
   import { credentialsComplete } from './composables/use-axios.js';
+
+  const hoursOverviewRef = ref(null);
+  const timerFormRef = ref(null);
 
   const timerFormMode = ref('add');
   const currentlyEditedHoursEntry = ref(null);
@@ -46,6 +51,41 @@
     timerFormMode.value = 'add';
     currentlyEditedHoursEntry.value = null;
   };
+
+  const setOrientation = () => {
+    if (!hoursOverviewRef.value || !timerFormRef.value) {
+      return;
+    }
+
+    const hoursOverviewEl = hoursOverviewRef.value.$el;
+    const timerFormEl = timerFormRef.value.$el;
+
+    // Compare y's. If identical, the elements are displayed horizontally.
+    document.documentElement.dataset.view = (
+      hoursOverviewEl.getBoundingClientRect().y === timerFormEl.getBoundingClientRect().y
+    ) ? 'horizontal' : 'vertical';
+  };
+
+  // All this ResizeObserver nonsense makes sure we can check if
+  // the timer-form is displayed below or beside the hours-overview.
+  const resizeObserver = new ResizeObserver(() => {
+    setOrientation();
+  });
+
+  // We need to watch, because either APIKeyPrompt or EmployeePicker will be visible at first render.
+  watch([hoursOverviewRef, timerFormRef], ([hoursOverviewNewVal, timerFormNewVal]) => {
+    if (hoursOverviewNewVal && timerFormNewVal) {
+      setOrientation();
+    }
+  });
+
+  onMounted(() => {
+    resizeObserver.observe(document.body);
+  });
+
+  onBeforeUnmount(() => {
+    resizeObserver.unobserve(document.body);
+  });
 </script>
 
 <style lang="scss">
@@ -58,13 +98,18 @@
   html {
     height: 100%;
     min-height: 100%;
+    width: 100%;
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    font-size: 120%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    @media screen and (max-width: 920px) {
+      font-size: 100%;
+    }
   }
 
   body {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    font-size: 1.2rem;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
     color: $black-1;
     display: flex;
     justify-content: stretch;
@@ -72,7 +117,24 @@
     margin: 0;
     padding: 0;
     min-height: 100%;
+    width: 100%;
     background-color: hsl(30deg 13% 98.5%);
+  }
+
+  .align-center {
+    align-items: center;
+  }
+
+  .justify-start {
+    justify-content: flex-start;
+  }
+
+  .justify-center {
+    justify-content: center;
+  }
+
+  .justify-end {
+    justify-content: flex-end;
   }
 
   .dim {
@@ -87,31 +149,37 @@
     color: #b41200;
   }
 
-  // .full-width {
-  //   width: 100%;
-  // }
+  .overflow-ellipsis {
+    width: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
 
   #app {
-    padding: 120px 60px 60px;
+    width: 100%;
+    max-width: 1700px;
+    min-height: 100%;
+    padding: $page-padding-top min(6%, #{$page-padding}) $page-padding;
+    margin: 0 auto;
     display: flex;
     flex-flow: row wrap;
     justify-content: center;
     justify-content: space-around;
     align-items: flex-start;
-    gap: 40px;
-    max-width: 1600px;
-    min-height: 100%;
-    margin: 0 auto;
+    align-content: flex-start; // prevents space between rows in vertical view
+    column-gap: 40px;
+    row-gap: 60px;
 
     .hours-overview {
-      flex: 1 0 60%;
-      min-width: 650px;
-      max-width: 980px;
+      flex: 8 0 0;
+      min-width: min(750px, 100%);
     }
 
     .timer-form {
-      flex: 0 0 auto;
-      width: 400px;
+      flex: 3 0 0;
+      min-width: min(400px, 100%);
+      max-width: 700px;
     }
   }
 
@@ -368,15 +436,6 @@
     border: 1px solid $grey-7;
   }
 
-  %ellipsis {
-    width: 100%;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    // REVIEW: Check if ellipsis works without overflow: hidden, because text was being cut off.
-    overflow: visible;
-    // overflow: hidden;
-  }
-
   .multiselect__placeholder,
   .multiselect__single,
   .multiselect__input {
@@ -390,7 +449,6 @@
     margin: 0 !important;
     background: none;
     border-radius: 0 !important;
-    @extend %ellipsis;
   }
 
   .multiselect__input {
@@ -469,7 +527,6 @@
     transition-property: background-color, color;
     transition-duration: 0.06s;
     transition-timing-function: ease-out;
-    @extend %ellipsis;
 
     &--highlight {
       background-color: $blue-9 !important;

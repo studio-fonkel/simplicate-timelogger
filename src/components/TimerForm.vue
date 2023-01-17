@@ -18,6 +18,14 @@
           placeholder="Selecteer een project"
           @remove="preventDeselectProject"
         >
+          <template #option="optionProps">
+            <span>{{ optionProps.option.name }} ({{ optionProps.option.organization.name }})</span>
+          </template>
+
+          <template #singleLabel="singleLabelProps">
+            <span class="overflow-ellipsis">{{ singleLabelProps.option.name }} ({{ singleLabelProps.option.organization.name }})</span>
+          </template>
+
           <template #noOptions>
             <span class="dim">
               {{ loadingAvailableProjects ? 'Bezig met projecten ophalen' : 'Geen projecten beschikbaar' }}
@@ -37,6 +45,10 @@
           placeholder="Selecteer een dienst"
           @remove="preventDeselectProjectService"
         >
+          <template #singleLabel="singleLabelProps">
+            <span class="overflow-ellipsis">{{ singleLabelProps.option.name }}</span>
+          </template>
+
           <template #noOptions>
             <span class="dim">
               {{ loadingAvailableProjectServices ? 'Bezig met diensten ophalen' : 'Geen diensten beschikbaar' }}
@@ -56,6 +68,10 @@
           placeholder="Selecteer een uursoort"
           @remove="preventDeselectProjectServiceHoursType"
         >
+          <template #singleLabel="singleLabelProps">
+            <span class="overflow-ellipsis">{{ singleLabelProps.option.label }}</span>
+          </template>
+
           <template #noOptions>
             <span class="dim">
               {{ loadingAvailableProjectServiceHoursTypes ? 'Bezig met uursoorten ophalen' : 'Geen uursoorten beschikbaar' }}
@@ -479,7 +495,14 @@
 <style lang="scss">
   .timer-form {
     // This aligns the top of the form with the bottom of the date-browser.
-    padding-top: var(--current-date-browser-height, 0);
+    html[data-view="horizontal"] & {
+      padding-top: var(--current-date-browser-height, 0);
+    }
+    // This fixes vertical positioning of the timer form, which is a bit off, because there
+    // is an absolute positioned label with font-size: 70% and margin-bottom: 0.5em (.timer-form__select-label).
+    html[data-view="vertical"] & {
+      padding-top: 0.7 * (1em + 0.5em);
+    }
 
     &:focus {
       outline: none;
