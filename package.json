@@ -14,14 +14,14 @@
     "@js-temporal/polyfill": "^0.4.3",
     "axios": "^1.2.2",
     "vue": "^3.2.45",
-    "vue-multiselect": "^3.0.0-alpha.2"
+    "vue-multiselect": "3.0.0-alpha.2"
   },
   "devDependencies": {
     "@fonkel/eslint-config-fonkel": "^0.2.8",
     "@vitejs/plugin-vue": "^4.0.0",
-    "eslint": "^8.30.0",
-    "eslint-plugin-vue": "^9.8.0",
+    "eslint": "^8.32.0",
+    "eslint-plugin-vue": "^9.9.0",
     "sass": "^1.57.1",
-    "vite": "^4.0.3"
+    "vite": "^4.0.4"
   }
 }
